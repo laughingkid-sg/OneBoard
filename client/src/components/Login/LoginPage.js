@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '../../UI/Button';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage(props) {
@@ -11,8 +10,11 @@ export default function LoginPage(props) {
 					<img src="img/loginImg.jpg" alt="Person Working" />
 				</div>
 
-                {/* Login Form */}
-				{props.children}
+				{/* Login Form */}
+				<div className={styles.loginForm}>
+					<h1 className={styles.title}>{props.title}</h1>
+					{props.children}
+				</div>
 			</div>
 		</React.Fragment>
 	);

@@ -30,3 +30,8 @@
     display: grid;
     grid-template-columns: auto;
 }
+
+.title {
+    margin-bottom:20px;
+    font-size: 3rem;
+}
