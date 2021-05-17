@@ -1,0 +1,29 @@
+.regRow {
+    grid-column: 1;
+    width: 100%;
+    margin: 15px 0;
+	font-size: 2rem;
+}
+
+.regRow label {
+    display: block;
+    font-size: 1.25rem;
+}
+
+.regRow input {
+    display: block;
+    width: 100%;
+    line-height: 1.5rem;
+    border-radius: 5px;
+}
+
+.formBtn  {
+    width: 100%;
+    font-size: 1.25rem;
+    margin-top: 35px;
+}
+
+.footText {
+    font-size: 1.25rem;
+    margin-top: 35px;
+}

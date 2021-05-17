@@ -1,0 +1,32 @@
+.gridContainer {
+	display: grid;
+	grid-template-columns: 33% auto;
+	grid-gap: 0px;
+}
+
+.sideImg {
+	grid-column: 1;
+}
+
+.sideImg img {
+	position: absolute;
+	height: 100%;
+	width: 33%;
+	object-fit: cover;
+}
+
+.loginForm {
+	grid-column: 2;
+	height: 100vh;
+    width: 100%;
+	margin: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+.loginForm form{
+    display: grid;
+    grid-template-columns: auto;
+}
