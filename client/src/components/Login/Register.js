@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './LoginCommon.module.css';
-import regStyles from './Register.module.css';
 import Button from '../../UI/Button';
 import Input from '../../UI/Input';
 import LoginPage from './LoginPage';
@@ -10,7 +9,6 @@ import useInput from '../hooks/use-input';
 const EMAIL_FORMAT =
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
-// TO CONSIDER: Generalise components to be used in both login and register
 export default function Register() {
 	const [isChecked, setIsChecked] = useState(false);
 	const [checkIsTouched, setIsTouched] = useState(false);
@@ -76,7 +74,7 @@ export default function Register() {
 			return;
 		}
 
-		console.log(fName, lName, email, password, cfmPassword,isChecked);
+		console.log(fName, lName, email, password, cfmPassword, isChecked);
 		fNameReset();
 		lNameReset();
 		emailReset();
@@ -100,8 +98,7 @@ export default function Register() {
 					label="First Name"
 					onChange={fNameOnChange}
 					onBlur={fNameOnBlur}
-					// To change css if necessary
-					className={` ${fNameHasError ? styles.invalid : ''}`}
+					className={`${fNameHasError ? styles.invalid : ''}`}
 					value={fName}
 				/>
 				{fNameHasError && (
@@ -116,8 +113,7 @@ export default function Register() {
 					label="Last Name"
 					onChange={lNameOnChange}
 					onBlur={lNameOnBlur}
-					// To change css if necessary
-					className={` ${lNameHasError ? styles.invalid : ''}`}
+					className={`${lNameHasError ? styles.invalid : ''}`}
 					value={lName}
 				/>
 				{lNameHasError && (
@@ -132,7 +128,7 @@ export default function Register() {
 					label="E-mail"
 					onChange={emailOnChange}
 					onBlur={emailOnBlur}
-					className={` ${emailHasError ? styles.invalid : ''}`}
+					className={`${emailHasError ? styles.invalid : ''}`}
 					value={email}
 				/>
 				{emailHasError && (
@@ -147,7 +143,7 @@ export default function Register() {
 					label="Password"
 					onChange={pwOnChange}
 					onBlur={pwOnBlur}
-					className={` ${pwHasError ? styles.invalid : ''}`}
+					className={`${pwHasError ? styles.invalid : ''}`}
 					value={password}
 				/>
 				{pwHasError && (
@@ -162,7 +158,7 @@ export default function Register() {
 					label="Confirm Password"
 					onChange={cfmPwOnChange}
 					onBlur={cfmPwOnBlur.bind(null, password)}
-					className={` ${cfmPwHasError ? styles.invalid : ''}`}
+					className={`${cfmPwHasError ? styles.invalid : ''}`}
 					value={cfmPassword}
 				/>
 				{cfmPwHasError && (
@@ -171,15 +167,30 @@ export default function Register() {
 					</p>
 				)}
 
-				<div className={`${(!isChecked && checkIsTouched) ? styles.invalid : ''}`}>
+				<div
+					className={`${
+						!isChecked && checkIsTouched ? styles.invalid : ''
+					}`}
+				>
 					<input
 						type="checkbox"
 						name="toc"
 						id="toc"
 						checked={isChecked}
 						onChange={toggleCheckHandler}
+						style={{
+							width: '1.25rem',
+							height: '1.25rem',
+							display: 'inline',
+						}}
 					/>
-					<label htmlFor="toc" className={regStyles.check}>
+					<label
+						htmlFor="toc"
+						style={{
+							marginLeft: '15px',
+							display: 'inline',
+						}}
+					>
 						I agree to the Terms of Use
 					</label>
 				</div>

@@ -9,7 +9,6 @@ import useInput from '../hooks/use-input';
 const EMAIL_FORMAT =
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
-// TO CONSIDER: Generalise components used in both login and register
 export default function Login() {
 	const {
 		value: email,
