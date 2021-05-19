@@ -1,7 +1,13 @@
+.invalid input{
+    background-color: #ed919191;
+}
+
+.invalid {
+    color:red;
+}
+
 .regRow {
-    grid-column: 1;
     width: 100%;
-    margin: 15px 0;
 	font-size: 2rem;
 }
 
@@ -10,12 +16,12 @@
     font-size: 1.25rem;
 }
 
-.regRow input {
+/* .regRow input {
     display: block;
     width: 100%;
-    line-height: 1.5rem;
     border-radius: 5px;
-}
+    line-height: 1.5rem;
+} */
 
 .formBtn  {
     width: 100%;

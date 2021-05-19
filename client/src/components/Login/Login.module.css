@@ -1,6 +1,13 @@
+.invalid input{
+    background-color: #ed919191;
+}
+
+.invalid {
+    color:red;
+}
+
 .formRow {
     width: 100%;
-    margin: 15px 0;
 	font-size: 2rem;
 }
 
@@ -9,12 +16,12 @@
     font-size: 1.25rem;
 }
 
-.formRow input {
+/* .formRow input {
     display: block;
     width: 100%;
     border-radius: 5px;
     line-height: 1.5rem;
-}
+} */
 
 .formBtn {
     width: 100%;

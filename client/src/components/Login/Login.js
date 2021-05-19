@@ -3,29 +3,81 @@ import { Link } from 'react-router-dom';
 import styles from './Login.module.css';
 import Button from '../../UI/Button';
 import LoginPage from './LoginPage';
+import Input from '../../UI/Input.js';
+import useInput from '../hooks/use-input';
 
-// TO CONSIDER: Generalise components to be used in both login and register
+const EMAIL_FORMAT =
+	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+// TO CONSIDER: Generalise components used in both login and register
 export default function Login() {
-	// const [isValid, setIsValid] = useState(false);
+	const {
+		value: email,
+		isValid: emailIsValid,
+		hasError: emailHasError,
+		onChange: emailOnChange,
+		onBlur: emailOnBlur,
+		reset: emailReset,
+	} = useInput((value) => EMAIL_FORMAT.test(value));
+
+	const {
+		value: password,
+		isValid: pwIsValid,
+		hasError: pwHasError,
+		onChange: pwOnChange,
+		onBlur: pwOnBlur,
+		reset: pwReset,
+	} = useInput((value) => value.trim() !== '');
+
+	const submitHandler = (e) => {
+		e.preventDefault();
+
+		if (!(emailIsValid && pwIsValid)) {
+			return;
+		}
+
+		console.log(email, password);
+		emailReset();
+		pwReset();
+	};
 
 	return (
 		<LoginPage title="Log In">
-			<form>
-				<div className={styles.formRow}>
-					<label htmlFor="email">E-mail</label>
-					<input type="email" id="email" />
-				</div>
-				<div className={styles.formRow}>
-					<label htmlFor="password">Password</label>
-					<input type="password" id="password" />
-				</div>
-				{/* To add custom style {width: 100%, font-size: 1.5rem} */}
+			<form onSubmit={submitHandler}>
+				<Input
+					id="email"
+					type="email"
+					label="E-mail"
+					onChange={emailOnChange}
+					onBlur={emailOnBlur}
+					className={` ${emailHasError ? styles.invalid : ''}`}
+					value={email}
+				/>
+				{emailHasError && (
+					<p className={styles.invalid}>
+						Please enter a valid E-mail.
+					</p>
+				)}
+				<Input
+					id="password"
+					type="password"
+					label="Password"
+					onChange={pwOnChange}
+					onBlur={pwOnBlur}
+					className={` ${pwHasError ? styles.invalid : ''}`}
+					value={password}
+				/>
+				{pwHasError && (
+					<p className={styles.invalid}>
+						Please enter your password.
+					</p>
+				)}
 				<Button type="submit" className={styles.formBtn}>
 					Log In
 				</Button>
 				<p className={styles.footText}>
-					{/* TODO: Add hyperlink to 'Register' */}
-					Don't have an account? <Link to="/register">Register here.</Link>
+					Don't have an account?{' '}
+					<Link to="/register">Register here.</Link>
 				</p>
 			</form>
 		</LoginPage>
