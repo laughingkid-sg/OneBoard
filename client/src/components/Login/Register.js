@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './Register.module.css';
+import styles from './LoginCommon.module.css';
+import regStyles from './Register.module.css';
 import Button from '../../UI/Button';
 import Input from '../../UI/Input';
 import LoginPage from './LoginPage';
@@ -11,6 +12,9 @@ const EMAIL_FORMAT =
 
 // TO CONSIDER: Generalise components to be used in both login and register
 export default function Register() {
+	const [isChecked, setIsChecked] = useState(false);
+	const [checkIsTouched, setIsTouched] = useState(false);
+
 	const {
 		value: fName,
 		isValid: fNameIsValid,
@@ -54,21 +58,37 @@ export default function Register() {
 		onChange: cfmPwOnChange,
 		onBlur: cfmPwOnBlur,
 		reset: cfmPwReset,
-	} = useInput((value) => (value.trim() !== '' && value === password));
+	} = useInput((value) => value.trim() !== '' && value === password);
 
 	const submitHandler = (e) => {
 		e.preventDefault();
 
-		if (!(fNameIsValid && lNameIsValid && emailIsValid && pwIsValid && cfmPwIsValid)) {
+		if (
+			!(
+				fNameIsValid &&
+				lNameIsValid &&
+				emailIsValid &&
+				pwIsValid &&
+				cfmPwIsValid &&
+				isChecked
+			)
+		) {
 			return;
 		}
 
-		console.log(fName, lName, email, password, cfmPassword);
+		console.log(fName, lName, email, password, cfmPassword,isChecked);
 		fNameReset();
 		lNameReset();
 		emailReset();
 		pwReset();
 		cfmPwReset();
+		setIsChecked(false);
+		setIsTouched(false);
+	};
+
+	const toggleCheckHandler = (e) => {
+		setIsChecked(!isChecked);
+		setIsTouched(true);
 	};
 
 	return (
@@ -141,7 +161,7 @@ export default function Register() {
 					type="password"
 					label="Confirm Password"
 					onChange={cfmPwOnChange}
-					onBlur={cfmPwOnBlur.bind(null,password)}
+					onBlur={cfmPwOnBlur.bind(null, password)}
 					className={` ${cfmPwHasError ? styles.invalid : ''}`}
 					value={cfmPassword}
 				/>
@@ -151,12 +171,23 @@ export default function Register() {
 					</p>
 				)}
 
-				{/* To add custom style {width: 100%, font-size: 1.5rem} */}
+				<div className={`${(!isChecked && checkIsTouched) ? styles.invalid : ''}`}>
+					<input
+						type="checkbox"
+						name="toc"
+						id="toc"
+						checked={isChecked}
+						onChange={toggleCheckHandler}
+					/>
+					<label htmlFor="toc" className={regStyles.check}>
+						I agree to the Terms of Use
+					</label>
+				</div>
+
 				<Button type="submit" className={styles.formBtn}>
 					Register
 				</Button>
 				<p className={styles.footText}>
-					{/* TODO: Add hyperlink to 'Login' */}
 					Already have an account? <Link to="/">Login here.</Link>
 				</p>
 			</form>

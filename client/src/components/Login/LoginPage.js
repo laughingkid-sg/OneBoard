@@ -12,6 +12,7 @@ export default function LoginPage(props) {
 
 				{/* Login Form */}
 				<div className={styles.loginForm}>
+					{/* TODO: Add logo on top */}
 					<h1 className={styles.title}>{props.title}</h1>
 					{props.children}
 				</div>

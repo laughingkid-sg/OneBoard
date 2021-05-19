@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import styles from './Login.module.css';
+import styles from './LoginCommon.module.css';
 import Button from '../../UI/Button';
 import LoginPage from './LoginPage';
 import Input from '../../UI/Input.js';
