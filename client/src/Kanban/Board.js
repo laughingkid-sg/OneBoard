@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import BoardForm from './BoardForm';
 import Column from './Column';
 import styles from './Board.module.css';
 import initData from './init-data';
@@ -80,6 +81,55 @@ function Board() {
 		return;
 	};
 
+	const addTaskHandler = (taskContent) => {
+		// Add new task
+		const newTaskId = `task-${Object.keys(tasks.tasks).length + 1}`;
+		const newTasks = {
+			...tasks.tasks,
+			[newTaskId]: { id: newTaskId, content: taskContent },
+		};
+
+		// Adding the new Task into a column
+		const firstColumn = tasks.columnOrder[0];
+		const column = tasks.columns[firstColumn];
+		const newColumnTasks = [...column.taskIds];
+		newColumnTasks.splice(newColumnTasks.length, 0, newTaskId);
+
+		// Update columns
+		const newColumns = {
+			...tasks.columns,
+			[column.id]: { ...column, taskIds: newColumnTasks },
+		};
+
+		// Update state
+		const newState = {
+			...tasks,
+			tasks: newTasks,
+			columns: newColumns,
+		};
+
+		setTasks(newState);
+	};
+
+	const addColumnHandler = (columnName) => {
+		// Updating columns
+		const newColumnId = `column-${Object.keys(tasks.columns).length + 1}`;
+		const newColumn = { id: newColumnId, title: columnName, taskIds: [] };
+		const newColumns = {...tasks.columns, [newColumnId]: newColumn}
+
+		// Updating columnOrder
+		const newColumOrder = [...tasks.columnOrder];
+		newColumOrder.splice(0,0,newColumnId)
+
+		const newState = {
+			...tasks,
+			columns: newColumns,
+			columnOrder: newColumOrder,
+		}
+
+		setTasks(newState);
+	};
+
 	const renderCols = tasks.columnOrder.map((colId, index) => {
 		const column = tasks.columns[colId];
 		const tasksInCol = column.taskIds.map((taskId) => tasks.tasks[taskId]);
@@ -95,24 +145,31 @@ function Board() {
 	});
 
 	return (
-		<DragDropContext onDragEnd={dragEndHandler}>
-			<Droppable
-				droppableId="all-cols"
-				direction="horizontal"
-				type="column"
-			>
-				{(provided) => (
-					<div
-						className={styles.board}
-						{...provided.droppableProps}
-						ref={provided.innerRef}
-					>
-						{renderCols}
-						{provided.placeholder}
-					</div>
-				)}
-			</Droppable>
-		</DragDropContext>
+		<React.Fragment>
+			<BoardForm
+				onAddTask={addTaskHandler}
+				onAddColumn={addColumnHandler}
+			/>
+			<DragDropContext onDragEnd={dragEndHandler}>
+				<Droppable
+					droppableId="all-cols"
+					direction="horizontal"
+					type="column"
+			
+				>
+					{(provided) => (
+						<div
+							className={styles.board}
+							{...provided.droppableProps}
+							ref={provided.innerRef}
+						>
+							{renderCols}
+							{provided.placeholder}
+						</div>
+					)}
+				</Droppable>
+			</DragDropContext>
+		</React.Fragment>
 	);
 }
 

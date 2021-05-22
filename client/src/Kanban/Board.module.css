@@ -1,7 +1,5 @@
 .board {
     display: flex;
-    flex-direction: row;
     flex-wrap: nowrap;
-    overflow:auto;
-    justify-content: space-around;
+    overflow-x: auto;
 }

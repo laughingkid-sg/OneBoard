@@ -1,18 +1,19 @@
 .container {
+	/* width: 360px; */
 	width: 25%;
 	height: 500px;
-	max-height: 75%;
+	max-height: 750px;
 	/* May be removed in favour of a parent flex/grid  */
 	margin: 8px;
     /* padding: 16px; */
 	border: 1px solid lightgray;
 	border-radius: 15px;
+	flex: 0 0 auto;
+	background-color: white;
 }
 
 .title {
 	font-size: 1.75rem;
-	/* text-align: center; */
-	/* margin: 24px 9px; */
     margin:0px;
     overflow: hidden;
     padding: 11px 9px;
@@ -23,6 +24,5 @@
 
 .taskList {
 	padding: 8px;
-    /* flex-grow: 1; */
     min-height: 100px;
 }
