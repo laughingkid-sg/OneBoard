@@ -1,0 +1,35 @@
+.invalid input{
+    background-color: #ed919191;
+}
+
+.invalid {
+    color:red;
+}
+
+.formRow {
+    width: 100%;
+	font-size: 2rem;
+}
+
+.formRow label {
+    display: block;
+    font-size: 1.25rem;
+}
+
+/* .formRow input {
+    display: block;
+    width: 100%;
+    border-radius: 5px;
+    line-height: 1.5rem;
+} */
+
+.formBtn {
+    width: 100%;
+    font-size: 1.25rem;
+    margin-top: 35px;
+}
+
+.footText {
+    font-size: 1.25rem;
+    margin-top: 35px;
+}
