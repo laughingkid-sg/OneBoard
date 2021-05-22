@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DragDropContext } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Column';
 import styles from './Board.module.css';
 import initData from './init-data';
@@ -8,8 +8,8 @@ function Board() {
 	const [tasks, setTasks] = useState(initData);
 
 	const dragEndHandler = (result) => {
-		const { source, destination, draggableId } = result;
-		console.log(source, destination);
+		const { source, destination, draggableId, type } = result;
+		// console.log(source, destination);
 
 		if (!destination) {
 			return;
@@ -25,6 +25,16 @@ function Board() {
 
 		const start = tasks.columns[source.droppableId];
 		const finish = tasks.columns[destination.droppableId];
+
+		// Operation for movement between columns
+		if (type === 'column') {
+			const newColOrder = [...tasks.columnOrder];
+			newColOrder.splice(source.index, 1);
+			newColOrder.splice(destination.index, 0, draggableId);
+
+			setTasks({ ...tasks, columnOrder: newColOrder });
+			return;
+		}
 
 		// Operation for same column
 		if (start === finish) {
@@ -58,7 +68,6 @@ function Board() {
 			...finish,
 			taskIds: finTaskIds,
 		};
-		console.log(newFin)
 
 		setTasks({
 			...tasks,
@@ -68,16 +77,16 @@ function Board() {
 				[newFin.id]: newFin,
 			},
 		});
-		console.log(tasks);
 		return;
 	};
 
-	const renderCols = tasks.columnOrder.map((colId) => {
+	const renderCols = tasks.columnOrder.map((colId, index) => {
 		const column = tasks.columns[colId];
 		const tasksInCol = column.taskIds.map((taskId) => tasks.tasks[taskId]);
 		return (
 			<Column
 				key={column.id}
+				index={index}
 				column={column}
 				tasks={tasksInCol}
 				title={column.title}
@@ -87,7 +96,22 @@ function Board() {
 
 	return (
 		<DragDropContext onDragEnd={dragEndHandler}>
-			<div className={styles.board}>{renderCols}</div>
+			<Droppable
+				droppableId="all-cols"
+				direction="horizontal"
+				type="column"
+			>
+				{(provided) => (
+					<div
+						className={styles.board}
+						{...provided.droppableProps}
+						ref={provided.innerRef}
+					>
+						{renderCols}
+						{provided.placeholder}
+					</div>
+				)}
+			</Droppable>
 		</DragDropContext>
 	);
 }

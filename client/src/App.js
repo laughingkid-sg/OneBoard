@@ -12,6 +12,7 @@ function App() {
     //  <Register />
     // <Login />
 		<div className="App">
+			<Board />
 			<Router>
 				{/* <Sidebar /> */}
 				<Switch>
