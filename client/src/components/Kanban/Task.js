@@ -12,7 +12,8 @@ function Task(props) {
 					{...provided.dragHandleProps}
 					ref={provided.innerRef}
 				>
-					{props.task.content}
+					{props.task.taskName}
+					<span className={styles.description}>{props.task.description}</span>
 				</div>;
 			}}
 		</Draggable>

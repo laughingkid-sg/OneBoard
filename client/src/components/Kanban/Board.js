@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import BoardForm from './BoardForm';
+import BoardForm from './BoardForm/BoardForm';
 import Column from './Column';
 import styles from './Board.module.css';
 import initData from './init-data';
@@ -81,12 +81,12 @@ function Board() {
 		return;
 	};
 
-	const addTaskHandler = (taskContent) => {
+	const addTaskHandler = (taskName,description) => {
 		// Add new task
 		const newTaskId = `task-${Object.keys(tasks.tasks).length + 1}`;
 		const newTasks = {
 			...tasks.tasks,
-			[newTaskId]: { id: newTaskId, content: taskContent },
+			[newTaskId]: { id: newTaskId, taskName, description},
 		};
 
 		// Adding the new Task into a column
@@ -149,7 +149,7 @@ function Board() {
 			<BoardForm
 				onAddTask={addTaskHandler}
 				onAddColumn={addColumnHandler}
-			/>
+			/>	
 			<DragDropContext onDragEnd={dragEndHandler}>
 				<Droppable
 					droppableId="all-cols"
