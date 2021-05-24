@@ -5,10 +5,15 @@ import Column from './Column';
 import TaskModal from './TaskModal';
 import styles from './Board.module.css';
 import initData from './init-data';
+import { useSelector, useDispatch } from 'react-redux';
+import { kanbanActions } from '../../store/kanban';
 
 function Board() {
-	const [tasks, setTasks] = useState(initData);
 	const [showModal, setShowModal] = useState({ showModal: false });
+	const tasks = useSelector((state) => state.kanban.tasks);
+	const columns = useSelector((state) => state.kanban.columns);
+	const columnOrder = useSelector((state) => state.kanban.columnOrder);
+	const dispatch = useDispatch();
 
 	const dragEndHandler = (result) => {
 		const { source, destination, draggableId, type } = result;
@@ -26,18 +31,20 @@ function Board() {
 			return;
 		}
 
-		const start = tasks.columns[source.droppableId];
-		const finish = tasks.columns[destination.droppableId];
+		const start = columns[source.droppableId];
+		const finish = columns[destination.droppableId];
 
 		// Operation for movement between columns
 		if (type === 'column') {
-			const newColOrder = [...tasks.columnOrder];
+			const newColOrder = [...columnOrder];
 			newColOrder.splice(source.index, 1);
 			newColOrder.splice(destination.index, 0, draggableId);
 
-			setTasks({ ...tasks, columnOrder: newColOrder });
+			dispatch(kanbanActions.columnReorder({ newColOrder }));
 			return;
 		}
+
+		let newColumns = {};
 
 		// Operation for same column
 		if (start === finish) {
@@ -50,89 +57,45 @@ function Board() {
 				taskIds: newTasks,
 			};
 
-			setTasks({
-				...tasks,
-				columns: { ...tasks.columns, [newCol.id]: newCol },
-			});
-			return;
-		}
+			newColumns = {
+				...columns,
+				[newCol.id]: newCol,
+			};
+		} else {
+			// Operation for different column
+			const startTaskIds = [...start.taskIds];
+			startTaskIds.splice(source.index, 1);
+			const newStart = {
+				...start,
+				taskIds: startTaskIds,
+			};
 
-		// Operation for different column
-		const startTaskIds = [...start.taskIds];
-		startTaskIds.splice(source.index, 1);
-		const newStart = {
-			...start,
-			taskIds: startTaskIds,
-		};
+			const finTaskIds = [...finish.taskIds];
+			finTaskIds.splice(destination.index, 0, draggableId);
+			const newFin = {
+				...finish,
+				taskIds: finTaskIds,
+			};
 
-		const finTaskIds = [...finish.taskIds];
-		finTaskIds.splice(destination.index, 0, draggableId);
-		const newFin = {
-			...finish,
-			taskIds: finTaskIds,
-		};
-
-		setTasks({
-			...tasks,
-			columns: {
-				...tasks.columns,
+			newColumns = {
+				...columns,
 				[newStart.id]: newStart,
 				[newFin.id]: newFin,
-			},
-		});
+			};
+		}
+
+		dispatch(kanbanActions.taskReorder({ newColumns }));
 		return;
 	};
 
 	const addTaskHandler = (taskName, description) => {
-		// Add new task
-		const newTaskId = `task-${Object.keys(tasks.tasks).length + 1}`;
-		const newTasks = {
-			...tasks.tasks,
-			[newTaskId]: { id: newTaskId, taskName, description },
-		};
-
-		// Adding the new Task into a column
-		const firstColumn = tasks.columnOrder[0];
-		const column = tasks.columns[firstColumn];
-		const newColumnTasks = [...column.taskIds];
-		newColumnTasks.splice(newColumnTasks.length, 0, newTaskId);
-
-		// Update columns
-		const newColumns = {
-			...tasks.columns,
-			[column.id]: { ...column, taskIds: newColumnTasks },
-		};
-
-		// Update state
-		const newState = {
-			...tasks,
-			tasks: newTasks,
-			columns: newColumns,
-		};
-
-		setTasks(newState);
+		dispatch(kanbanActions.addTask({ taskName, description }));
 	};
 
 	const addColumnHandler = (columnName) => {
-		// Updating columns
-		const newColumnId = `column-${Object.keys(tasks.columns).length + 1}`;
-		const newColumn = { id: newColumnId, title: columnName, taskIds: [] };
-		const newColumns = { ...tasks.columns, [newColumnId]: newColumn };
-
-		// Updating columnOrder
-		const newColumOrder = [...tasks.columnOrder];
-		newColumOrder.splice(0, 0, newColumnId);
-
-		const newState = {
-			...tasks,
-			columns: newColumns,
-			columnOrder: newColumOrder,
-		};
-
-		setTasks(newState);
+		dispatch(kanbanActions.addColumn({columnName}))
 	};
 
-	// Add closure to include column
 	const showModalHandler = (columnTitle,task) => {
 		setShowModal({
 			showModal: true, modal:
@@ -150,9 +113,9 @@ function Board() {
 		setShowModal({ showModal: false });
 	};
 
-	const renderCols = tasks.columnOrder.map((colId, index) => {
-		const column = tasks.columns[colId];
-		const tasksInCol = column.taskIds.map((taskId) => tasks.tasks[taskId]);
+	const renderCols = columnOrder.map((colId, index) => {
+		const column = columns[colId];
+		const tasksInCol = column.taskIds.map((taskId) => tasks[taskId]);
 		return (
 			<Column
 				key={column.id}
@@ -167,12 +130,12 @@ function Board() {
 
 	return (
 		<React.Fragment>
+			{console.log(columns) || console.log(columnOrder)}
 			<BoardForm
 				onAddTask={addTaskHandler}
 				onAddColumn={addColumnHandler}
 			/>
 			{showModal.showModal && showModal.modal}
-			{/* <TaskModal /> */}
 			<DragDropContext onDragEnd={dragEndHandler}>
 				<Droppable
 					droppableId="all-cols"

@@ -9,8 +9,6 @@ function Task(props) {
 			return;
 		}
 
-		// Calls the TaskList to show Modal
-		console.log("I'm clicking a task");
 		props.showModal(props.task);
 	};
 
@@ -23,14 +21,14 @@ function Task(props) {
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
 						ref={provided.innerRef}
-						// onClick={showTask}
+						onClick={showTask}
 					>
 						<h4>{props.task.taskName}</h4>
+						{/* <FaEllipsisH onClick={showTask} /> */}
 						<span className={styles.description}>
 							{props.task.description}
 						</span>
 						{/* Make this bigger for users to click on it */}
-						<FaEllipsisH onClick={showTask} />
 					</div>
 				);
 			}}

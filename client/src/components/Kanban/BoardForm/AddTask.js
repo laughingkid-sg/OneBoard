@@ -33,7 +33,7 @@ function AddTask(props) {
 			console.log('Please ensure the task name is not empty!');
 			return;
 		}
-		console.log(taskName, description);
+		// console.log("From AddTask",taskName, description);
 
         // Send information upwards to add task
         props.onAddTask(taskName, description);
