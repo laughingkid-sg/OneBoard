@@ -2,7 +2,6 @@ import React, { useReducer } from 'react';
 import AddTask from './AddTask';
 import AddColumn from './AddColumn';
 import Button from '../../../UI/Button';
-// import Input from '../../../UI/Input';
 import styles from './BoardForm.module.css';
 import Modal from '../../../UI/Modal';
 
@@ -57,7 +56,6 @@ function BoardForm(props) {
 
 	return (
 		<React.Fragment>
-			{console.log("BoardForm render")}
 			{showModal.showModal && (
 				<Modal onClose={closeModal}>{showModal.modalToShow}</Modal>
 			)}

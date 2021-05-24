@@ -87,6 +87,10 @@ const kanbanSlice = createSlice({
 			newColumn = { ...newColumn, taskIds: columnTasks };
 			state.columns = { ...state.columns, [columnId]: newColumn };
 		},
+		editTask(state, action) {
+			const taskId = action.payload.id;
+			state.tasks = { ...state.tasks, [taskId]: { ...action.payload } };
+		},
 		addColumn(state, action) {
 			// Updating columns
 			const newColumnId = `column-${

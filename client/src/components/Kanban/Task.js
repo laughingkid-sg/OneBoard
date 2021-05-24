@@ -5,8 +5,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa';
 import styles from './Task.module.css';
 
 function Task(props) {
-
-	const showTask = (e) => {
+	const showTask = ( e) => {
 		if (e.defaultPrevented) {
 			return;
 		}
@@ -16,7 +15,12 @@ function Task(props) {
 
 	const deleteTask = (e) => {
 		e.stopPropagation();
-		props.onDelete(props.id,props.index)
+		props.onDelete(props.id, props.index);
+	};
+
+	const editTask = (e) => {
+		e.stopPropagation();
+		props.onEdit();
 	}
 
 	return (
@@ -35,9 +39,14 @@ function Task(props) {
 							{props.task.description}
 						</span>
 						<div className={styles.icons}>
-							<IconContext.Provider value={{className: styles.icons}}>
-								<FaEdit />
-								<FaTrash onClick={deleteTask}/>
+							<IconContext.Provider
+								value={{ className: styles.icons }}
+							>
+								<FaEdit onClick={editTask} />
+								<FaTrash
+									onClick={deleteTask}
+									className={styles.delete}
+								/>
 							</IconContext.Provider>
 						</div>
 					</div>

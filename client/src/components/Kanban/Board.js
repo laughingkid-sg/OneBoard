@@ -93,24 +93,47 @@ function Board() {
 	};
 
 	const addColumnHandler = (columnName) => {
-		dispatch(kanbanActions.addColumn({columnName}))
+		dispatch(kanbanActions.addColumn({ columnName }));
 	};
 
-	const showModalHandler = (columnTitle,task) => {
+	const showModalHandler = (columnTitle, task) => {
 		setShowModal({
-			showModal: true, modal:
-			<TaskModal
-				title={task.taskName}
-				description={task.description}
-				columnTitle={columnTitle}
-				onClose={closeModalHandler}
-			/>
-		 })
+			showModal: true,
+			modal: (
+				<TaskModal
+					id={task.id}
+					title={task.taskName}
+					description={task.description}
+					columnTitle={columnTitle}
+					onClose={closeModalHandler}
+				/>
+			),
+		});
 	};
 
 	const closeModalHandler = () => {
 		console.log('closeModalHandler called');
 		setShowModal({ showModal: false });
+	};
+
+	const editModalHandler = (columnId, taskId) => {
+		const task = tasks[taskId];
+		const column = columns[columnId];
+		setShowModal({
+			showModal: true,
+			modal: (
+				<TaskModal
+					write={true}
+					id={task.id}
+					title={task.taskName}
+					description={task.description}
+					columnTitle={column.title}
+					onClose={closeModalHandler}
+				/>
+			),
+		});
+
+		// console.log('Render Edit Column');
 	};
 
 	const renderCols = columnOrder.map((colId, index) => {
@@ -124,13 +147,13 @@ function Board() {
 				tasks={tasksInCol}
 				title={column.title}
 				showModal={showModalHandler}
+				onEdit={editModalHandler}
 			/>
 		);
 	});
 
 	return (
 		<React.Fragment>
-			{console.log(columns) || console.log(columnOrder)}
 			<BoardForm
 				onAddTask={addTaskHandler}
 				onAddColumn={addColumnHandler}

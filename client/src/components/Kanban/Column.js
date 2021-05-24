@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import {useDispatch} from 'react-redux'
 import Task from './Task';
@@ -20,7 +20,7 @@ function Column(props) {
 					{...provided.draggableProps}
 					ref={provided.innerRef}
 				>
-					<h3 className={styles.title} {...provided.dragHandleProps}>
+					<h3 className={styles.title} {...provided.dragHandleProps} onClick={props.onEdit.bind(null,props.column.id,'')}>
 						{props.title}
 					</h3>
 					<Droppable droppableId={props.column.id}>
@@ -40,6 +40,7 @@ function Column(props) {
 											props.title
 										)}
 										onDelete={deleteTask.bind(null,props.column.id)}
+										onEdit={props.onEdit.bind(null,props.column.id,task.id)}
 									/>
 								))}
 								{provided.placeholder}
