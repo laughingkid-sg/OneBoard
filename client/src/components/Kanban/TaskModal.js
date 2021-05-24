@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Modal from '../../UI/Modal';
 import styles from './TaskModal.module.css';
 import { AiOutlineClose } from 'react-icons/ai';
 
 function TaskModal(props) {
+	const [isWrite, setIsWrite] = useState( props.write || false );
+
 	return (
 		<Modal onClose={props.onClose}>
 			<div className={styles.container}>

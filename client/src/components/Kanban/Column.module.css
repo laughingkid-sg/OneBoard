@@ -1,14 +1,14 @@
 .container {
-	/* width: 360px; */
-	width: 25%;
-	height: 500px;
-	max-height: 750px;
+	display: flex;
+	flex-direction: column;
+	flex: 0 0 auto;
+	width: 400px;
+	height:600px;
 	/* May be removed in favour of a parent flex/grid  */
 	margin: 8px;
     /* padding: 16px; */
 	border: 1px solid lightgray;
 	border-radius: 15px;
-	flex: 0 0 auto;
 	background-color: white;
 }
 
@@ -24,5 +24,15 @@
 
 .taskList {
 	padding: 8px;
-    min-height: 100px;
+	height:100%;
+	overflow: auto;
+}
+
+/* Hide scrollbar */
+.container::-webkit-scrollbar, .taskList::-webkit-scrollbar {
+	display: none;
+}
+
+.container, .taskList {
+	scrollbar-width: none;
 }

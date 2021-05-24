@@ -75,9 +75,23 @@ const kanbanSlice = createSlice({
 			state.tasks = newTasks;
 			state.columns = newColumns;
 		},
+		deleteTask(state, action) {
+			const taskId = action.payload.taskId;
+			const newTasks = { ...state.tasks };
+			delete newTasks[taskId];
+
+			const columnId = action.payload.columnId;
+			let newColumn = { ...state.columns[columnId] };
+			const columnTasks = [...newColumn.taskIds];
+			columnTasks.splice(action.payload.index, 1);
+			newColumn = { ...newColumn, taskIds: columnTasks };
+			state.columns = { ...state.columns, [columnId]: newColumn };
+		},
 		addColumn(state, action) {
 			// Updating columns
-			const newColumnId = `column-${Object.keys(state.columns).length + 1}`;
+			const newColumnId = `column-${
+				Object.keys(state.columns).length + 1
+			}`;
 			const newColumn = {
 				id: newColumnId,
 				title: action.payload.columnName,

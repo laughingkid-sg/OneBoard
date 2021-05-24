@@ -1,9 +1,17 @@
 import React from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
+import {useDispatch} from 'react-redux'
 import Task from './Task';
+import { kanbanActions } from '../../store/kanban';
 import styles from './Column.module.css';
 
 function Column(props) {
+	const dispatch = useDispatch();
+
+	const deleteTask = (columnId,taskId,index) => {
+		dispatch(kanbanActions.deleteTask({ columnId, taskId,index }));
+	}
+	
 	return (
 		<Draggable draggableId={props.column.id} index={props.index}>
 			{(provided) => (
@@ -12,7 +20,9 @@ function Column(props) {
 					{...provided.draggableProps}
 					ref={provided.innerRef}
 				>
-                    <h3 className={styles.title} {...provided.dragHandleProps}>{props.title}</h3>
+					<h3 className={styles.title} {...provided.dragHandleProps}>
+						{props.title}
+					</h3>
 					<Droppable droppableId={props.column.id}>
 						{(provided) => (
 							<TaskList
@@ -25,7 +35,11 @@ function Column(props) {
 										task={task}
 										index={index}
 										id={task.id}
-										showModal={props.showModal.bind(null,props.title)}
+										showModal={props.showModal.bind(
+											null,
+											props.title
+										)}
+										onDelete={deleteTask.bind(null,props.column.id)}
 									/>
 								))}
 								{provided.placeholder}
@@ -40,7 +54,11 @@ function Column(props) {
 
 const TaskList = (props) => {
 	return (
-		<div ref={props.innerRef} className={styles.taskList} {...props.dragHandle}>
+		<div
+			ref={props.innerRef}
+			className={styles.taskList}
+			{...props.dragHandle}
+		>
 			{props.children}
 		</div>
 	);
