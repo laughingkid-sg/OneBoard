@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import BoardForm from './BoardForm/BoardForm';
 import Column from './Column';
+import TaskModal from './TaskModal';
 import styles from './Board.module.css';
 import initData from './init-data';
 
 function Board() {
 	const [tasks, setTasks] = useState(initData);
+	const [showModal, setShowModal] = useState({ showModal: false });
 
 	const dragEndHandler = (result) => {
 		const { source, destination, draggableId, type } = result;
@@ -81,12 +83,12 @@ function Board() {
 		return;
 	};
 
-	const addTaskHandler = (taskName,description) => {
+	const addTaskHandler = (taskName, description) => {
 		// Add new task
 		const newTaskId = `task-${Object.keys(tasks.tasks).length + 1}`;
 		const newTasks = {
 			...tasks.tasks,
-			[newTaskId]: { id: newTaskId, taskName, description},
+			[newTaskId]: { id: newTaskId, taskName, description },
 		};
 
 		// Adding the new Task into a column
@@ -115,19 +117,37 @@ function Board() {
 		// Updating columns
 		const newColumnId = `column-${Object.keys(tasks.columns).length + 1}`;
 		const newColumn = { id: newColumnId, title: columnName, taskIds: [] };
-		const newColumns = {...tasks.columns, [newColumnId]: newColumn}
+		const newColumns = { ...tasks.columns, [newColumnId]: newColumn };
 
 		// Updating columnOrder
 		const newColumOrder = [...tasks.columnOrder];
-		newColumOrder.splice(0,0,newColumnId)
+		newColumOrder.splice(0, 0, newColumnId);
 
 		const newState = {
 			...tasks,
 			columns: newColumns,
 			columnOrder: newColumOrder,
-		}
+		};
 
 		setTasks(newState);
+	};
+
+	// Add closure to include column
+	const showModalHandler = (columnTitle,task) => {
+		setShowModal({
+			showModal: true, modal:
+			<TaskModal
+				title={task.taskName}
+				description={task.description}
+				columnTitle={columnTitle}
+				onClose={closeModalHandler}
+			/>
+		 })
+	};
+
+	const closeModalHandler = () => {
+		console.log('closeModalHandler called');
+		setShowModal({ showModal: false });
 	};
 
 	const renderCols = tasks.columnOrder.map((colId, index) => {
@@ -140,6 +160,7 @@ function Board() {
 				column={column}
 				tasks={tasksInCol}
 				title={column.title}
+				showModal={showModalHandler}
 			/>
 		);
 	});
@@ -149,13 +170,14 @@ function Board() {
 			<BoardForm
 				onAddTask={addTaskHandler}
 				onAddColumn={addColumnHandler}
-			/>	
+			/>
+			{showModal.showModal && showModal.modal}
+			{/* <TaskModal /> */}
 			<DragDropContext onDragEnd={dragEndHandler}>
 				<Droppable
 					droppableId="all-cols"
 					direction="horizontal"
 					type="column"
-			
 				>
 					{(provided) => (
 						<div

@@ -41,8 +41,6 @@ function BoardForm(props) {
 			type: 'task',
 			modal: <AddTask onClose={closeModal} onAddTask={props.onAddTask} />,
 		});
-		// // Add task to the first column
-		// props.onAddTask(textInput);
 	};
 
 	const showColumnHandler = () => {
@@ -55,12 +53,11 @@ function BoardForm(props) {
 				/>
 			),
 		});
-		// // Add column
-		// props.onAddColumn(textInput);
 	};
 
 	return (
 		<React.Fragment>
+			{console.log("BoardForm render")}
 			{showModal.showModal && (
 				<Modal onClose={closeModal}>{showModal.modalToShow}</Modal>
 			)}

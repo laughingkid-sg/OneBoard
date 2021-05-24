@@ -12,7 +12,6 @@ function Column(props) {
 					{...provided.draggableProps}
 					ref={provided.innerRef}
 				>
-					{/* <Title title={props.title} dragHandle={...provided.dragHandleProps} /> */}
                     <h3 className={styles.title} {...provided.dragHandleProps}>{props.title}</h3>
 					<Droppable droppableId={props.column.id}>
 						{(provided) => (
@@ -26,6 +25,7 @@ function Column(props) {
 										task={task}
 										index={index}
 										id={task.id}
+										showModal={props.showModal.bind(null,props.title)}
 									/>
 								))}
 								{provided.placeholder}
