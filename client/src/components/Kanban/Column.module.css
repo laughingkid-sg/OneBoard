@@ -13,13 +13,21 @@
 }
 
 .title {
-	font-size: 1.75rem;
-    margin:0px;
-    overflow: hidden;
-    padding: 11px 9px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     background-color: skyblue;
+    padding: 11px 12px;
+    margin:0px;
+}
+
+.titleText {
+	font-size: 1.75rem;
+    overflow: hidden;
+	width: 70%;
+	margin: 0 22px;
 }
 
 .taskList {

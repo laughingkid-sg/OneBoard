@@ -1,25 +1,25 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import EditDelete from './KanbanUI/EditDelete';
 import styles from './Task.module.css';
 
 function Task(props) {
-	const showTask = ( e) => {
+	const showTask = (e) => {
 		if (e.defaultPrevented) {
 			return;
 		}
 
-		props.showModal(props.task.id);
+		props.showModal(props.task,props.index,false);
 	};
 
 	const deleteTask = (e) => {
 		e.stopPropagation();
-		props.onDelete(props.id, props.index);
+		props.onDelete(props.id,props.task.taskName, props.index);
 	};
 
 	const editTask = (e) => {
 		e.stopPropagation();
-		props.onEdit();
+		props.showModal(props.task,props.index, true);
 	}
 
 	return (
@@ -33,6 +33,7 @@ function Task(props) {
 						ref={provided.innerRef}
 						onClick={showTask}
 					>
+						{console.log(props.task.taskName)}
 						<h3>{props.task.taskName}</h3>
 						<span className={styles.description}>
 							{props.task.description}

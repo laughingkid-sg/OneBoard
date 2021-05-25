@@ -1,3 +1,15 @@
+
+.close {
+    color: rgb(121, 121, 121);
+    font-size: 25px;
+    align-self: flex-end;
+    cursor: pointer;
+}
+
+.close:hover {
+    color:#272727;
+}
+
 .title {
 	font-size: 2.25rem;
 }
@@ -9,35 +21,27 @@
 
 .invalid {
 	margin-top: 12px;
-	margin-bottom: -8px;
 	color: red;
 	font-size: 1.15rem;
 }
 
-.form div {
+.container {
 	display: flex;
 	flex-direction: column;
-	margin: 20px 10px;
+	align-items: center;
 }
 
-.form label {
-	font-weight: bold;
-	font-size: 1.5rem;
-	margin-bottom: 8px;
-}
-
-.form input,
-.form textarea {
-	font-size: 1.25rem;
-}
-
-.form textarea {
-	resize: none;
+.input {
+	font-size: 20px;
+	width: 95%;
+	text-align: center;
 }
 
 .buttonArea {
+	display: flex;
 	flex-direction: row !important;
 	justify-content: space-between;
+	margin: 20px 0;
 }
 
 .button {

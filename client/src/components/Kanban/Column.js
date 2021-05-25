@@ -1,37 +1,80 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { useDispatch } from 'react-redux';
 import Task from './Task';
-import { kanbanActions } from '../../store/kanban';
 import styles from './Column.module.css';
 import EditDelete from './KanbanUI/EditDelete';
 import DeleteModal from './KanbanUI/DeleteModal';
 import ColumnEditModal from './KanbanUI/ColumnEditModal';
+import TaskModal from './KanbanUI/TaskModal';
 
 function Column(props) {
-	const dispatch = useDispatch();
-
-	const deleteTask = (columnId, taskId, index) => {
-		dispatch(kanbanActions.deleteTask({ columnId, taskId, index }));
-	};
-
 	const deleteColumnHandler = (e) => {
 		e.stopPropagation();
-		props.onDelete(
+		props.showModal(
 			<DeleteModal
 				isCol={true}
+				title={props.title}
 				columnId={props.column.id}
 				onCancel={props.onCancel}
 			/>
 		);
 	};
 
-	const editColumnHandler = (e) => {
-		e.stopPropagation();
-		props.onColEdit(
-			<ColumnEditModal columnTitle={props.title} id={props.column.id} onClose={props.onCancel}/>
+	const deleteTaskHandler = (
+		taskId,
+		taskName,
+		index,
+		onCancel = props.onCancel
+	) => {
+		props.showModal(
+			<DeleteModal
+				isCol={false}
+				taskId={taskId}
+				title={taskName}
+				columnId={props.column.id}
+				index={index}
+				onCancel={onCancel}
+			/>
 		);
 	};
+
+	const editColumnHandler = (e) => {
+		e.stopPropagation();
+		props.showModal(
+			<ColumnEditModal
+				columnTitle={props.title}
+				id={props.column.id}
+				onClose={props.onCancel}
+			/>
+		);
+	};
+
+	const setTaskModal = (task, index, isWrite) => {
+		props.showModal(
+			<TaskModal
+				write={isWrite}
+				id={task.id}
+				index={index}
+				title={task.taskName}
+				description={task.description}
+				columnTitle={props.column.title}
+				columnId={props.column.id}
+				onClose={props.onCancel}
+				onDelete={deleteTaskHandler}
+			/>
+		);
+	};
+
+	const renderTasks = props.tasks.map((task, index) => (
+		<Task
+			key={task.id}
+			task={task}
+			index={index}
+			id={task.id}
+			showModal={setTaskModal}
+			onDelete={deleteTaskHandler}
+		/>
+	));
 
 	return (
 		<Draggable draggableId={props.column.id} index={props.index}>
@@ -43,13 +86,8 @@ function Column(props) {
 				>
 					<div className={styles.title}>
 						<h3
-							className={styles.title}
+							className={styles.titleText}
 							{...provided.dragHandleProps}
-							// onClick={props.onEdit.bind(
-							// 	null,
-							// 	props.column.id,
-							// 	''
-							// )}
 						>
 							{props.title}
 						</h3>
@@ -64,27 +102,7 @@ function Column(props) {
 								{...provided.droppableProps}
 								innerRef={provided.innerRef}
 							>
-								{props.tasks.map((task, index) => (
-									<Task
-										key={task.id}
-										task={task}
-										index={index}
-										id={task.id}
-										showModal={props.showTaskModal.bind(
-											null,
-											props.column.id
-										)}
-										onDelete={deleteTask.bind(
-											null,
-											props.column.id
-										)}
-										onEdit={props.onEdit.bind(
-											null,
-											props.column.id,
-											task.id
-										)}
-									/>
-								))}
+								{renderTasks}
 								{provided.placeholder}
 							</TaskList>
 						)}

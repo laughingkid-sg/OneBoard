@@ -74,10 +74,10 @@ function AddTask(props) {
 				{/* <h3>Subtask (Coming soon!)</h3> */}
 
 				<div className={styles.buttonArea}>
-					<Button className={styles.button} onClick={props.onClose}>Cancel</Button>
-					<Button type="Submit" className={styles.button}>
+					<Button type="Submit" className={`${styles.button} ${styles.confirm}`}>
 						Submit
 					</Button>
+					<Button className={styles.button} onClick={props.onClose}>Cancel</Button>
 				</div>
 			</form>
 		</React.Fragment>

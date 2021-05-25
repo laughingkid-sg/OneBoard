@@ -21,6 +21,14 @@ function TaskModal(props) {
 			return;
 		}
 
+		if (
+			taskName.current.value === beforeChange.taskName &&
+			description.current.value === beforeChange.description
+		) {
+			toggleEditHandler();
+			return;
+		}
+
 		const updatedTask = {
 			taskName: taskName.current.value,
 			description: description.current.value,
@@ -31,30 +39,29 @@ function TaskModal(props) {
 		toggleEditHandler();
 	};
 
-	const cancelEditHandler = () => {
-		setIsWrite(false);
+	const toggleEditHandler = () => {
+		setIsWrite((prevWrite) => !prevWrite);
 	};
 
-	const toggleEditHandler = () => {
-		setIsWrite(prevWrite => !prevWrite);
-	}
+	const deleteTaskHandler = () => {
+		props.onDelete(props.id, props.title, props.index);
+	};
 
-	const deleteEditHandler = () => {
-		dispatch(kanbanActions.deleteTask({ taskId: props.id, columnId: props.columnId }));
-		props.onClose();
-	}
-	
 	const renderButtons = isWrite ? (
-			<div className={styles.btnContainer}>
-				<Button onClick={confirmEditHandler}>Confirm Changes</Button>
-				<Button onClick={toggleEditHandler}>Cancel Changes</Button>
-			</div>
-		) : (
-			<div className={styles.btnContainer}>
-				<Button onClick={toggleEditHandler}>Edit Task</Button>
-				<Button onClick={deleteEditHandler}>Delete Task</Button>
-			</div>
-		);
+		<div className={styles.btnContainer}>
+			<Button onClick={confirmEditHandler} className={styles.confirm}>
+				Confirm Changes
+			</Button>
+			<Button onClick={toggleEditHandler}>Cancel Changes</Button>
+		</div>
+	) : (
+		<div className={styles.btnContainer}>
+			<Button onClick={deleteTaskHandler} className={styles.delete}>
+				Delete Task
+			</Button>
+			<Button onClick={toggleEditHandler}>Edit Task</Button>
+		</div>
+	);
 
 	return (
 		<Modal onClose={props.onClose}>

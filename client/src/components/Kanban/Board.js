@@ -87,22 +87,10 @@ function Board() {
 		return;
 	};
 
-	const showTaskModalHandler = (columnId, taskId) => {
-		setTaskModal(columnId, taskId, false);
-	};
-
-	const showColumnModalHandler = (modal) => {
-		setShowModal({showModal:true, modal})
-	}
-
-	const showDeleteModalHandler = (modal) => {
+	const showModalHandler = (modal) => {
 		setShowModal({ showModal: true, modal });
 	}
 	
-	const showAddHandler = (modal) => {
-		setShowModal({ showModal: true, modal });
-	}
-
 	const editTaskModalHandler = (columnId, taskId) => {
 		setTaskModal(columnId, taskId, true);
 	};
@@ -141,11 +129,9 @@ function Board() {
 				column={column}
 				tasks={tasksInCol}
 				title={column.title}
-				showTaskModal={showTaskModalHandler}
 				onCancel={closeModalHandler}
-				onDelete={showDeleteModalHandler}
 				onEdit={editTaskModalHandler}
-				onColEdit={showColumnModalHandler}
+				showModal={showModalHandler}
 			/>
 		);
 	});
@@ -153,7 +139,7 @@ function Board() {
 	return (
 		<React.Fragment>
 			<BoardForm
-				onOpen={showAddHandler}
+				onOpen={showModalHandler}
 				onClose={closeModalHandler}
 			/>
 			{showModal.showModal && showModal.modal}
