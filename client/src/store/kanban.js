@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from '@reduxjs/toolkit';
 
 const initKanbanState = {
 	tasks: {
@@ -42,12 +42,14 @@ const initKanbanState = {
 	},
 	// Facilitate reordering of the columns
 	columnOrder: ['column-1', 'column-2', 'column-3'],
+	max: { task: 4, columns: 3 },
 };
 
 const kanbanSlice = createSlice({
 	name: 'kanban',
 	initialState: initKanbanState,
 	reducers: {
+		// * TASKS
 		addTask(state, action) {
 			// Add new task
 			const newTaskId = `task-${Object.keys(state.tasks).length + 1}`;
@@ -76,11 +78,13 @@ const kanbanSlice = createSlice({
 			state.columns = newColumns;
 		},
 		deleteTask(state, action) {
+			// REQUIRES: taskId, columnId
 			const taskId = action.payload.taskId;
+			const columnId = action.payload.columnId;
 			const newTasks = { ...state.tasks };
+
 			delete newTasks[taskId];
 
-			const columnId = action.payload.columnId;
 			let newColumn = { ...state.columns[columnId] };
 			const columnTasks = [...newColumn.taskIds];
 			columnTasks.splice(action.payload.index, 1);
@@ -91,6 +95,11 @@ const kanbanSlice = createSlice({
 			const taskId = action.payload.id;
 			state.tasks = { ...state.tasks, [taskId]: { ...action.payload } };
 		},
+		taskReorder(state, action) {
+			const newColumns = action.payload.newColumns;
+			state.columns = newColumns;
+		},
+		// * COLUMNS
 		addColumn(state, action) {
 			// Updating columns
 			const newColumnId = `column-${
@@ -112,9 +121,38 @@ const kanbanSlice = createSlice({
 			state.columns = newColumns;
 			state.columnOrder = newColumnOrder;
 		},
-		taskReorder(state, action) {
-			const newColumns = action.payload.newColumns;
-			state.columns = newColumns;
+		editColumn(state, action) {
+			const colId = action.payload.colId;
+			const columnName = action.payload.columnName;
+
+			const newColumn = { ...state.columns[colId] };
+			newColumn.title = columnName;
+			state.columns = { ...state.columns, [colId]: newColumn };
+		},
+		deleteColumn(state, action) {
+			//REQUIRES colId
+			// Remove Column
+			const colId = action.payload.colId;
+			const column = state.columns[colId];
+			const newColumns = { ...state.columns };
+			delete newColumns[colId];
+			console.log(newColumns);
+
+			// Removing Tasks
+			const tasksInCol = column.taskIds;
+			const newTasks = { ...state.tasks };
+			tasksInCol.forEach((taskId) => {
+				delete newTasks[taskId];
+			});
+
+			// Updating columnOrder
+			const index = state.columnOrder.indexOf(colId);
+			const newColOrder = [...state.columnOrder];
+			newColOrder.splice(index, 1);
+
+			state.tasks = newTasks;
+			state.column = newColumns;
+			state.columnOrder = newColOrder;
 		},
 		columnReorder(state, action) {
 			state.columnOrder = action.payload.newColOrder;

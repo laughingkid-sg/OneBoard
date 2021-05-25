@@ -1,64 +1,44 @@
-import React, { useReducer } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import AddTask from './AddTask';
 import AddColumn from './AddColumn';
 import Button from '../../../UI/Button';
-import styles from './BoardForm.module.css';
 import Modal from '../../../UI/Modal';
-
-function isTextEmpty(text) {
-	return text.trim() === '';
-}
-
-const initialState = {
-	showModal: false,
-	modalToShow: null,
-};
-
-const modalReducer = (state, action) => {
-	switch (action.type) {
-		case 'task':
-		case 'column':
-			return {
-				showModal: true,
-				modalToShow: action.modal,
-			};
-	}
-
-	return initialState;
-};
+import styles from './BoardForm.module.css';
+import { kanbanActions } from '../../../store/kanban';
 
 function BoardForm(props) {
-	const [showModal, dispatchShowModal] = useReducer(
-		modalReducer,
-		initialState
-	);
+	const dispatch = useDispatch();
 
-	const closeModal = () => dispatchShowModal({ type: 'close' });
+	const addTaskHandler = (taskName, description) => {
+		dispatch(kanbanActions.addTask({ taskName, description }));
+	};
+
+	const addColumnHandler = (columnName) => {
+		dispatch(kanbanActions.addColumn({ columnName }));
+	};
 
 	const showTaskHandler = () => {
-		dispatchShowModal({
-			type: 'task',
-			modal: <AddTask onClose={closeModal} onAddTask={props.onAddTask} />,
-		});
+		props.onOpen(
+			<Modal onClose={props.onClose}>
+				<AddTask onAddTask={addTaskHandler} onClose={props.onClose} />
+			</Modal>
+		);
 	};
 
 	const showColumnHandler = () => {
-		dispatchShowModal({
-			type: 'column',
-			modal: (
+		props.onOpen(
+			<Modal onClose={props.onClose}>
 				<AddColumn
-					onClose={closeModal}
-					onAddColumn={props.onAddColumn}
+					onAddColumn={addColumnHandler}
+					onClose={props.onClose}
 				/>
-			),
-		});
+			</Modal>
+		);
 	};
 
 	return (
 		<React.Fragment>
-			{showModal.showModal && (
-				<Modal onClose={closeModal}>{showModal.modalToShow}</Modal>
-			)}
 			<div className={styles.boardForm}>
 				<Button onClick={showTaskHandler} className={styles.button}>
 					Add New Task

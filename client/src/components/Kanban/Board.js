@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import BoardForm from './BoardForm/BoardForm';
 import Column from './Column';
-import TaskModal from './TaskModal';
+import TaskModal from './KanbanUI/TaskModal';
 import styles from './Board.module.css';
-import initData from './init-data';
 import { useSelector, useDispatch } from 'react-redux';
 import { kanbanActions } from '../../store/kanban';
 
@@ -15,9 +14,9 @@ function Board() {
 	const columnOrder = useSelector((state) => state.kanban.columnOrder);
 	const dispatch = useDispatch();
 
+	// TODO Could be refactored
 	const dragEndHandler = (result) => {
 		const { source, destination, draggableId, type } = result;
-		// console.log(source, destination);
 
 		if (!destination) {
 			return;
@@ -88,52 +87,48 @@ function Board() {
 		return;
 	};
 
-	const addTaskHandler = (taskName, description) => {
-		dispatch(kanbanActions.addTask({ taskName, description }));
+	const showTaskModalHandler = (columnId, taskId) => {
+		setTaskModal(columnId, taskId, false);
 	};
 
-	const addColumnHandler = (columnName) => {
-		dispatch(kanbanActions.addColumn({ columnName }));
+	const showColumnModalHandler = (modal) => {
+		setShowModal({showModal:true, modal})
+	}
+
+	const showDeleteModalHandler = (modal) => {
+		setShowModal({ showModal: true, modal });
+	}
+	
+	const showAddHandler = (modal) => {
+		setShowModal({ showModal: true, modal });
+	}
+
+	const editTaskModalHandler = (columnId, taskId) => {
+		setTaskModal(columnId, taskId, true);
 	};
 
-	const showModalHandler = (columnTitle, task) => {
-		setShowModal({
-			showModal: true,
-			modal: (
-				<TaskModal
-					id={task.id}
-					title={task.taskName}
-					description={task.description}
-					columnTitle={columnTitle}
-					onClose={closeModalHandler}
-				/>
-			),
-		});
-	};
-
-	const closeModalHandler = () => {
-		console.log('closeModalHandler called');
-		setShowModal({ showModal: false });
-	};
-
-	const editModalHandler = (columnId, taskId) => {
+	const setTaskModal = (columnId,taskId,isWrite) => {
 		const task = tasks[taskId];
 		const column = columns[columnId];
+		// console.log(task);
 		setShowModal({
 			showModal: true,
 			modal: (
 				<TaskModal
-					write={true}
+					write={isWrite}
 					id={task.id}
 					title={task.taskName}
 					description={task.description}
 					columnTitle={column.title}
+					columnId={columnId}
 					onClose={closeModalHandler}
 				/>
 			),
 		});
+	}
 
-		// console.log('Render Edit Column');
+	const closeModalHandler = () => {
+		setShowModal({ showModal: false });
 	};
 
 	const renderCols = columnOrder.map((colId, index) => {
@@ -146,8 +141,11 @@ function Board() {
 				column={column}
 				tasks={tasksInCol}
 				title={column.title}
-				showModal={showModalHandler}
-				onEdit={editModalHandler}
+				showTaskModal={showTaskModalHandler}
+				onCancel={closeModalHandler}
+				onDelete={showDeleteModalHandler}
+				onEdit={editTaskModalHandler}
+				onColEdit={showColumnModalHandler}
 			/>
 		);
 	});
@@ -155,8 +153,8 @@ function Board() {
 	return (
 		<React.Fragment>
 			<BoardForm
-				onAddTask={addTaskHandler}
-				onAddColumn={addColumnHandler}
+				onOpen={showAddHandler}
+				onClose={closeModalHandler}
 			/>
 			{showModal.showModal && showModal.modal}
 			<DragDropContext onDragEnd={dragEndHandler}>

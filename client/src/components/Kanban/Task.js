@@ -1,7 +1,6 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { IconContext } from 'react-icons';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import EditDelete from './KanbanUI/EditDelete';
 import styles from './Task.module.css';
 
 function Task(props) {
@@ -10,7 +9,7 @@ function Task(props) {
 			return;
 		}
 
-		props.showModal(props.task);
+		props.showModal(props.task.id);
 	};
 
 	const deleteTask = (e) => {
@@ -38,17 +37,7 @@ function Task(props) {
 						<span className={styles.description}>
 							{props.task.description}
 						</span>
-						<div className={styles.icons}>
-							<IconContext.Provider
-								value={{ className: styles.icons }}
-							>
-								<FaEdit onClick={editTask} />
-								<FaTrash
-									onClick={deleteTask}
-									className={styles.delete}
-								/>
-							</IconContext.Provider>
-						</div>
+						<EditDelete onEdit={editTask} onDelete={deleteTask} />
 					</div>
 				);
 			}}

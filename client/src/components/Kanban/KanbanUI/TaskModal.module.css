@@ -1,21 +1,29 @@
-.container {
+.container, .btnContainer {
     display: flex;
     flex-direction: column;
     margin: 8px 20px;
 }
 
+.btnContainer {
+    flex-direction: row;
+    justify-content: space-around;
+}
 .close {
-    /* margin: 8px 16px; */
+    color: rgb(121, 121, 121);
     font-size: 25px;
     align-self: flex-end;
     cursor: pointer;
+}
+
+.close:hover {
+    color:#272727;
 }
 
 .taskinfo {
     margin: 22px 0;
 }
 
-.title {
+.title, .input[type="text"] {
     font-size: 2.25rem;
 }
 
@@ -29,7 +37,13 @@
     margin-bottom: 8px;
 }
 
-.description {
+.description, .input[type="textarea"]{
     line-height: 1.7;
+    white-space: pre-wrap;
 }
+
+.input {
+    width:100%;
+}
+
 
