@@ -1,0 +1,46 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	flex: 0 0 auto;
+	width: 400px;
+	height:600px;
+	/* May be removed in favour of a parent flex/grid  */
+	margin: 8px;
+    /* padding: 16px; */
+	border: 1px solid lightgray;
+	border-radius: 15px;
+	background-color: white;
+}
+
+.title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background-color: skyblue;
+    padding: 11px 12px;
+    margin:0px;
+}
+
+.titleText {
+	font-size: 1.75rem;
+    overflow: hidden;
+	width: 70%;
+	margin: 0 22px;
+}
+
+.taskList {
+	padding: 8px;
+	height:100%;
+	overflow: auto;
+}
+
+/* Hide scrollbar */
+.container::-webkit-scrollbar, .taskList::-webkit-scrollbar {
+	display: none;
+}
+
+.container, .taskList {
+	scrollbar-width: none;
+}
