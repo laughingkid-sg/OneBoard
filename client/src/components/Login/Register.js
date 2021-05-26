@@ -12,6 +12,8 @@ const EMAIL_FORMAT =
 export default function Register() {
 	const [isChecked, setIsChecked] = useState(false);
 	const [checkIsTouched, setIsTouched] = useState(false);
+	const [errorMsg, setErrorMsg] = useState('');
+	const [isError, setIsError] = useState(false);
 
 	const {
 		value: fName,
@@ -58,7 +60,7 @@ export default function Register() {
 		reset: cfmPwReset,
 	} = useInput((value) => value.trim() !== '' && value === password);
 
-	const submitHandler = (e) => {
+	const submitHandler = async (e) => {
 		e.preventDefault();
 
 		if (
@@ -74,14 +76,32 @@ export default function Register() {
 			return;
 		}
 
-		console.log(fName, lName, email, password, cfmPassword, isChecked);
-		fNameReset();
-		lNameReset();
-		emailReset();
-		pwReset();
-		cfmPwReset();
-		setIsChecked(false);
-		setIsTouched(false);
+		const user = { firstName: fName, lastName: lName, email, password };
+
+		const response = await fetch('/api/signup', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(user),
+		});
+
+		const data = await response.json();
+
+		if (response.ok) {
+			setErrorMsg('Register success! You may login to OneBoard now.');
+			setIsError(false);
+			fNameReset();
+			lNameReset();
+			emailReset();
+			pwReset();
+			cfmPwReset();
+			setIsChecked(false);
+			setIsTouched(false);
+			return;
+		}
+
+		setErrorMsg(data.message);
+		setIsError(true);
+		return;
 	};
 
 	const toggleCheckHandler = (e) => {
@@ -90,7 +110,7 @@ export default function Register() {
 	};
 
 	return (
-		<LoginPage title="Register">
+		<LoginPage title="Register" errorMsg={errorMsg} isError={isError}>
 			<form onSubmit={submitHandler}>
 				<Input
 					id="fName"

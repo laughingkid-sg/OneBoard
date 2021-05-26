@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styles from './App.module.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Board from './components/Kanban/Board';
@@ -9,21 +10,37 @@ import Reports from './pages/Reports';
 import Sidebar from './UI/Sidebar';
 
 function App() {
+	const [userToken, setUserToken] = useState('');
+
+	// TODO add Bearer Auth
+	const onLoginHandler = (token) => {
+		setUserToken(token);
+	};
+
 	return (
-    //  <Register />
-    // <Login />
+		//  <Register />
+		// <Login />
 		<div className="App">
-			<Board />
-			{/* <Router> */}
+			{/* <Board /> */}
+			<Router>
 				{/* <Sidebar /> */}
-				{/* <Switch> */}
-					{/* <Route path="/" exact component={Login} /> */}
-					{/* <Route path="/register" component={Register} /> */}
-					{/* <Route path="/" exact component={Home} />
-					<Route path="/reports" component={Reports} />
-					<Route path="/products" component={Products} /> */}
-				{/* </Switch> */}
-			{/* </Router> */}
+				<Switch>
+					{!userToken && (
+						<Route
+							path="/"
+							exact
+							component={() => <Login onLogin={onLoginHandler} />}
+						/>
+					)}
+					{!userToken && (
+						<Route path="/register" component={Register} />
+					)}
+					{userToken && <Route path="/" exact component={Board} />}
+					{/* <Route path="/" exact component={Home} /> */}
+					{/* <Route path="/reports" component={Reports} /> */}
+					{/* <Route path="/products" component={Products} />  */}
+				</Switch>
+			</Router>
 		</div>
 	);
 }

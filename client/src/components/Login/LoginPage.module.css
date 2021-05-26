@@ -53,3 +53,11 @@
     margin-bottom:20px;
     font-size: 3rem;
 }
+
+.message {
+	text-align: center;
+}
+
+.invalid {
+	color: red;
+}

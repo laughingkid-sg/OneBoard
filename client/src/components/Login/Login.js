@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import styles from './LoginCommon.module.css';
 import Button from '../../UI/Button';
@@ -9,7 +9,7 @@ import useInput from '../hooks/use-input';
 const EMAIL_FORMAT =
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
-export default function Login() {
+export default function Login(props) {
 	const {
 		value: email,
 		isValid: emailIsValid,
@@ -28,20 +28,37 @@ export default function Login() {
 		reset: pwReset,
 	} = useInput((value) => value.trim() !== '');
 
-	const submitHandler = (e) => {
+	const [errorMsg, setErrorMsg] = useState('');
+
+	const submitHandler = async (e) => {
 		e.preventDefault();
 
 		if (!(emailIsValid && pwIsValid)) {
 			return;
 		}
 
-		console.log(email, password);
-		emailReset();
-		pwReset();
+		const user = { email, password };
+
+		const response = await fetch('/api/signin', {
+			method: 'POST',
+			body: JSON.stringify(user),
+			headers: { 'Content-Type': 'application/json' },
+		});
+
+		const data = await response.json();
+		console.log(data);
+
+		if (response.ok) {
+			props.onLogin(data.token);
+			return;
+		}
+
+		setErrorMsg(data.message);
+		return;
 	};
 
 	return (
-		<LoginPage title="Log In">
+		<LoginPage title="Log In" errorMsg={errorMsg}>
 			<form onSubmit={submitHandler}>
 				<Input
 					id="email"
@@ -52,11 +69,9 @@ export default function Login() {
 					className={` ${emailHasError ? styles.invalid : ''}`}
 					value={email}
 				/>
-				{emailHasError && (
-					<p className={styles.invalid}>
-						Please enter a valid E-mail.
-					</p>
-				)}
+				<p className={styles.invalid}>
+					{emailHasError && 'Please enter a valid E-mail.'}
+				</p>
 				<Input
 					id="password"
 					type="password"
@@ -66,11 +81,9 @@ export default function Login() {
 					className={` ${pwHasError ? styles.invalid : ''}`}
 					value={password}
 				/>
-				{pwHasError && (
-					<p className={styles.invalid}>
-						Please enter your password.
-					</p>
-				)}
+				<p className={styles.invalid}>
+					{pwHasError && 'Please enter your password.'}
+				</p>
 				<Button type="submit" className={styles.formBtn}>
 					Log In
 				</Button>
