@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 const crypto = require('crypto')
 const uuidv1 = require('uuid/v1')
 
+const {ObjectId} = mongoose.Schema
+
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -41,7 +43,12 @@ const userSchema = new mongoose.Schema({
     history: {
         type: Array,
         default: []
-    }
+    },
+    boards: [{ 
+        type: ObjectId, 
+        ref: 'Boards',
+        required: true
+    }]
 }, {timestamps : true}
 );
 

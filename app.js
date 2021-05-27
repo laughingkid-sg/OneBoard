@@ -8,6 +8,7 @@ require('dotenv').config()
 // import routes
 const authRoutes = require('./routes/auth')
 const userRoutes = require('./routes/user')
+const kanbanRoutes = require('./routes/kanban')
 
 // app
 const app = express()
@@ -29,6 +30,7 @@ app.use(expressValidator());
 // routes middleware
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
+app.use("/api", kanbanRoutes);
 
 const port = process.env.PORT || 8000
 
