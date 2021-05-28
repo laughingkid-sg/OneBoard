@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { AiOutlineClose, AiOutlinePlus } from 'react-icons/ai';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import BoardForm from './BoardForm/BoardForm';
 import Column from './Column';
 import TaskModal from './KanbanUI/TaskModal';
 import styles from './Board.module.css';
-import { useSelector, useDispatch } from 'react-redux';
+import AddColumn from './AddColumn';
 import { kanbanActions } from '../../store/kanban';
 
 function Board(props) {
 	const [showModal, setShowModal] = useState({ showModal: false });
+	const [isEditing, setIsEditing] = useState(false);
 	const tasks = useSelector((state) => state.kanban.tasks);
 	const columns = useSelector((state) => state.kanban.columns);
 	const columnOrder = useSelector((state) => state.kanban.columnOrder);
@@ -119,6 +121,15 @@ function Board(props) {
 	const closeModalHandler = () => {
 		setShowModal({ showModal: false });
 	};
+	// TODO Refactor modal actions in to a redux store
+
+	const addColumnHandler = () => {
+		setIsEditing(true);
+	};
+
+	const cancelHandler = () => {
+		setIsEditing(false);
+	};
 
 	const renderCols = columnOrder.map((colId, index) => {
 		const column = columns[colId];
@@ -137,9 +148,17 @@ function Board(props) {
 		);
 	});
 
+	const renderAddCol = isEditing ? (
+		<AddColumn onCancel={cancelHandler} />
+	) : (
+		<div className={styles.addColBtn} onClick={addColumnHandler}>
+			<AiOutlinePlus />
+			<h3>Add Column</h3>
+		</div>
+	);
+
 	return (
-		<div>
-			<BoardForm onOpen={showModalHandler} onClose={closeModalHandler} />
+		<div style={{ display: 'flex', flexDirection: 'row' }}>
 			{showModal.showModal && showModal.modal}
 			<DragDropContext onDragEnd={dragEndHandler}>
 				<Droppable
@@ -159,6 +178,7 @@ function Board(props) {
 					)}
 				</Droppable>
 			</DragDropContext>
+			{renderAddCol}
 		</div>
 	);
 }

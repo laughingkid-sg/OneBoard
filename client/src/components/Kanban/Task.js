@@ -1,26 +1,58 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import EditDelete from './KanbanUI/EditDelete';
+import DeleteModal from './KanbanUI/DeleteModal';
+import TaskModal from './KanbanUI/TaskModal';
 import styles from './Task.module.css';
 
 function Task(props) {
-	const showTask = (e) => {
+	const deleteTaskHandler = (e) => {
+		e.stopPropagation();
+		deleteTask();
+	};
+
+	const showTaskHandler = (e) => {
 		if (e.defaultPrevented) {
 			return;
 		}
-
-		props.showModal(props.task,props.index,false);
+		console.log('showTask');
+		props.showModal(setTaskModal(false));
 	};
 
-	const deleteTask = (e) => {
+	const editTaskHandler = (e) => {
 		e.stopPropagation();
-		props.onDelete(props.id,props.task.taskName, props.index);
+		props.showModal(setTaskModal(true));
 	};
 
-	const editTask = (e) => {
-		e.stopPropagation();
-		props.showModal(props.task,props.index, true);
-	}
+	const deleteTask = () => {
+		const deleteModal = (
+			<DeleteModal
+				isCol={false}
+				taskId={props.id}
+				title={props.task.taskName}
+				columnId={props.colId}
+				index={props.index}
+				onCancel={props.onCancel}
+			/>
+		);
+		props.showModal(deleteModal);
+	};
+
+	const setTaskModal = (isWrite) => {
+		return (
+			<TaskModal
+				write={isWrite}
+				id={props.id}
+				index={props.index}
+				title={props.task.taskName}
+				description={props.task.description}
+				columnTitle={props.columnTitle}
+				columnId={props.colId}
+				onClose={props.onCancel}
+				onDelete={deleteTask}
+			/>
+		);
+	};
 
 	return (
 		<Draggable draggableId={props.id} index={props.index}>
@@ -31,14 +63,13 @@ function Task(props) {
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
 						ref={provided.innerRef}
-						onClick={showTask}
+						onClick={showTaskHandler}
 					>
-						{console.log(props.task.taskName)}
-						<h3>{props.task.taskName}</h3>
-						<span className={styles.description}>
-							{props.task.description}
-						</span>
-						<EditDelete onEdit={editTask} onDelete={deleteTask} />
+						<p>{props.task.taskName}</p>
+						<EditDelete
+							onEdit={editTaskHandler}
+							onDelete={deleteTaskHandler}
+						/>
 					</div>
 				);
 			}}

@@ -11,7 +11,6 @@ function DeleteModal(props) {
 	const deleteHandler = () => {
 		if (props.isCol) {
 			dispatch(kanbanActions.deleteColumn({ colId: props.columnId }));
-			return;
 		} else {
 			dispatch(
 				kanbanActions.deleteTask({
@@ -31,7 +30,6 @@ function DeleteModal(props) {
 				<h2 className={styles.title}>
 					Are you sure you want to delete this{' '}
 					{props.isCol ? 'Column' : 'Task'}?
-					{/* {`${props.isCol ? 'column-' : 'task-'}${props.title}`}? */}
 				</h2>
 				{props.isCol && (
 					<p className={styles.warning}>

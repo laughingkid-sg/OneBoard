@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { AiOutlinePlus } from 'react-icons/ai';
+import { FaTrash } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import Task from './Task';
-import styles from './Column.module.css';
-import EditDelete from './KanbanUI/EditDelete';
+import AddTask from './AddTask';
 import DeleteModal from './KanbanUI/DeleteModal';
-import ColumnEditModal from './KanbanUI/ColumnEditModal';
-import TaskModal from './KanbanUI/TaskModal';
+import styles from './Column.module.css';
+import { kanbanActions } from '../../store/kanban';
 
 function Column(props) {
+	const [isEditingTask, setIsEditingTask] = useState(false);
+	const [editTitle, setIsEditTitle] = useState({
+		isEditing: false,
+		previous: props.title,
+	});
+	const newTitle = useRef(props.title);
+	const dispatch = useDispatch();
+
 	const deleteColumnHandler = (e) => {
 		e.stopPropagation();
 		props.showModal(
@@ -20,49 +30,34 @@ function Column(props) {
 		);
 	};
 
-	const deleteTaskHandler = (
-		taskId,
-		taskName,
-		index,
-		onCancel = props.onCancel
-	) => {
-		props.showModal(
-			<DeleteModal
-				isCol={false}
-				taskId={taskId}
-				title={taskName}
-				columnId={props.column.id}
-				index={index}
-				onCancel={onCancel}
-			/>
-		);
+	const addTaskHandler = () => {
+		setIsEditingTask(true);
 	};
 
-	const editColumnHandler = (e) => {
-		e.stopPropagation();
-		props.showModal(
-			<ColumnEditModal
-				columnTitle={props.title}
-				id={props.column.id}
-				onClose={props.onCancel}
-			/>
-		);
+	const cancelTaskHandler = () => {
+		setIsEditingTask(false);
 	};
 
-	const setTaskModal = (task, index, isWrite) => {
-		props.showModal(
-			<TaskModal
-				write={isWrite}
-				id={task.id}
-				index={index}
-				title={task.taskName}
-				description={task.description}
-				columnTitle={props.column.title}
-				columnId={props.column.id}
-				onClose={props.onCancel}
-				onDelete={deleteTaskHandler}
-			/>
+	const editTitleHandler = () => {
+		setIsEditTitle({ ...editTitle, isEditing: true });
+	};
+
+	const updateColumnHandler = () => {
+		const updatedTitle = newTitle.current.value.trim();
+		if (
+			editTitle.previous === newTitle.current.value ||
+			updatedTitle === ''
+		) {
+			setIsEditTitle({ ...editTitle, isEditing: false });
+			return;
+		}
+		dispatch(
+			kanbanActions.editColumn({
+				colId: props.column.id,
+				columnName: updatedTitle,
+			})
 		);
+		setIsEditTitle({ isEditing: false, previous: updatedTitle });
 	};
 
 	const renderTasks = props.tasks.map((task, index) => (
@@ -71,10 +66,45 @@ function Column(props) {
 			task={task}
 			index={index}
 			id={task.id}
-			showModal={setTaskModal}
-			onDelete={deleteTaskHandler}
+			colId={props.column.id}
+			columnTitle={props.title}
+			showModal={props.showModal}
+			onCancel={props.onCancel}
 		/>
 	));
+
+	const renderAddTask = isEditingTask ? (
+		<AddTask cancelEdit={cancelTaskHandler} columnId={props.column.id} />
+	) : (
+		<div
+			style={{
+				display: 'flex',
+				flexDirection: 'row',
+				height: '50px',
+				cursor: 'pointer',
+			}}
+			onClick={addTaskHandler}
+		>
+			<AiOutlinePlus />
+			<p>Add a task</p>
+		</div>
+	);
+
+	const renderEditCol = editTitle.isEditing ? (
+		<div>
+			<input
+				autoFocus
+				ref={newTitle}
+				placeholder={props.title}
+				onBlur={updateColumnHandler}
+			/>
+			<FaTrash onClick={deleteColumnHandler} />
+		</div>
+	) : (
+		<h3 className={styles.titleText} onClick={editTitleHandler}>
+			{props.title}
+		</h3>
+	);
 
 	return (
 		<Draggable draggableId={props.column.id} index={props.index}>
@@ -84,27 +114,21 @@ function Column(props) {
 					{...provided.draggableProps}
 					ref={provided.innerRef}
 				>
-					<div className={styles.title}>
-						<h3
-							className={styles.titleText}
-							{...provided.dragHandleProps}
-						>
-							{props.title}
-						</h3>
-						<EditDelete
-							onEdit={editColumnHandler}
-							onDelete={deleteColumnHandler}
-						/>
+					<div className={styles.title} {...provided.dragHandleProps}>
+						{renderEditCol}
 					</div>
 					<Droppable droppableId={props.column.id}>
 						{(provided) => (
-							<TaskList
-								{...provided.droppableProps}
-								innerRef={provided.innerRef}
-							>
-								{renderTasks}
-								{provided.placeholder}
-							</TaskList>
+							<React.Fragment>
+								<TaskList
+									{...provided.droppableProps}
+									innerRef={provided.innerRef}
+								>
+									{renderTasks}
+									{provided.placeholder}
+								</TaskList>
+								{renderAddTask}
+							</React.Fragment>
 						)}
 					</Droppable>
 				</div>

@@ -2,7 +2,7 @@
 	display: flex;
 	flex-direction: column;
 	flex: 0 0 auto;
-	width: 350px;
+	width: 275px;
 	min-height: 100px;
 	/* May be removed in favour of a parent flex/grid  */
 	margin: 8px;
@@ -24,7 +24,6 @@
 }
 
 .titleText {
-	/* font-size: 1.75rem; */
 	overflow: hidden;
 	width: 70%;
 	margin: 0 22px;
