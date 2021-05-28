@@ -1,45 +1,51 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import styles from './App.module.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Board from './components/Kanban/Board';
 import Login from './components/Login/Login';
 import Register from './components/Login/Register';
-import Home from './pages/Home';
-import Products from './pages/Products';
-import Reports from './pages/Reports';
-import Sidebar from './UI/Sidebar';
+import Dashboard from './components/Dashboard/Dashboard';
+import MainLayout from './Layout/MainLayout';
+import ComingSoon from './pages/ComingSoon';
+
+const noBackend = true;
 
 function App() {
-	const [userToken, setUserToken] = useState('');
+	const [userToken, setUserToken] = useState(noBackend);
 
 	// TODO add Bearer Auth
 	const onLoginHandler = (token) => {
 		setUserToken(token);
 	};
 
+	// TODO could be in another file?
+	const showRoutes = userToken ? (
+		<React.Fragment>
+			<MainLayout>
+				<Route path="/" exact component={Dashboard} />
+				<Route path="/tasks">
+					<Board />
+				</Route>
+				<Route path="/calendar" component={ComingSoon} />
+				<Route path="/expenses" component={ComingSoon} />
+				<Route path="/notes" component={ComingSoon} />
+			</MainLayout>
+		</React.Fragment>
+	) : (
+		<React.Fragment>
+			<Route
+				path="/"
+				exact
+				component={() => <Login onLogin={onLoginHandler} />}
+			/>
+			<Route path="/register" component={Register} />
+		</React.Fragment>
+	);
+
 	return (
-		//  <Register />
-		// <Login />
-		<div className="App">
-			{/* <Board /> */}
+		<div className={styles.app}>
 			<Router>
-				{/* <Sidebar /> */}
-				<Switch>
-					{!userToken && (
-						<Route
-							path="/"
-							exact
-							component={() => <Login onLogin={onLoginHandler} />}
-						/>
-					)}
-					{!userToken && (
-						<Route path="/register" component={Register} />
-					)}
-					{userToken && <Route path="/" exact component={Board} />}
-					{/* <Route path="/" exact component={Home} /> */}
-					{/* <Route path="/reports" component={Reports} /> */}
-					{/* <Route path="/products" component={Products} />  */}
-				</Switch>
+				<Switch>{showRoutes}</Switch>
 			</Router>
 		</div>
 	);

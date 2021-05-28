@@ -29,7 +29,9 @@ function DeleteModal(props) {
 		<Modal onClose={props.onCancel}>
 			<div className={styles.container}>
 				<h2 className={styles.title}>
-					Are you sure you want to delete {`${props.isCol ? 'column-' : 'task-'}${props.title}`}?
+					Are you sure you want to delete this{' '}
+					{props.isCol ? 'Column' : 'Task'}?
+					{/* {`${props.isCol ? 'column-' : 'task-'}${props.title}`}? */}
 				</h2>
 				{props.isCol && (
 					<p className={styles.warning}>

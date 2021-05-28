@@ -7,7 +7,7 @@ import styles from './Board.module.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { kanbanActions } from '../../store/kanban';
 
-function Board() {
+function Board(props) {
 	const [showModal, setShowModal] = useState({ showModal: false });
 	const tasks = useSelector((state) => state.kanban.tasks);
 	const columns = useSelector((state) => state.kanban.columns);
@@ -87,15 +87,16 @@ function Board() {
 		return;
 	};
 
+	// TODO Refactor modal actions in to a redux store
 	const showModalHandler = (modal) => {
 		setShowModal({ showModal: true, modal });
-	}
-	
+	};
+
 	const editTaskModalHandler = (columnId, taskId) => {
 		setTaskModal(columnId, taskId, true);
 	};
 
-	const setTaskModal = (columnId,taskId,isWrite) => {
+	const setTaskModal = (columnId, taskId, isWrite) => {
 		const task = tasks[taskId];
 		const column = columns[columnId];
 		// console.log(task);
@@ -113,7 +114,7 @@ function Board() {
 				/>
 			),
 		});
-	}
+	};
 
 	const closeModalHandler = () => {
 		setShowModal({ showModal: false });
@@ -137,11 +138,8 @@ function Board() {
 	});
 
 	return (
-		<React.Fragment>
-			<BoardForm
-				onOpen={showModalHandler}
-				onClose={closeModalHandler}
-			/>
+		<div>
+			<BoardForm onOpen={showModalHandler} onClose={closeModalHandler} />
 			{showModal.showModal && showModal.modal}
 			<DragDropContext onDragEnd={dragEndHandler}>
 				<Droppable
@@ -161,7 +159,7 @@ function Board() {
 					)}
 				</Droppable>
 			</DragDropContext>
-		</React.Fragment>
+		</div>
 	);
 }
 

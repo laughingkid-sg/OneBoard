@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import { useReducer } from 'react';
 
 const ACTIONS = {
 	INPUT: 'INPUT',
@@ -21,6 +21,8 @@ const inputStateReducer = (state, action) => {
 
 		case ACTIONS.RESET:
 			return initState;
+		default:
+			return;
 	}
 };
 

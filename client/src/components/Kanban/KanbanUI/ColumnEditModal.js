@@ -57,15 +57,12 @@ function ColumnEditModal(props) {
 
 				<div className={styles.buttonArea}>
 					<Button
-						className={styles.button}
+						className={`${styles.button} ${styles.confirm}`}
 						onClick={confirmEditHandler}
 					>
 						Confirm Changes
 					</Button>
-					<Button
-						className={`${styles.button} ${styles.confirm}`}
-						onClick={props.onClose}
-					>
+					<Button className={styles.button} onClick={props.onClose}>
 						Cancel Changes
 					</Button>
 				</div>

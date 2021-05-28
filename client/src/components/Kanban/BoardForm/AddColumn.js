@@ -7,7 +7,6 @@ import useInput from '../../hooks/use-input';
 function AddColumn(props) {
 	const {
 		value: columnName,
-		isValid: columnIsValid,
 		hasError: columnHasError,
 		onChange: columnNameChangeHandler,
 		onBlur: columnNameBlurHandler,

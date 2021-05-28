@@ -1,0 +1,60 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	/* margin: 1.5% 2.5%; */
+	padding: 0 1.5%;
+	height: 91vh;
+}
+
+.topRow {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+	height: 20%;
+}
+
+.bottomRow {
+	display: flex;
+	overflow-x: auto;
+}
+
+.expenses {
+	margin-top: 12px;
+	font-size: 28px;
+}
+
+.subtitle {
+	color: rgb(49, 49, 49);
+}
+
+.scheduleList {
+	list-style-type: none;
+	list-style-position: inside;
+}
+
+/* CSS for Card */
+.placeholder {
+	height: 85%;
+	width: 25%;
+	padding: 1.5% 2%;
+	border-radius: 20px;
+	background-color: pink;
+}
+
+.title {
+	font-size: 1.65rem;
+}
+
+/* CSS for schedule item */
+.scheduleItem {
+	display: grid;
+	grid-template-columns: 25% 75%;
+	border-bottom: 1px solid rgb(119, 118, 118);
+	padding: 2px 0;
+}
+
+.scheduleItem > span {
+	margin: 0;
+}

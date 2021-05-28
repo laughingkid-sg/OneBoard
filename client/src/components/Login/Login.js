@@ -16,7 +16,7 @@ export default function Login(props) {
 		hasError: emailHasError,
 		onChange: emailOnChange,
 		onBlur: emailOnBlur,
-		reset: emailReset,
+		// reset: emailReset,
 	} = useInput((value) => EMAIL_FORMAT.test(value));
 
 	const {
@@ -25,7 +25,7 @@ export default function Login(props) {
 		hasError: pwHasError,
 		onChange: pwOnChange,
 		onBlur: pwOnBlur,
-		reset: pwReset,
+		// reset: pwReset,
 	} = useInput((value) => value.trim() !== '');
 
 	const [errorMsg, setErrorMsg] = useState('');

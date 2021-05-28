@@ -2,13 +2,12 @@ import React from 'react';
 import styles from './Add.module.css';
 import Button from '../../../UI/Button';
 import Input from '../../../UI/Input';
-// import Modal from '../../../UI/Modal';
 import useInput from '../../hooks/use-input';
 
 function AddTask(props) {
 	const {
 		value: taskName,
-		isValid: taskIsValid,
+		// isValid: taskIsValid,
 		hasError: taskHasError,
 		onChange: taskNameChangeHandler,
 		onBlur: taskNameBlurHandler,
@@ -18,8 +17,8 @@ function AddTask(props) {
 	// !! May add validation in future (eg character encoding for possible injections)
 	const {
 		value: description,
-		isValid: descriptionIsValid,
-		hasError: descriptionHasError,
+		// isValid: descriptionIsValid,
+		// hasError: descriptionHasError,
 		onChange: descriptionChangeHandler,
 		onBlur: descriptionBlurHandler,
 		reset: descriptionReset,
@@ -33,7 +32,6 @@ function AddTask(props) {
 			console.log('Please ensure the task name is not empty!');
 			return;
 		}
-		// console.log("From AddTask",taskName, description);
 
         // Send information upwards to add task
         props.onAddTask(taskName, description);
