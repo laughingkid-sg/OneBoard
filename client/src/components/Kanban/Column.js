@@ -1,34 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { AiOutlinePlus } from 'react-icons/ai';
-import { FaTrash } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
 import Task from './Task';
 import AddTask from './AddTask';
-import DeleteModal from './KanbanUI/DeleteModal';
 import styles from './Column.module.css';
-import { kanbanActions } from '../../store/kanban';
+import EditColumn from './EditColumn';
 
 function Column(props) {
 	const [isEditingTask, setIsEditingTask] = useState(false);
-	const [editTitle, setIsEditTitle] = useState({
-		isEditing: false,
-		previous: props.title,
-	});
-	const newTitle = useRef(props.title);
-	const dispatch = useDispatch();
-
-	const deleteColumnHandler = (e) => {
-		e.stopPropagation();
-		props.showModal(
-			<DeleteModal
-				isCol={true}
-				title={props.title}
-				columnId={props.column.id}
-				onCancel={props.onCancel}
-			/>
-		);
-	};
+	const [editTitle, setIsEditTitle] = useState(false);
 
 	const addTaskHandler = () => {
 		setIsEditingTask(true);
@@ -39,25 +19,11 @@ function Column(props) {
 	};
 
 	const editTitleHandler = () => {
-		setIsEditTitle({ ...editTitle, isEditing: true });
+		setIsEditTitle(true);
 	};
 
-	const updateColumnHandler = () => {
-		const updatedTitle = newTitle.current.value.trim();
-		if (
-			editTitle.previous === newTitle.current.value ||
-			updatedTitle === ''
-		) {
-			setIsEditTitle({ ...editTitle, isEditing: false });
-			return;
-		}
-		dispatch(
-			kanbanActions.editColumn({
-				colId: props.column.id,
-				columnName: updatedTitle,
-			})
-		);
-		setIsEditTitle({ isEditing: false, previous: updatedTitle });
+	const cancelTitleHandler = () => {
+		setIsEditTitle(false);
 	};
 
 	const renderTasks = props.tasks.map((task, index) => (
@@ -74,32 +40,22 @@ function Column(props) {
 	));
 
 	const renderAddTask = isEditingTask ? (
-		<AddTask cancelEdit={cancelTaskHandler} columnId={props.column.id} />
+		<AddTask columnId={props.column.id} onCancel={cancelTaskHandler} />
 	) : (
-		<div
-			style={{
-				display: 'flex',
-				flexDirection: 'row',
-				height: '50px',
-				cursor: 'pointer',
-			}}
-			onClick={addTaskHandler}
-		>
-			<AiOutlinePlus />
+		<div className={styles.addTaskBtn} onClick={addTaskHandler}>
+			<AiOutlinePlus className={styles.addTaskIcon} />
 			<p>Add a task</p>
 		</div>
 	);
 
-	const renderEditCol = editTitle.isEditing ? (
-		<div>
-			<input
-				autoFocus
-				ref={newTitle}
-				placeholder={props.title}
-				onBlur={updateColumnHandler}
-			/>
-			<FaTrash onClick={deleteColumnHandler} />
-		</div>
+	const renderEditCol = editTitle ? (
+		<EditColumn
+			title={props.title}
+			onCancel={cancelTitleHandler}
+			onModalCancel={props.onCancel}
+			onDelete={props.showModal}
+			columnId={props.column.id}
+		/>
 	) : (
 		<h3 className={styles.titleText} onClick={editTitleHandler}>
 			{props.title}

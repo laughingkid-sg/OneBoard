@@ -1,8 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+// import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Board from '../Kanban/Board';
-import ComingSoon from '../../pages/ComingSoon';
-import Sidebar from './Sidebar';
+// import ComingSoon from '../../pages/ComingSoon';
+// import Sidebar from './Sidebar';
 import styles from './Dashboard.module.css';
 
 const DUMMY_SCHEDULE = [
@@ -11,6 +11,8 @@ const DUMMY_SCHEDULE = [
 	{ time: '10:30am', activity: 'Gym' },
 	{ time: '11am', activity: '' },
 	{ time: '12pm', activity: '' },
+	{ time: '1pm', activity: 'CS2100 Lecture' },
+	{ time: '3pm', activity: '' },
 ];
 
 function Dashboard(props) {

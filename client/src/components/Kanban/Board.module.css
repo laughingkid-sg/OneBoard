@@ -2,7 +2,6 @@
 	display: inline-flex;
 	align-items: flex-start;
 	flex-wrap: nowrap;
-	overflow-x: auto;
 }
 
 /* For adding Column */
@@ -18,7 +17,20 @@
 	border-radius: 15px;
 }
 
+.addColBtn h3 {
+	margin-left: 6px;
+}
+
 .addColBtn:hover {
 	color: #333333;
 	background-color: #cccccc;
+}
+
+/* Hide scrollbar */
+.board::-webkit-scrollbar {
+	display: none;
+}
+
+.board {
+	scrollbar-width: none;
 }

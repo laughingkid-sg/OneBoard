@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import { kanbanActions } from '../../store/kanban';
+import styles from './AddTask.module.css';
 
 const AddTask = (props) => {
 	const dispatch = useDispatch();
@@ -18,28 +19,32 @@ const AddTask = (props) => {
 				columnId: props.columnId,
 			})
 		);
-		props.cancelEdit();
+		props.onCancel();
+	};
+
+	const cancelHandler = () => {
+		if (taskName.current.value.trim() === '') {
+			props.onCancel();
+		}
+		return;
 	};
 
 	return (
-		<div
-			style={{
-				margin: '8px',
-				width: '90%',
-				display: 'flex',
-				flexDirection: 'column',
-			}}
-		>
+		<div className={styles.addTask}>
 			<textarea
+				autoFocus
 				placeholder="Enter Task here"
 				ref={taskName}
-				style={{ resize: 'none' }}
+				className={styles.text}
+				onBlur={cancelHandler}
 			/>
 			<div>
-				<button onClick={addTaskHandler}>Add Task</button>
+				<button onClick={addTaskHandler} className={styles.confirm}>
+					Add Task
+				</button>
 				<AiOutlineClose
-					onClick={props.cancelEdit}
-					style={{ cursor: 'pointer' }}
+					onClick={props.onCancel}
+					className={styles.cancel}
 				/>
 			</div>
 		</div>

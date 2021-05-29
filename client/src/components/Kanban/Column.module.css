@@ -33,6 +33,30 @@
 	padding: 8px;
 	height: 100%;
 	overflow: auto;
+	background-color: rgb(228, 228, 228);
+}
+
+.addTaskBtn {
+	display: flex;
+	align-content: center;
+	flex-direction: row;
+	height: 50%;
+	padding: 8px;
+	cursor: pointer;
+	color: #333333;
+	background-color: #aaaaaa;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+}
+
+.addTaskBtn:hover {
+	color: #333333;
+	background-color: #cccccc;
+}
+
+.addTaskBtn p {
+	margin-left: 6px;
+	margin-bottom: 4px;
 }
 
 /* Hide scrollbar */

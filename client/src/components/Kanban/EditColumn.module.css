@@ -1,0 +1,17 @@
+.editTitle {
+	font-size: 18.72px;
+}
+.editTitle input {
+	font-size: 18.72px;
+	margin-right: 8px;
+	width: 85%;
+}
+
+.editIcon {
+	margin-top: 8px;
+	color: darkgray;
+}
+
+.editIcon:hover {
+	color: rgb(236, 71, 71);
+}

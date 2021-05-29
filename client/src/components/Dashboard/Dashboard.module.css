@@ -12,12 +12,13 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-around;
-	height: 20%;
+	height: 20vh;
 }
 
 .bottomRow {
 	display: flex;
 	overflow-x: auto;
+	height: 50vh;
 }
 
 .expenses {
