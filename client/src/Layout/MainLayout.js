@@ -4,7 +4,7 @@ import Sidebar from '../components/Dashboard/Sidebar';
 function MainLayout(props) {
 	return (
 		<React.Fragment>
-			<Sidebar />
+			<Sidebar onLogout={props.onLogout} />
 			{props.children}
 		</React.Fragment>
 	);

@@ -18,11 +18,17 @@ function App() {
 		setUserToken(token);
 	};
 
+	const onLogoutHandler = () => {
+		setUserToken('');
+	};
+
 	// TODO could be in another file?
 	const showRoutes = userToken ? (
 		<React.Fragment>
-			<MainLayout>
-				<Route path="/" exact component={Dashboard} />
+			<MainLayout onLogout={onLogoutHandler}>
+				<Route path="/" exact>
+					<Dashboard />
+				</Route>
 				<Route path="/tasks">
 					<Board />
 				</Route>
@@ -33,11 +39,9 @@ function App() {
 		</React.Fragment>
 	) : (
 		<React.Fragment>
-			<Route
-				path="/"
-				exact
-				component={() => <Login onLogin={onLoginHandler} />}
-			/>
+			<Route path="/" exact>
+				<Login onLogin={onLoginHandler} />
+			</Route>
 			<Route path="/register" component={Register} />
 		</React.Fragment>
 	);

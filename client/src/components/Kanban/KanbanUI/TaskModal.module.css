@@ -1,68 +1,71 @@
-.container, .btnContainer {
-    display: flex;
-    flex-direction: column;
-    margin: 8px 20px;
+.container,
+.btnContainer {
+	display: flex;
+	flex-direction: column;
+	margin: 8px 20px;
 }
 
 .btnContainer {
-    flex-direction: row;
-    justify-content: space-around;
+	flex-direction: row;
+	justify-content: space-around;
 }
 
 .close {
-    color: rgb(121, 121, 121);
-    font-size: 25px;
-    align-self: flex-end;
-    cursor: pointer;
+	color: rgb(121, 121, 121);
+	font-size: 25px;
+	align-self: flex-end;
+	cursor: pointer;
 }
 
 .close:hover {
-    color:#272727;
+	color: #272727;
 }
 
 .taskinfo {
-    margin: 22px 0;
+	margin: 22px 0;
 }
 
-.title, .input[type="text"] {
-    font-size: 2.25rem;
+.title,
+.input[type='text'] {
+	font-size: 2.25rem;
 }
 
 .subtitle {
-    color: rgb(92, 92, 92);
-    margin-top: 8px;
+	color: rgb(92, 92, 92);
+	margin-top: 8px;
 }
 
 .header {
-    font-size: 2rem;
-    margin-bottom: 8px;
+	font-size: 2rem;
+	margin-bottom: 8px;
 }
 
-.description, .input[type="textarea"]{
-    line-height: 1.7;
-    white-space: pre-wrap;
+.description,
+.input[type='textarea'] {
+	line-height: 1.7;
+	white-space: pre-wrap;
 }
 
 .input {
-    width:100%;
+	width: 100%;
 }
 
 .confirm {
-    background-color: rgb(6, 112, 6);
-	border: 1px solid rgb(6, 112, 6);
+	background-color: #458c7f;
+	border: 1px solid #458c7f;
 }
 
 .confirm:hover {
-    background-color: rgb(15, 155, 15);
-	border: 1px solid rgb(15, 155, 15);
+	background-color: #43c6ae;
+	border: 1px solid #43c6ae;
 }
 
 .delete {
-    background-color: rgb(247, 38, 38);
+	background-color: rgb(247, 38, 38);
 	border: 1px solid rgb(247, 38, 38);
 }
 
 .delete:hover {
-    background-color: rgb(255, 92, 92);
+	background-color: rgb(255, 92, 92);
 	border: 1px solid rgb(255, 92, 92);
 }

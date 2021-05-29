@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa';
 import { SidebarData } from './SidebarData';
 import styles from './Sidebar.module.css';
+import { RiLogoutBoxFill } from 'react-icons/ri';
 
 const Sidebar = (props) => {
 	const [sidebar, setSidebar] = useState(false);
@@ -43,6 +44,16 @@ const Sidebar = (props) => {
 					>
 						<SidebarToggle />
 						{renderSidebars}
+						<li
+							key={SidebarData.length + 1}
+							className={styles['nav-text']}
+							onClick={props.onLogout}
+						>
+							<Link to="/" exact>
+								<RiLogoutBoxFill />
+								<span>Logout</span>
+							</Link>
+						</li>
 					</ul>
 				</nav>
 			</IconContext.Provider>

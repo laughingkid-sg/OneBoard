@@ -26,15 +26,15 @@
 	margin-right: 12px;
 	font-size: 18px;
 	padding: 8px;
-	background-color: rgb(6, 112, 6);
-	border: 1px solid rgb(6, 112, 6);
+	background-color: #458c7f;
+	border: 1px solid #458c7f;
 	border-radius: 8px;
 	color: white;
 }
 
 .confirm:hover {
-	background-color: rgb(15, 155, 15);
-	border: 1px solid rgb(15, 155, 15);
+	background-color: #43c6ae;
+	border: 1px solid #43c6ae;
 }
 
 .cancel {

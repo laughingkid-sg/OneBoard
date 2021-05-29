@@ -35,9 +35,4 @@ export const SidebarData = [
 		path: '/profile',
 		icon: <FaIcons.FaUser />,
 	},
-	{
-		title: 'Logout',
-		path: '/',
-		icon: <RiLogoutBoxRFill />,
-	},
 ];
