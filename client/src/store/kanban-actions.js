@@ -1,5 +1,32 @@
 import { kanbanActions } from './kanban';
 
+export const createBoard = (boardName, token) => {
+	return async (dispatch) => {
+		const postData = async () => {
+			const response = await fetch('/api/kanban/', {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ name: boardName }),
+			});
+
+			if (!response.ok) {
+				throw new Error('Could not make new board');
+			}
+
+			const data = await response.json();
+
+			return data;
+		};
+
+		try {
+			await postData();
+		} catch (error) {}
+	};
+};
+
 export const fetchBoardData = (boardId, token) => {
 	return async (dispatch) => {
 		const fetchData = async () => {

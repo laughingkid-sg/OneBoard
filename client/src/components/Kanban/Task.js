@@ -15,7 +15,6 @@ function Task(props) {
 		if (e.defaultPrevented) {
 			return;
 		}
-		console.log('showTask');
 		props.showModal(setTaskModal(false));
 	};
 

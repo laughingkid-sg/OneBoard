@@ -7,12 +7,14 @@ import TaskModal from './KanbanUI/TaskModal';
 import styles from './Board.module.css';
 import AddColumn from './AddColumn';
 import { kanbanActions } from '../../store/kanban';
-import { fetchBoardData } from '../../store/kanban-actions';
+import { createBoard, fetchBoardData } from '../../store/kanban-actions';
+import { fetchUserData } from '../../store/user-actions';
 
 function Board(props) {
 	const [showModal, setShowModal] = useState({ showModal: false });
 	const [isEditing, setIsEditing] = useState(false);
 	const token = useSelector((state) => state.user.token);
+	const userId = useSelector((state) => state.user.id);
 	const boardId = useSelector((state) => state.user.boards[0]);
 	const tasks = useSelector((state) => state.kanban.tasks);
 	const columns = useSelector((state) => state.kanban.columns);
@@ -20,6 +22,11 @@ function Board(props) {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
+		if (!boardId) {
+			dispatch(createBoard('My First Board', token));
+			dispatch(fetchUserData(userId, token));
+			return;
+		}
 		dispatch(fetchBoardData(boardId, token));
 	}, [dispatch, boardId, token]);
 

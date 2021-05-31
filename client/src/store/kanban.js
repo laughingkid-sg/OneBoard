@@ -46,12 +46,12 @@ const initKanbanState = {
 
 const kanbanSlice = createSlice({
 	name: 'kanban',
-	initialState: initKanbanState,
-	// initialState: {
-	// 	tasks: {},
-	// 	columns: {},
-	// 	columnOrder: {},
-	// },
+	// initialState: initKanbanState,
+	initialState: {
+		tasks: {},
+		columns: {},
+		columnOrder: [],
+	},
 	reducers: {
 		replaceBoard(state, action) {
 			state.tasks = action.payload.tasks;

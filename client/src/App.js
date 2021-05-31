@@ -40,7 +40,6 @@ function App() {
 
 	return (
 		<div className={styles.app}>
-			{console.log(isLoggedIn)}
 			<Router>
 				<Switch>{showRoutes}</Switch>
 			</Router>
