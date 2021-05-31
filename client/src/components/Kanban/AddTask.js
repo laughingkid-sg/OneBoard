@@ -15,12 +15,6 @@ const AddTask = (props) => {
 			props.onCancel();
 			return;
 		}
-		// dispatch(
-		// 	kanbanActions.addTask({
-		// 		taskName: taskName.current.value,
-		// 		columnId: props.columnId,
-		// 	})
-		// );
 		dispatch(
 			addTask(
 				props.boardId,

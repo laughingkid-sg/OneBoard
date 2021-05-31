@@ -8,6 +8,7 @@ const initialState = {
 	lastName: '',
 	email: '',
 	boards: [],
+	selectedBoard: '',
 };
 
 const userSlice = createSlice({
@@ -22,6 +23,7 @@ const userSlice = createSlice({
 			state.email = action.payload.email;
 			state.boards = action.payload.boards;
 			state.isLoggedIn = true;
+			state.selectedBoard = action.payload.boards[0] || '';
 		},
 		logout(state) {
 			state.id = '';

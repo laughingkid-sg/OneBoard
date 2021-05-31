@@ -116,7 +116,6 @@ function Board(props) {
 	const setTaskModal = (columnId, taskId, isWrite) => {
 		const task = tasks[taskId];
 		const column = columns[columnId];
-		// console.log(task);
 		setShowModal({
 			showModal: true,
 			modal: (
