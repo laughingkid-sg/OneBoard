@@ -9,7 +9,8 @@ const taskSchema = new mongoose.Schema(
         },
         description: {
             type: String,
-            required: false
+            required: false,
+            maxlength: 5000
         },
         expireAt: { 
             type: Date, 

@@ -62,8 +62,16 @@ exports.signin = (req, res) => {
             res.cookie('t', token, {expire: new Date() + 3600 })
 
             // Return respone with user and token to frontend client
-            const {_id, name, email, role} = user
-            return res.json({token, user: {_id, name, email, role}})
+            const { _id, name, email, role } = user
+            return res.json({
+                token, 
+                user: {
+                    _id, 
+                    name, 
+                    email, 
+                    role
+                }
+            })
         }
     })
 };
@@ -92,6 +100,28 @@ exports.requireSignin = expressJwt({
 */
 exports.isAuth = (req, res, next) => {
 
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+
+    if (token == null) {
+        return res.status(403).json({
+            errorCode: 4,
+            message: "Access denied"
+        });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({
+                errorCode: 4,
+                message: "Access denied"
+            });
+        } 
+    });
+
+    next();
+
+    /*
       let user = req.profile && req.auth && req.profile._id == req.auth._id
         if (!user) {
             return res.status(403).json({
@@ -100,7 +130,38 @@ exports.isAuth = (req, res, next) => {
             });
         }
       next();
-  }
+    */
+}
+
+/*
+    setAuth
+
+
+exports.setAuth = (req, res, next) => {
+
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+
+    if (token == null) {
+        return res.status(403).json({
+            errorCode: 4,
+            message: "Access denied"
+        });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({
+                errorCode: 4,
+                message: "Access denied"
+            });
+        } 
+    });
+
+    next();
+}
+
+*/
 
 /*
     isAdmin - Used to check if user has admin rights
