@@ -32,6 +32,7 @@ function Column(props) {
 			task={task}
 			index={index}
 			id={task.id}
+			boardId={props.boardId}
 			colId={props.column.id}
 			columnTitle={props.title}
 			showModal={props.showModal}
@@ -40,7 +41,11 @@ function Column(props) {
 	));
 
 	const renderAddTask = isEditingTask ? (
-		<AddTask columnId={props.column.id} onCancel={cancelTaskHandler} />
+		<AddTask
+			boardId={props.boardId}
+			columnId={props.column.id}
+			onCancel={cancelTaskHandler}
+		/>
 	) : (
 		<div className={styles.addTaskBtn} onClick={addTaskHandler}>
 			<AiOutlinePlus className={styles.addTaskIcon} />
@@ -51,6 +56,7 @@ function Column(props) {
 	const renderEditCol = editTitle ? (
 		<EditColumn
 			title={props.title}
+			boardId={props.boardId}
 			onCancel={cancelTitleHandler}
 			onModalCancel={props.onCancel}
 			onDelete={props.showModal}

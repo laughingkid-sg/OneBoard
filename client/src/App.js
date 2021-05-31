@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import styles from './App.module.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Board from './components/Kanban/Board';
@@ -8,29 +9,20 @@ import Dashboard from './components/Dashboard/Dashboard';
 import MainLayout from './Layout/MainLayout';
 import ComingSoon from './pages/ComingSoon';
 
-const noBackend = true;
-
 function App() {
-	const [userToken, setUserToken] = useState(noBackend);
-
-	// TODO add Bearer Auth
-	const onLoginHandler = (token) => {
-		setUserToken(token);
-	};
-
-	const onLogoutHandler = () => {
-		setUserToken('');
-	};
+	const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
 
 	// TODO could be in another file?
-	const showRoutes = userToken ? (
+	const showRoutes = isLoggedIn ? (
 		<React.Fragment>
-			<MainLayout onLogout={onLogoutHandler}>
+			<MainLayout>
 				<Route path="/" exact>
 					<Dashboard />
 				</Route>
 				<Route path="/tasks">
-					<Board />
+					<div className={styles.container}>
+						<Board />
+					</div>
 				</Route>
 				<Route path="/calendar" component={ComingSoon} />
 				<Route path="/expenses" component={ComingSoon} />
@@ -40,7 +32,7 @@ function App() {
 	) : (
 		<React.Fragment>
 			<Route path="/" exact>
-				<Login onLogin={onLoginHandler} />
+				<Login />
 			</Route>
 			<Route path="/register" component={Register} />
 		</React.Fragment>
@@ -48,6 +40,7 @@ function App() {
 
 	return (
 		<div className={styles.app}>
+			{console.log(isLoggedIn)}
 			<Router>
 				<Switch>{showRoutes}</Switch>
 			</Router>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { IconContext } from 'react-icons';
 import { AiOutlineClose } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
@@ -6,12 +7,19 @@ import { FaBars } from 'react-icons/fa';
 import { SidebarData } from './SidebarData';
 import styles from './Sidebar.module.css';
 import { RiLogoutBoxFill } from 'react-icons/ri';
+import { logout } from '../../store/user-actions';
 
 const Sidebar = (props) => {
 	const [sidebar, setSidebar] = useState(false);
+	const dispatch = useDispatch();
 
 	const showSidebarHandler = () => {
 		setSidebar((prevSide) => !prevSide);
+	};
+
+	const logoutHandler = () => {
+		console.log('Logging out');
+		dispatch(logout());
 	};
 
 	const renderSidebars = SidebarData.map((item, index) => {
@@ -49,7 +57,7 @@ const Sidebar = (props) => {
 							className={styles['nav-text']}
 							onClick={props.onLogout}
 						>
-							<Link to="/" exact>
+							<Link to="/" exact onClick={logoutHandler}>
 								<RiLogoutBoxFill />
 								<span>Logout</span>
 							</Link>

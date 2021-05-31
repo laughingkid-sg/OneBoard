@@ -6,7 +6,7 @@
 
 /* For adding Column */
 .addColBtn {
-	width: 325px;
+	width: 275px;
 	display: flex;
 	align-items: center;
 	align-self: flex-start;
@@ -16,6 +16,7 @@
 	margin: 11px auto;
 	border-radius: 15px;
 	cursor: pointer;
+	flex-shrink: 0;
 }
 
 .addColBtn h3 {

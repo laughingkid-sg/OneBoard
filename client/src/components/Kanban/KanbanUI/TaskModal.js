@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import Button from '../../../UI/Button';
 import Modal from '../../../UI/Modal';
 import styles from './TaskModal.module.css';
-import { kanbanActions } from '../../../store/kanban';
+import { updateTask } from '../../../store/kanban-actions';
 
 function TaskModal(props) {
 	const dispatch = useDispatch();
@@ -15,6 +15,7 @@ function TaskModal(props) {
 		taskName: props.title,
 		description: props.description,
 	});
+	const token = useSelector((state) => state.user.token);
 
 	const confirmEditHandler = () => {
 		if (taskName.current.value.trim() === '') {
@@ -30,12 +31,21 @@ function TaskModal(props) {
 		}
 
 		const updatedTask = {
-			taskName: taskName.current.value,
+			name: taskName.current.value,
 			description: description.current.value,
 		};
 
-		setBeforeChange(updatedTask);
-		dispatch(kanbanActions.editTask({ ...updatedTask, id: props.id }));
+		// setBeforeChange(updatedTask);
+		// dispatch(kanbanActions.editTask({ ...updatedTask, id: props.id }));
+		dispatch(
+			updateTask(
+				props.boardId,
+				props.columnId,
+				props.id,
+				updatedTask,
+				token
+			)
+		);
 		toggleEditHandler();
 	};
 

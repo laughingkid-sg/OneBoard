@@ -1,20 +1,27 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { AiOutlineClose, AiOutlinePlus } from 'react-icons/ai';
+import { AiOutlinePlus } from 'react-icons/ai';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Column';
 import TaskModal from './KanbanUI/TaskModal';
 import styles from './Board.module.css';
 import AddColumn from './AddColumn';
 import { kanbanActions } from '../../store/kanban';
+import { fetchBoardData } from '../../store/kanban-actions';
 
 function Board(props) {
 	const [showModal, setShowModal] = useState({ showModal: false });
 	const [isEditing, setIsEditing] = useState(false);
+	const token = useSelector((state) => state.user.token);
+	const boardId = useSelector((state) => state.user.boards[0]);
 	const tasks = useSelector((state) => state.kanban.tasks);
 	const columns = useSelector((state) => state.kanban.columns);
 	const columnOrder = useSelector((state) => state.kanban.columnOrder);
 	const dispatch = useDispatch();
+
+	useEffect(() => {
+		dispatch(fetchBoardData(boardId, token));
+	}, [dispatch, boardId, token]);
 
 	// TODO Could be refactored
 	const dragEndHandler = (result) => {
@@ -42,6 +49,7 @@ function Board(props) {
 			newColOrder.splice(destination.index, 0, draggableId);
 
 			dispatch(kanbanActions.columnReorder({ newColOrder }));
+			// dispatch(updateColOrder(boardId, newColOrder, token));
 			return;
 		}
 
@@ -137,6 +145,7 @@ function Board(props) {
 		return (
 			<Column
 				key={column.id}
+				boardId={boardId}
 				index={index}
 				column={column}
 				tasks={tasksInCol}
@@ -149,7 +158,7 @@ function Board(props) {
 	});
 
 	const renderAddCol = isEditing ? (
-		<AddColumn onCancel={cancelHandler} />
+		<AddColumn onCancel={cancelHandler} boardId={boardId} />
 	) : (
 		<div className={styles.addColBtn} onClick={addColumnHandler}>
 			<AiOutlinePlus />

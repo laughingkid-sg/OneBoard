@@ -1,23 +1,32 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Button from '../../../UI/Button';
 import Modal from '../../../UI/Modal';
-import { kanbanActions } from '../../../store/kanban';
 import styles from './DeleteModal.module.css';
+import { deleteData } from '../../../store/kanban-actions';
 
 function DeleteModal(props) {
 	const dispatch = useDispatch();
+	const token = useSelector((state) => state.user.token);
 
 	const deleteHandler = () => {
 		if (props.isCol) {
-			dispatch(kanbanActions.deleteColumn({ colId: props.columnId }));
+			dispatch(
+				deleteData(
+					props.boardId,
+					{ columnId: props.columnId },
+					true,
+					token
+				)
+			);
 		} else {
 			dispatch(
-				kanbanActions.deleteTask({
-					columnId: props.columnId,
-					taskId: props.taskId,
-					index: props.index,
-				})
+				deleteData(
+					props.boardId,
+					{ columnId: props.columnId, taskId: props.taskId },
+					false,
+					token
+				)
 			);
 		}
 

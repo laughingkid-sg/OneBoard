@@ -30,6 +30,7 @@ function Task(props) {
 				isCol={false}
 				taskId={props.id}
 				title={props.task.taskName}
+				boardId={props.boardId}
 				columnId={props.colId}
 				index={props.index}
 				onCancel={props.onCancel}
@@ -43,6 +44,7 @@ function Task(props) {
 			<TaskModal
 				write={isWrite}
 				id={props.id}
+				boardId={props.boardId}
 				index={props.index}
 				title={props.task.taskName}
 				description={props.task.description}

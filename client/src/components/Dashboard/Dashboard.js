@@ -1,8 +1,5 @@
 import React from 'react';
-// import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Board from '../Kanban/Board';
-// import ComingSoon from '../../pages/ComingSoon';
-// import Sidebar from './Sidebar';
 import styles from './Dashboard.module.css';
 
 const DUMMY_SCHEDULE = [

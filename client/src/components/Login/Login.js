@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styles from './LoginCommon.module.css';
 import Button from '../../UI/Button';
 import LoginPage from './LoginPage';
 import Input from '../../UI/Input.js';
 import useInput from '../hooks/use-input';
+import { login } from '../../store/user-actions';
 
 const EMAIL_FORMAT =
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -29,6 +31,7 @@ export default function Login(props) {
 	} = useInput((value) => value.trim() !== '');
 
 	const [errorMsg, setErrorMsg] = useState('');
+	const dispatch = useDispatch();
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
@@ -39,21 +42,12 @@ export default function Login(props) {
 
 		const user = { email, password };
 
-		const response = await fetch('/api/signin', {
-			method: 'POST',
-			body: JSON.stringify(user),
-			headers: { 'Content-Type': 'application/json' },
-		});
+		const error = dispatch(login(user));
+		const errorMsg = error.errorMsg || '';
 
-		const data = await response.json();
-		console.log(data);
-
-		if (response.ok) {
-			props.onLogin(data.token);
-			return;
+		if (errorMsg) {
+			setErrorMsg(errorMsg);
 		}
-
-		setErrorMsg(data.message);
 		return;
 	};
 

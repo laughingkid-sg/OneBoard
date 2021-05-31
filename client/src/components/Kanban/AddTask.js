@@ -1,23 +1,33 @@
 import { useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import { kanbanActions } from '../../store/kanban';
 import styles from './AddTask.module.css';
+import { addTask } from '../../store/kanban-actions';
 
 const AddTask = (props) => {
 	const dispatch = useDispatch();
 	const taskName = useRef();
+	const token = useSelector((state) => state.user.token);
 
 	const addTaskHandler = () => {
 		if (taskName.current.value.trim() === '') {
 			props.onCancel();
 			return;
 		}
+		// dispatch(
+		// 	kanbanActions.addTask({
+		// 		taskName: taskName.current.value,
+		// 		columnId: props.columnId,
+		// 	})
+		// );
 		dispatch(
-			kanbanActions.addTask({
-				taskName: taskName.current.value,
-				columnId: props.columnId,
-			})
+			addTask(
+				props.boardId,
+				taskName.current.value,
+				props.columnId,
+				token
+			)
 		);
 		props.onCancel();
 	};
