@@ -1,12 +1,13 @@
 import React from 'react';
-import styles from './pages.module.css'
+import MainLayout from '../Layout/MainLayout';
+import Dashboard from '../components/Dashboard/Dashboard';
 
 function Home() {
-    return (
-        <div className={styles.home}>
-            <h1>Home</h1>
-        </div>
-    )
+	return (
+		<MainLayout>
+			<Dashboard />
+		</MainLayout>
+	);
 }
 
 export default Home;

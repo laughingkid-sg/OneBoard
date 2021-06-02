@@ -35,8 +35,6 @@ function Column(props) {
 			boardId={props.boardId}
 			colId={props.column.id}
 			columnTitle={props.title}
-			showModal={props.showModal}
-			onCancel={props.onCancel}
 		/>
 	));
 
@@ -58,8 +56,6 @@ function Column(props) {
 			title={props.title}
 			boardId={props.boardId}
 			onCancel={cancelTitleHandler}
-			onModalCancel={props.onCancel}
-			onDelete={props.showModal}
 			columnId={props.column.id}
 		/>
 	) : (

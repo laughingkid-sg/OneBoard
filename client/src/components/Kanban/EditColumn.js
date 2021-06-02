@@ -1,13 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { FaTrash } from 'react-icons/fa';
 import DeleteModal from './KanbanUI/DeleteModal';
 import { kanbanActions } from '../../store/kanban';
 import styles from './EditColumn.module.css';
 import { updateColumn } from '../../store/kanban-actions';
+import ModalContext from '../../store/ModalContext';
 
 function EditColumn(props) {
 	const title = useRef();
+	const modalContext = useContext(ModalContext);
 	const [editTitle, setIsEditTitle] = useState(props.title);
 	const token = useSelector((state) => state.user.token);
 	const dispatch = useDispatch();
@@ -32,13 +34,12 @@ function EditColumn(props) {
 	};
 
 	const deleteColumnHandler = () => {
-		props.onDelete(
+		modalContext.showModal(
 			<DeleteModal
 				isCol={true}
 				title={props.title}
 				boardId={props.boardId}
 				columnId={props.columnId}
-				onCancel={props.onModalCancel}
 			/>
 		);
 	};

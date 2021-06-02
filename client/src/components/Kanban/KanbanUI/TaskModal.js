@@ -1,13 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import Button from '../../../UI/Button';
 import Modal from '../../../UI/Modal';
 import styles from './TaskModal.module.css';
 import { updateTask } from '../../../store/kanban-actions';
+import ModalContext from '../../../store/ModalContext';
 
 function TaskModal(props) {
 	const dispatch = useDispatch();
+	const modalContext = useContext(ModalContext);
 	const taskName = useRef(props.title);
 	const description = useRef(props.description);
 	const [isWrite, setIsWrite] = useState(props.write || false);
@@ -74,10 +76,10 @@ function TaskModal(props) {
 	);
 
 	return (
-		<Modal onClose={props.onClose}>
+		<Modal onClose={modalContext.hideModal}>
 			<div className={styles.container}>
 				<AiOutlineClose
-					onClick={props.onClose}
+					onClick={modalContext.hideModal}
 					className={styles.close}
 				/>
 

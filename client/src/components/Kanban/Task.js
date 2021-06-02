@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import EditDelete from './KanbanUI/EditDelete';
 import DeleteModal from './KanbanUI/DeleteModal';
 import TaskModal from './KanbanUI/TaskModal';
 import styles from './Task.module.css';
+import ModalContext from '../../store/ModalContext';
 
 function Task(props) {
+	const modalContext = useContext(ModalContext);
+
 	const deleteTaskHandler = (e) => {
 		e.stopPropagation();
 		deleteTask();
@@ -15,12 +18,12 @@ function Task(props) {
 		if (e.defaultPrevented) {
 			return;
 		}
-		props.showModal(setTaskModal(false));
+		modalContext.showModal(setTaskModal(false));
 	};
 
 	const editTaskHandler = (e) => {
 		e.stopPropagation();
-		props.showModal(setTaskModal(true));
+		modalContext.showModal(setTaskModal(true));
 	};
 
 	const deleteTask = () => {
@@ -31,11 +34,9 @@ function Task(props) {
 				title={props.task.taskName}
 				boardId={props.boardId}
 				columnId={props.colId}
-				index={props.index}
-				onCancel={props.onCancel}
 			/>
 		);
-		props.showModal(deleteModal);
+		modalContext.showModal(deleteModal);
 	};
 
 	const setTaskModal = (isWrite) => {

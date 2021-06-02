@@ -1,12 +1,14 @@
-import React from 'react'
-import styles from './pages.module.css';
+import React from 'react';
+import MainLayout from '../Layout/MainLayout';
 
 function ComingSoon() {
-    return (
-        <div>
-           <h1>Feature coming soon!</h1> 
-        </div>
-    )
+	return (
+		<MainLayout>
+			<div>
+				<h1>Feature coming soon!</h1>
+			</div>
+		</MainLayout>
+	);
 }
 
-export default ComingSoon
+export default ComingSoon;

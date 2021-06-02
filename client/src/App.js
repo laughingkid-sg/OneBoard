@@ -2,15 +2,19 @@ import React, { useContext, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import styles from './App.module.css';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Board from './components/Kanban/Board';
+import {
+	BrowserRouter as Router,
+	Switch,
+	Route,
+	Redirect,
+} from 'react-router-dom';
 import Login from './components/Login/Login';
 import Register from './components/Login/Register';
-import Dashboard from './components/Dashboard/Dashboard';
-import MainLayout from './Layout/MainLayout';
-import ComingSoon from './pages/ComingSoon';
+import { ComingSoon, Home, KanbanBoard } from './pages';
+import ModalContext from './store/ModalContext';
 import AuthContext from './store/AuthContext';
 import { userActions } from './store/user';
+import { kanbanActions } from './store/kanban';
 import { fetchUserData } from './store/user-actions';
 
 function App() {
@@ -18,6 +22,7 @@ function App() {
 	const [cookies] = useCookies(['t', 'id']);
 	const { t: token, id } = cookies;
 	const authContext = useContext(AuthContext);
+	const modalContext = useContext(ModalContext);
 	const isLoggedIn = authContext.isLoggedIn;
 
 	useEffect(() => {
@@ -28,46 +33,33 @@ function App() {
 		}
 		if (!isLoggedIn && !token) {
 			dispatch(userActions.logout());
+			dispatch(kanbanActions.resetBoard());
 		}
 	}, [dispatch, token]);
 
-	// useEffect(() => {
-	// 	if (!isLoggedIn && !!token) {
-	// 		console.log('No token and not logged in');
-	// 		dispatch(userActions.logout());
-	// 	}
-	// }, [dispatch, isLoggedIn, token]);
-
-	// TODO could be in another file?
-	const showRoutes = isLoggedIn ? (
-		<React.Fragment>
-			<MainLayout>
-				<Route path="/" exact>
-					<Dashboard />
-				</Route>
-				<Route path="/tasks">
-					<div className={styles.container}>
-						<Board />
-					</div>
-				</Route>
-				<Route path="/calendar" component={ComingSoon} />
-				<Route path="/expenses" component={ComingSoon} />
-				<Route path="/notes" component={ComingSoon} />
-			</MainLayout>
-		</React.Fragment>
-	) : (
+	const showRoutes = (
 		<React.Fragment>
 			<Route path="/" exact>
-				<Login />
+				{isLoggedIn ? <Home /> : <Login />}
 			</Route>
-			<Route path="/register" component={Register} />
+			<Route path="/register">
+				{isLoggedIn ? <Register /> : <Redirect to="/" />}
+			</Route>
+			<Route path="/tasks">
+				{isLoggedIn ? <KanbanBoard /> : <Redirect to="/" />}
+			</Route>
+			<Route path={['/calendar', '/notes', '/profile']}>
+				{isLoggedIn ? <ComingSoon /> : <Redirect to="/" />}
+			</Route>
 		</React.Fragment>
 	);
 
 	return (
 		<div className={styles.app}>
+			{modalContext.isVisible && modalContext.modal}
 			<Router>
-				<Switch>{showRoutes}</Switch>
+				{isLoggedIn && <Switch>{showRoutes}</Switch>}
+				{!isLoggedIn && <Switch>{showRoutes}</Switch>}
 			</Router>
 		</div>
 	);

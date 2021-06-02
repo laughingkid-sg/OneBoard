@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Button from '../../../UI/Button';
 import Modal from '../../../UI/Modal';
 import styles from './DeleteModal.module.css';
 import { deleteData } from '../../../store/kanban-actions';
+import ModalContext from '../../../store/ModalContext';
 
 function DeleteModal(props) {
+	const modalContext = useContext(ModalContext);
 	const dispatch = useDispatch();
 	const token = useSelector((state) => state.user.token);
 
@@ -30,11 +32,11 @@ function DeleteModal(props) {
 			);
 		}
 
-		props.onCancel();
+		modalContext.hideModal();
 	};
 
 	return (
-		<Modal onClose={props.onCancel}>
+		<Modal onClose={modalContext.hideModal}>
 			<div className={styles.container}>
 				<h2 className={styles.title}>
 					Are you sure you want to delete this{' '}
@@ -51,7 +53,7 @@ function DeleteModal(props) {
 					<Button onClick={deleteHandler} className={styles.delete}>
 						Delete {props.isCol ? 'Column' : 'Task'}
 					</Button>
-					<Button onClick={props.onCancel}>Go Back</Button>
+					<Button onClick={modalContext.hideModal}>Go Back</Button>
 				</div>
 			</div>
 		</Modal>

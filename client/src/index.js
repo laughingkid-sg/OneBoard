@@ -6,12 +6,15 @@ import './index.css';
 import App from './App';
 import { AuthContextProvider } from './store/AuthContext';
 import store from './store/index';
+import { ModalContextProvider } from './store/ModalContext';
 
 ReactDOM.render(
 	<AuthContextProvider>
-		<Provider store={store}>
-			<App />
-		</Provider>
+		<ModalContextProvider>
+			<Provider store={store}>
+				<App />
+			</Provider>
+		</ModalContextProvider>
 	</AuthContextProvider>,
 	document.getElementById('root')
 );

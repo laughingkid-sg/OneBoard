@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Column';
-import TaskModal from './KanbanUI/TaskModal';
 import styles from './Board.module.css';
 import AddColumn from './AddColumn';
 import { kanbanActions } from '../../store/kanban';
@@ -23,12 +22,12 @@ function Board(props) {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		console.log(boardId);
 		if (!boardId) {
 			dispatch(createBoard('My First Board', token));
 			dispatch(fetchUserData(userId, token));
 			return;
 		}
+		console.log('Fetch');
 		dispatch(fetchBoardData(boardId, token));
 	}, [dispatch, boardId, token]);
 
@@ -106,39 +105,6 @@ function Board(props) {
 		return;
 	};
 
-	// TODO Refactor modal actions in to a redux store
-	const showModalHandler = (modal) => {
-		setShowModal({ showModal: true, modal });
-	};
-
-	const editTaskModalHandler = (columnId, taskId) => {
-		setTaskModal(columnId, taskId, true);
-	};
-
-	const setTaskModal = (columnId, taskId, isWrite) => {
-		const task = tasks[taskId];
-		const column = columns[columnId];
-		setShowModal({
-			showModal: true,
-			modal: (
-				<TaskModal
-					write={isWrite}
-					id={task.id}
-					title={task.taskName}
-					description={task.description}
-					columnTitle={column.title}
-					columnId={columnId}
-					onClose={closeModalHandler}
-				/>
-			),
-		});
-	};
-
-	const closeModalHandler = () => {
-		setShowModal({ showModal: false });
-	};
-	// TODO Refactor modal actions in to a redux store
-
 	const addColumnHandler = () => {
 		setIsEditing(true);
 	};
@@ -158,9 +124,6 @@ function Board(props) {
 				column={column}
 				tasks={tasksInCol}
 				title={column.title}
-				onCancel={closeModalHandler}
-				onEdit={editTaskModalHandler}
-				showModal={showModalHandler}
 			/>
 		);
 	});
