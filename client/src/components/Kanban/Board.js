@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
@@ -13,8 +14,8 @@ import { fetchUserData } from '../../store/user-actions';
 function Board(props) {
 	const [showModal, setShowModal] = useState({ showModal: false });
 	const [isEditing, setIsEditing] = useState(false);
-	const token = useSelector((state) => state.user.token);
-	const userId = useSelector((state) => state.user.id);
+	const [cookies] = useCookies(['t', 'id']);
+	const { t: token, id: userId } = cookies;
 	const boardId = useSelector((state) => state.user.boards.selectedBoard);
 	const tasks = useSelector((state) => state.kanban.tasks);
 	const columns = useSelector((state) => state.kanban.columns);
@@ -22,9 +23,10 @@ function Board(props) {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
+		console.log(boardId);
 		if (!boardId) {
-			// dispatch(createBoard('My First Board', token));
-			// dispatch(fetchUserData(userId, token));
+			dispatch(createBoard('My First Board', token));
+			dispatch(fetchUserData(userId, token));
 			return;
 		}
 		dispatch(fetchBoardData(boardId, token));

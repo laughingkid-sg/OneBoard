@@ -17,8 +17,11 @@ const userSlice = createSlice({
 			state.firstName = action.payload.firstName;
 			state.lastName = action.payload.lastName;
 			state.email = action.payload.email;
-			state.boards = action.payload.boards;
-			state.selectedBoard = action.payload.boards[0] || '';
+			const newBoards = {
+				boards: action.payload.boards,
+				selectedBoard: action.payload.boards[0] || '',
+			};
+			state.boards = newBoards;
 		},
 		logout(state) {
 			return initialState;
