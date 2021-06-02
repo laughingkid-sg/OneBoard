@@ -1,14 +1,18 @@
 import React from 'react';
+import { CookiesProvider } from 'react-cookie';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import './index.css';
 import App from './App';
+import { AuthContextProvider } from './store/AuthContext';
 import store from './store/index';
-import { Provider } from 'react-redux';
 
 ReactDOM.render(
-	<Provider store={store}>
-		<App />
-	</Provider>,
+	<AuthContextProvider>
+		<Provider store={store}>
+			<App />
+		</Provider>
+	</AuthContextProvider>,
 	document.getElementById('root')
 );
 

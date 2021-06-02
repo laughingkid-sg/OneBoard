@@ -3,10 +3,6 @@ import { IconContext } from 'react-icons';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import styles from './EditDelete.module.css';
 
-/**
- * @param onEdit Handler to edit component
- * @param onDelete Handler to delete component
- */
 function EditDelete(props) {
 	return (
 		<div className={`${styles.icons} ${props.className}`}>

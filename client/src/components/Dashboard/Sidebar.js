@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconContext } from 'react-icons';
 import { AiOutlineClose } from 'react-icons/ai';
@@ -7,10 +7,12 @@ import { FaBars } from 'react-icons/fa';
 import { SidebarData } from './SidebarData';
 import styles from './Sidebar.module.css';
 import { RiLogoutBoxFill } from 'react-icons/ri';
-import { logout } from '../../store/user-actions';
+import { userActions } from '../../store/user';
+import AuthContext from '../../store/AuthContext';
 
 const Sidebar = (props) => {
 	const [sidebar, setSidebar] = useState(false);
+	const authContext = useContext(AuthContext);
 	const dispatch = useDispatch();
 
 	const showSidebarHandler = () => {
@@ -18,8 +20,13 @@ const Sidebar = (props) => {
 	};
 
 	const logoutHandler = () => {
-		console.log('Logging out');
-		dispatch(logout());
+		fetch('/api/signout', {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		});
+
+		authContext.logout();
+		return;
 	};
 
 	const renderSidebars = SidebarData.map((item, index) => {

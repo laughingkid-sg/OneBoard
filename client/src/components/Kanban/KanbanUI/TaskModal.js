@@ -35,7 +35,7 @@ function TaskModal(props) {
 			description: description.current.value,
 		};
 
-		// setBeforeChange(updatedTask);
+		setBeforeChange(updatedTask);
 		// dispatch(kanbanActions.editTask({ ...updatedTask, id: props.id }));
 		dispatch(
 			updateTask(

@@ -1,5 +1,6 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useContext, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
 import styles from './App.module.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Board from './components/Kanban/Board';
@@ -8,9 +9,34 @@ import Register from './components/Login/Register';
 import Dashboard from './components/Dashboard/Dashboard';
 import MainLayout from './Layout/MainLayout';
 import ComingSoon from './pages/ComingSoon';
+import AuthContext from './store/AuthContext';
+import { userActions } from './store/user';
+import { fetchUserData } from './store/user-actions';
 
 function App() {
-	const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t', 'id']);
+	const { t: token, id } = cookies;
+	const authContext = useContext(AuthContext);
+	const isLoggedIn = authContext.isLoggedIn;
+
+	useEffect(() => {
+		if (token) {
+			authContext.login(token);
+			dispatch(fetchUserData(id, token));
+			return;
+		}
+		if (!isLoggedIn && !token) {
+			dispatch(userActions.logout());
+		}
+	}, [dispatch, token]);
+
+	// useEffect(() => {
+	// 	if (!isLoggedIn && !!token) {
+	// 		console.log('No token and not logged in');
+	// 		dispatch(userActions.logout());
+	// 	}
+	// }, [dispatch, isLoggedIn, token]);
 
 	// TODO could be in another file?
 	const showRoutes = isLoggedIn ? (

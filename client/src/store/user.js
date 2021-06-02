@@ -2,13 +2,10 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
 	id: '',
-	token: '',
-	isLoggedIn: false,
 	firstName: '',
 	lastName: '',
 	email: '',
-	boards: [],
-	selectedBoard: '',
+	boards: { boards: [], selectedBoard: '' },
 };
 
 const userSlice = createSlice({
@@ -17,22 +14,14 @@ const userSlice = createSlice({
 	reducers: {
 		login(state, action) {
 			state.id = action.payload.id;
-			state.token = action.payload.token;
 			state.firstName = action.payload.firstName;
 			state.lastName = action.payload.lastName;
 			state.email = action.payload.email;
 			state.boards = action.payload.boards;
-			state.isLoggedIn = true;
 			state.selectedBoard = action.payload.boards[0] || '';
 		},
 		logout(state) {
-			state.id = '';
-			state.token = '';
-			state.isLoggedIn = false;
-			state.firstName = '';
-			state.lastName = '';
-			state.email = '';
-			state.boards = [];
+			return initialState;
 		},
 	},
 });

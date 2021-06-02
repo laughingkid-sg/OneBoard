@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styles from './LoginCommon.module.css';
@@ -6,7 +7,8 @@ import Button from '../../UI/Button';
 import LoginPage from './LoginPage';
 import Input from '../../UI/Input.js';
 import useInput from '../hooks/use-input';
-import { login } from '../../store/user-actions';
+import { fetchUserData } from '../../store/user-actions';
+import AuthContext from '../../store/AuthContext';
 
 const EMAIL_FORMAT =
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -31,6 +33,8 @@ export default function Login(props) {
 	} = useInput((value) => value.trim() !== '');
 
 	const [errorMsg, setErrorMsg] = useState('');
+	const authContext = useContext(AuthContext);
+	const [cookies, setCookie] = useCookies(['id']);
 	const dispatch = useDispatch();
 
 	const submitHandler = async (e) => {
@@ -42,13 +46,29 @@ export default function Login(props) {
 
 		const user = { email, password };
 
-		const error = dispatch(login(user));
-		const errorMsg = error.errorMsg || '';
+		const response = await fetch('/api/signin', {
+			method: 'POST',
+			body: JSON.stringify(user),
+			headers: { 'Content-Type': 'application/json' },
+		});
 
-		if (errorMsg) {
-			setErrorMsg(errorMsg);
+		const data = await response.json();
+
+		if (!response.ok) {
+			setErrorMsg(data.message);
+			return;
 		}
-		return;
+
+		const token = data.token;
+		const id = data.user._id;
+		setCookie('id', id);
+		const getUserData = await dispatch(fetchUserData(id, token));
+
+		if (getUserData.isSuccess) {
+			authContext.login(token);
+		} else {
+			setErrorMsg(getUserData.errorMsg);
+		}
 	};
 
 	return (
