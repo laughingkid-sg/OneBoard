@@ -18,7 +18,7 @@
 .loginForm {
 	grid-column: 2;
 	height: 100vh;
-    width: 100%;
+	width: 100%;
 	margin: auto;
 	display: flex;
 	justify-content: center;
@@ -26,15 +26,15 @@
 	flex-direction: column;
 }
 
-.loginForm form{
-    display: grid;
-    grid-template-columns: auto;
+.loginForm form {
+	display: grid;
+	grid-template-columns: auto;
 }
 
 .loginForm div {
 	width: 100%;
 	margin-top: 15px;
-	font-size: 2rem;
+	/* font-size: 2rem; */
 }
 
 .loginForm label {
@@ -42,7 +42,7 @@
 	font-size: 1.25rem;
 }
 
-.loginForm input {
+.loginForm input[type='text'] {
 	display: block;
 	width: 100%;
 	border-radius: 5px;
@@ -50,8 +50,8 @@
 }
 
 .title {
-    margin-bottom:20px;
-    font-size: 3rem;
+	margin-bottom: 20px;
+	font-size: 3rem;
 }
 
 .message {

@@ -11,25 +11,35 @@ import { createBoard, fetchBoardData } from '../../store/kanban-actions';
 import { fetchUserData } from '../../store/user-actions';
 
 function Board(props) {
-	const [showModal, setShowModal] = useState({ showModal: false });
 	const [isEditing, setIsEditing] = useState(false);
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
 	const userId = localStorage.getItem('id');
 	const boardId = useSelector((state) => state.user.boards.selectedBoard);
-	const tasks = useSelector((state) => state.kanban.tasks);
-	const columns = useSelector((state) => state.kanban.columns);
-	const columnOrder = useSelector((state) => state.kanban.columnOrder);
+	const kanban = useSelector((state) => state.kanban);
+	const { tasks, columns, columnOrder } = kanban;
 	const dispatch = useDispatch();
 
 	useEffect(() => {
+		// function boardFromStorage() {
+		// 	const strBoard = localStorage.getItem('currentBoard');
+		// 	const jsonBoard = JSON.parse(strBoard);
+		// 	if (jsonBoard) {
+		// 		dispatch(kanbanActions.replaceBoard(jsonBoard));
+		// 	} else {
+		// 		dispatch(fetchBoardData(boardId, token));
+		// 	}
+		// }
+
 		if (!boardId) {
 			dispatch(createBoard('My First Board', token));
 			dispatch(fetchUserData(userId, token));
 			return;
 		}
+
 		dispatch(fetchBoardData(boardId, token));
-	}, [dispatch, boardId, token]);
+		// boardFromStorage();
+	}, [dispatch, boardId, userId, token]);
 
 	// TODO Could be refactored
 	const dragEndHandler = (result) => {
@@ -133,13 +143,12 @@ function Board(props) {
 	) : (
 		<div className={styles.addColBtn} onClick={addColumnHandler}>
 			<AiOutlinePlus />
-			<h3>Add Column</h3>
+			<h4>Add Column</h4>
 		</div>
 	);
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'row' }}>
-			{showModal.showModal && showModal.modal}
 			<DragDropContext onDragEnd={dragEndHandler}>
 				<Droppable
 					droppableId="all-cols"

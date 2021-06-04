@@ -78,13 +78,9 @@ export const fetchBoardData = (boardId, token) => {
 				);
 			}
 
-			dispatch(
-				kanbanActions.replaceBoard({
-					tasks: taskObj,
-					columns: colObj,
-					columnOrder,
-				})
-			);
+			const boardInfo = { tasks: taskObj, columns: colObj, columnOrder };
+			localStorage.setItem('currentBoard', JSON.stringify(boardInfo));
+			dispatch(kanbanActions.replaceBoard(boardInfo));
 		} catch (error) {}
 	};
 };

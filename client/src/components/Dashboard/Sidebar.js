@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { IconContext } from 'react-icons';
 import { AiOutlineClose } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
@@ -7,13 +6,11 @@ import { FaBars } from 'react-icons/fa';
 import { SidebarData } from './SidebarData';
 import styles from './Sidebar.module.css';
 import { RiLogoutBoxFill } from 'react-icons/ri';
-import { userActions } from '../../store/user';
 import AuthContext from '../../store/AuthContext';
 
 const Sidebar = (props) => {
 	const [sidebar, setSidebar] = useState(false);
 	const authContext = useContext(AuthContext);
-	const dispatch = useDispatch();
 
 	const showSidebarHandler = () => {
 		setSidebar((prevSide) => !prevSide);

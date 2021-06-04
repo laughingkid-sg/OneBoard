@@ -59,9 +59,9 @@ function Column(props) {
 			columnId={props.column.id}
 		/>
 	) : (
-		<h3 className={styles.titleText} onClick={editTitleHandler}>
+		<h4 className={styles.titleText} onClick={editTitleHandler}>
 			{props.title}
-		</h3>
+		</h4>
 	);
 
 	return (

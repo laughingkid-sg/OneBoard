@@ -47,12 +47,12 @@ function App() {
 				{isLoggedIn ? <Home /> : <Login />}
 			</Route>
 			<Route path="/register">
-				{isLoggedIn ? <Register /> : <Redirect to="/" />}
+				{!isLoggedIn ? <Register /> : <Redirect to="/" />}
 			</Route>
 			<Route path="/tasks">
 				{isLoggedIn ? <KanbanBoard /> : <Redirect to="/" />}
 			</Route>
-			<Route path={['/calendar', '/notes', '/profile']}>
+			<Route path={['/calendar', '/notes', '/profile', '/expenses']}>
 				{isLoggedIn ? <ComingSoon /> : <Redirect to="/" />}
 			</Route>
 		</React.Fragment>

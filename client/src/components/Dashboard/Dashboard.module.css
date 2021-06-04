@@ -1,7 +1,7 @@
 .container {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-evenly;
+	justify-content: space-between;
 	/* margin: 1.5% 2.5%; */
 	padding: 0 1.5%;
 	height: 91vh;
@@ -18,7 +18,7 @@
 .bottomRow {
 	display: flex;
 	overflow-x: auto;
-	height: 50vh;
+	height: 60vh;
 }
 
 .expenses {

@@ -6,7 +6,7 @@ const ACTIONS = {
 	RESET: 'RESET',
 };
 
-const initState = {
+const deafultState = {
 	value: '',
 	isTouched: false,
 };
@@ -20,13 +20,19 @@ const inputStateReducer = (state, action) => {
 			return { ...state, isTouched: true };
 
 		case ACTIONS.RESET:
-			return initState;
+			return deafultState;
 		default:
 			return;
 	}
 };
 
-export default function useInput(validate) {
+export default function useInput(validate, initValue = '') {
+	let initState = deafultState;
+
+	if (initValue) {
+		initState = { value: initValue, isTouched: false };
+	}
+
 	const [inputState, dispatchInput] = useReducer(
 		inputStateReducer,
 		initState
@@ -50,7 +56,7 @@ export default function useInput(validate) {
 	return {
 		value: inputState.value,
 		isValid,
-        hasError,
+		hasError,
 		onChange: inputChangeHandler,
 		onBlur: inputBlurHandler,
 		reset: inputResetHandler,

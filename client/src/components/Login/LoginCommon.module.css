@@ -4,6 +4,7 @@
 
 .invalid {
 	color: red;
+	margin: 0;
 }
 
 .formRow {
@@ -32,4 +33,9 @@
 .footText {
 	font-size: 1.25rem;
 	margin-top: 35px;
+}
+
+.checkBox {
+	display: inline-flex;
+	align-items: center;
 }

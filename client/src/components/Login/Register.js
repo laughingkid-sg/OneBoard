@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { Label, Input, Form } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import styles from './LoginCommon.module.css';
 import Button from '../../UI/Button';
-import Input from '../../UI/Input';
 import LoginPage from './LoginPage';
 import useInput from '../hooks/use-input';
 
@@ -111,11 +111,11 @@ export default function Register() {
 
 	return (
 		<LoginPage title="Register" errorMsg={errorMsg} isError={isError}>
-			<form onSubmit={submitHandler}>
+			<Form onSubmit={submitHandler}>
+				<Label for="fName">First Name</Label>
 				<Input
 					id="fName"
-					type="fName"
-					label="First Name"
+					type="text"
 					onChange={fNameOnChange}
 					onBlur={fNameOnBlur}
 					className={`${fNameHasError ? styles.invalid : ''}`}
@@ -127,10 +127,10 @@ export default function Register() {
 					</p>
 				)}
 
+				<Label for="lName">Last Name</Label>
 				<Input
 					id="lName"
-					type="lName"
-					label="Last Name"
+					type="text"
 					onChange={lNameOnChange}
 					onBlur={lNameOnBlur}
 					className={`${lNameHasError ? styles.invalid : ''}`}
@@ -142,10 +142,10 @@ export default function Register() {
 					</p>
 				)}
 
+				<Label for="email">E-mail</Label>
 				<Input
 					id="email"
 					type="email"
-					label="E-mail"
 					onChange={emailOnChange}
 					onBlur={emailOnBlur}
 					className={`${emailHasError ? styles.invalid : ''}`}
@@ -157,10 +157,10 @@ export default function Register() {
 					</p>
 				)}
 
+				<Label for="password">Password</Label>
 				<Input
 					id="password"
 					type="password"
-					label="Password"
 					onChange={pwOnChange}
 					onBlur={pwOnBlur}
 					className={`${pwHasError ? styles.invalid : ''}`}
@@ -172,10 +172,10 @@ export default function Register() {
 					</p>
 				)}
 
+				<Label for="cfmPassword">Confirm Password</Label>
 				<Input
 					id="cfmPassword"
 					type="password"
-					label="Confirm Password"
 					onChange={cfmPwOnChange}
 					onBlur={cfmPwOnBlur.bind(null, password)}
 					className={`${cfmPwHasError ? styles.invalid : ''}`}
@@ -188,31 +188,25 @@ export default function Register() {
 				)}
 
 				<div
-					className={`${
+					className={` ${styles.checkBox} ${
 						!isChecked && checkIsTouched ? styles.invalid : ''
 					}`}
 				>
-					<input
+					<Input
 						type="checkbox"
 						name="toc"
 						id="toc"
 						checked={isChecked}
 						onChange={toggleCheckHandler}
-						style={{
-							width: '1.25rem',
-							height: '1.25rem',
-							display: 'inline',
-						}}
+						style={{ fontSize: '20px' }}
 					/>
-					<label
-						htmlFor="toc"
-						style={{
-							marginLeft: '15px',
-							display: 'inline',
-						}}
+					<Label
+						check
+						for="toc"
+						style={{ marginLeft: '15px', fontSize: '20px' }}
 					>
-						I agree to the Terms of Use
-					</label>
+						I agree to the terms of use
+					</Label>
 				</div>
 
 				<Button type="submit" className={styles.formBtn}>
@@ -221,7 +215,7 @@ export default function Register() {
 				<p className={styles.footText}>
 					Already have an account? <Link to="/">Login here.</Link>
 				</p>
-			</form>
+			</Form>
 		</LoginPage>
 	);
 }
