@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { useCookies } from 'react-cookie';
+// import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styles from './LoginCommon.module.css';
@@ -34,7 +34,7 @@ export default function Login(props) {
 
 	const [errorMsg, setErrorMsg] = useState('');
 	const authContext = useContext(AuthContext);
-	const [cookies, setCookie] = useCookies(['id']);
+	// const [cookies, setCookie] = useCookies(['id']);
 	const dispatch = useDispatch();
 
 	const submitHandler = async (e) => {
@@ -61,7 +61,8 @@ export default function Login(props) {
 
 		const token = data.token;
 		const id = data.user._id;
-		setCookie('id', id);
+		localStorage.setItem('id', id);
+		// setCookie('id', id);
 		const getUserData = await dispatch(fetchUserData(id, token));
 
 		if (getUserData.isSuccess) {

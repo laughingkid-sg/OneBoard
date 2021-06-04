@@ -20,22 +20,26 @@ import { fetchUserData } from './store/user-actions';
 function App() {
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t', 'id']);
-	const { t: token, id } = cookies;
+	const { t: token } = cookies;
+	const id = localStorage.getItem('id') || '';
 	const authContext = useContext(AuthContext);
 	const modalContext = useContext(ModalContext);
 	const isLoggedIn = authContext.isLoggedIn;
 
+	// Only used for persistence
 	useEffect(() => {
 		if (token) {
 			authContext.login(token);
 			dispatch(fetchUserData(id, token));
-			return;
 		}
+	}, []);
+
+	useEffect(() => {
 		if (!isLoggedIn && !token) {
 			dispatch(userActions.logout());
 			dispatch(kanbanActions.resetBoard());
 		}
-	}, [dispatch, token]);
+	}, [dispatch, isLoggedIn, token]);
 
 	const showRoutes = (
 		<React.Fragment>

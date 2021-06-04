@@ -63,6 +63,7 @@ export const fetchBoardData = (boardId, token) => {
 				};
 			});
 
+			// May convert this to a forEach
 			for (const i in columnOrder) {
 				const tasks = await dispatch(
 					fetchTaskData(boardId, columnOrder[i], token)
@@ -139,7 +140,49 @@ export const updateColumn = (boardId, columnId, newName, token) => {
 
 		try {
 			await postData();
-			dispatch(fetchBoardData(boardId, token));
+			dispatch(
+				kanbanActions.editColumn({
+					colId: columnId,
+					columnName: newName,
+				})
+			);
+			// dispatch(fetchBoardData(boardId, token));
+		} catch (error) {}
+	};
+};
+
+export const updateTask = (boardId, columnId, taskId, task, token) => {
+	return async (dispatch) => {
+		const postData = async () => {
+			const response = await fetch(
+				`/api/kanban/${boardId}/${columnId}/${taskId}`,
+				{
+					method: 'PUT',
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(task),
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error('Could not change update task');
+			}
+
+			const data = await response.json();
+
+			return data;
+		};
+
+		try {
+			await postData();
+			const newTask = {
+				id: taskId,
+				taskName: task.name,
+				description: task.description,
+			};
+			dispatch(kanbanActions.editTask(newTask));
 		} catch (error) {}
 	};
 };
@@ -176,25 +219,29 @@ export const updateColOrder = (boardId, newColumnOrder, token) => {
 	};
 };
 
-export const addColumn = (boardId, columnName, token) => {
+export const addData = (boardId, token, title, columnId = '') => {
 	return async (dispatch) => {
-		console.log(boardId, columnName, token);
+		let url = `api/kanban/${boardId}`;
+		const options = {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ name: title }),
+		};
+
+		if (columnId) {
+			url += `/${columnId}`;
+		}
+
 		const postData = async () => {
-			const response = await fetch(`/api/kanban/${boardId}`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ name: columnName }),
-			});
-
-			if (!response.ok) {
-				throw new Error('Could not make new column');
-			}
-
+			const response = await fetch(url, options);
 			const data = await response.json();
 
+			if (!response.ok) {
+				throw new Error(data.message);
+			}
 			return data;
 		};
 
@@ -205,65 +252,7 @@ export const addColumn = (boardId, columnName, token) => {
 	};
 };
 
-export const addTask = (boardId, taskName, columnId, token) => {
-	return async (dispatch) => {
-		const postData = async () => {
-			const response = await fetch(`/api/kanban/${boardId}/${columnId}`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ name: taskName }),
-			});
-
-			if (!response.ok) {
-				throw new Error('Could not make new task');
-			}
-
-			const data = await response.json();
-
-			return data;
-		};
-
-		try {
-			await postData();
-			dispatch(fetchBoardData(boardId, token));
-		} catch (error) {}
-	};
-};
-
-export const updateTask = (boardId, columnId, taskId, task, token) => {
-	return async (dispatch) => {
-		const postData = async () => {
-			const response = await fetch(
-				`/api/kanban/${boardId}/${columnId}/${taskId}`,
-				{
-					method: 'PUT',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(task),
-				}
-			);
-
-			if (!response.ok) {
-				throw new Error('Could not change update task');
-			}
-
-			const data = await response.json();
-
-			return data;
-		};
-
-		try {
-			await postData();
-			dispatch(fetchBoardData(boardId, token));
-		} catch (error) {}
-	};
-};
-
+// NOT WORKING
 export const deleteData = (boardId, ids, isCol, token) => {
 	return async (dispatch) => {
 		const postData = async () => {
@@ -281,7 +270,6 @@ export const deleteData = (boardId, ids, isCol, token) => {
 				},
 			});
 
-			console.log(response);
 			if (!response.ok) {
 				throw new Error(
 					`Could not delete ${isCol ? 'Column' : 'Task'}`

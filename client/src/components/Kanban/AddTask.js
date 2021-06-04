@@ -1,28 +1,23 @@
 import { useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
-import { kanbanActions } from '../../store/kanban';
 import styles from './AddTask.module.css';
-import { addTask } from '../../store/kanban-actions';
+import { addData } from '../../store/kanban-actions';
 
 const AddTask = (props) => {
 	const dispatch = useDispatch();
 	const taskName = useRef();
-	const token = useSelector((state) => state.user.token);
+	const [cookies] = useCookies(['t']);
+	const token = cookies.t;
 
 	const addTaskHandler = () => {
 		if (taskName.current.value.trim() === '') {
 			props.onCancel();
 			return;
 		}
-		dispatch(
-			addTask(
-				props.boardId,
-				taskName.current.value,
-				props.columnId,
-				token
-			)
-		);
+		const title = taskName.current.value.trim();
+		dispatch(addData(props.boardId, token, title, props.columnId));
 		props.onCancel();
 	};
 

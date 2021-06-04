@@ -13,8 +13,9 @@ import { fetchUserData } from '../../store/user-actions';
 function Board(props) {
 	const [showModal, setShowModal] = useState({ showModal: false });
 	const [isEditing, setIsEditing] = useState(false);
-	const [cookies] = useCookies(['t', 'id']);
-	const { t: token, id: userId } = cookies;
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
+	const userId = localStorage.getItem('id');
 	const boardId = useSelector((state) => state.user.boards.selectedBoard);
 	const tasks = useSelector((state) => state.kanban.tasks);
 	const columns = useSelector((state) => state.kanban.columns);
@@ -27,7 +28,6 @@ function Board(props) {
 			dispatch(fetchUserData(userId, token));
 			return;
 		}
-		console.log('Fetch');
 		dispatch(fetchBoardData(boardId, token));
 	}, [dispatch, boardId, token]);
 

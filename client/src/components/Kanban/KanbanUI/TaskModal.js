@@ -1,5 +1,6 @@
 import React, { useContext, useState, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import Button from '../../../UI/Button';
 import Modal from '../../../UI/Modal';
@@ -14,10 +15,11 @@ function TaskModal(props) {
 	const description = useRef(props.description);
 	const [isWrite, setIsWrite] = useState(props.write || false);
 	const [beforeChange, setBeforeChange] = useState({
-		taskName: props.title,
+		name: props.title,
 		description: props.description,
 	});
-	const token = useSelector((state) => state.user.token);
+	const [cookies] = useCookies(['t']);
+	const token = cookies.t;
 
 	const confirmEditHandler = () => {
 		if (taskName.current.value.trim() === '') {
@@ -25,7 +27,7 @@ function TaskModal(props) {
 		}
 
 		if (
-			taskName.current.value === beforeChange.taskName &&
+			taskName.current.value === beforeChange.name &&
 			description.current.value === beforeChange.description
 		) {
 			toggleEditHandler();
@@ -38,7 +40,6 @@ function TaskModal(props) {
 		};
 
 		setBeforeChange(updatedTask);
-		// dispatch(kanbanActions.editTask({ ...updatedTask, id: props.id }));
 		dispatch(
 			updateTask(
 				props.boardId,
@@ -85,16 +86,14 @@ function TaskModal(props) {
 
 				<div className={styles.taskinfo}>
 					{!isWrite && (
-						<h2 className={styles.title}>
-							{beforeChange.taskName}
-						</h2>
+						<h2 className={styles.title}>{beforeChange.name}</h2>
 					)}
 					{isWrite && (
 						<input
 							type="text"
 							id="taskTitle"
 							ref={taskName}
-							defaultValue={beforeChange.taskName}
+							defaultValue={beforeChange.name}
 							className={styles.input}
 						/>
 					)}

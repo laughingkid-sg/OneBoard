@@ -1,5 +1,6 @@
 import React, { useContext, useState, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
 import { FaTrash } from 'react-icons/fa';
 import DeleteModal from './KanbanUI/DeleteModal';
 import { kanbanActions } from '../../store/kanban';
@@ -11,7 +12,8 @@ function EditColumn(props) {
 	const title = useRef();
 	const modalContext = useContext(ModalContext);
 	const [editTitle, setIsEditTitle] = useState(props.title);
-	const token = useSelector((state) => state.user.token);
+	const [cookies] = useCookies(['t']);
+	const token = cookies.t;
 	const dispatch = useDispatch();
 
 	const updateColumnHandler = () => {
@@ -22,12 +24,6 @@ function EditColumn(props) {
 		}
 		dispatch(
 			updateColumn(props.boardId, props.columnId, updatedTitle, token)
-		);
-		dispatch(
-			kanbanActions.editColumn({
-				colId: props.columnId,
-				columnName: updatedTitle,
-			})
 		);
 		setIsEditTitle(updatedTitle);
 		props.onCancel();

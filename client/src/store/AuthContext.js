@@ -22,7 +22,7 @@ export const AuthContextProvider = (props) => {
 
 	const logoutHandler = () => {
 		removeCookie('t');
-		removeCookie('id');
+		localStorage.clear();
 		setToken('');
 		clearTimeout(cookieExpiry);
 	};

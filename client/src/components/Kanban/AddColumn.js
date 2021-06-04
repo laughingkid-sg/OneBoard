@@ -1,14 +1,15 @@
 import { useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
-import { kanbanActions } from '../../store/kanban';
 import styles from './AddColumn.module.css';
-import { addColumn } from '../../store/kanban-actions';
+import { addData } from '../../store/kanban-actions';
 
 const AddColumn = (props) => {
 	const columnName = useRef();
 	const dispatch = useDispatch();
-	const token = useSelector((state) => state.user.token);
+	const [cookies] = useCookies(['t']);
+	const token = cookies.t;
 
 	const addColumnHandler = () => {
 		if (columnName.current.value.trim() === '') {
@@ -16,9 +17,9 @@ const AddColumn = (props) => {
 			return;
 		}
 
-		const colName = columnName.current.value;
+		const colName = columnName.current.value.trim();
 
-		dispatch(addColumn(props.boardId, colName, token));
+		dispatch(addData(props.boardId, token, colName));
 		props.onCancel();
 	};
 
