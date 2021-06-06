@@ -31,7 +31,7 @@ export const SidebarData = [
 	// TODO Insert classnames for last 2 buttons (at the bottom)
 	{
 		title: 'Edit Profile',
-		path: '/profile',
+		path: '/editprofile',
 		icon: <FaIcons.FaUser />,
 	},
 ];

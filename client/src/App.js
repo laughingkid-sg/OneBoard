@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import Login from './components/Login/Login';
 import Register from './components/Login/Register';
-import { ComingSoon, Home, KanbanBoard } from './pages';
+import { ComingSoon, Home, KanbanBoard, EditUser } from './pages';
 import ModalContext from './store/ModalContext';
 import AuthContext from './store/AuthContext';
 import { userActions } from './store/user';
@@ -38,6 +38,7 @@ function App() {
 		if (!isLoggedIn && !token) {
 			dispatch(userActions.logout());
 			dispatch(kanbanActions.resetBoard());
+			localStorage.clear();
 		}
 	}, [dispatch, isLoggedIn, token]);
 
@@ -52,7 +53,10 @@ function App() {
 			<Route path="/tasks">
 				{isLoggedIn ? <KanbanBoard /> : <Redirect to="/" />}
 			</Route>
-			<Route path={['/calendar', '/notes', '/profile', '/expenses']}>
+			<Route path="/editprofile">
+				{isLoggedIn ? <EditUser /> : <Redirect to="/" />}
+			</Route>
+			<Route path={['/calendar', '/notes', '/expenses']}>
 				{isLoggedIn ? <ComingSoon /> : <Redirect to="/" />}
 			</Route>
 		</React.Fragment>

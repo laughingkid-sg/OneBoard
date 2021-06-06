@@ -11,6 +11,7 @@ const AuthContext = React.createContext({
 let cookieExpiry;
 
 export const AuthContextProvider = (props) => {
+	// eslint-disable-next-line
 	const [cookie, setCookie, removeCookie] = useCookies(['t']);
 	const [token, setToken] = useState('');
 	const isLoggedIn = !!token;
@@ -22,7 +23,6 @@ export const AuthContextProvider = (props) => {
 
 	const logoutHandler = () => {
 		removeCookie('t');
-		localStorage.clear();
 		setToken('');
 		clearTimeout(cookieExpiry);
 	};

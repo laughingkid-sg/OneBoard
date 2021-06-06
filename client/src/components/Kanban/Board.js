@@ -21,15 +21,17 @@ function Board(props) {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		// function boardFromStorage() {
-		// 	const strBoard = localStorage.getItem('currentBoard');
-		// 	const jsonBoard = JSON.parse(strBoard);
-		// 	if (jsonBoard) {
-		// 		dispatch(kanbanActions.replaceBoard(jsonBoard));
-		// 	} else {
-		// 		dispatch(fetchBoardData(boardId, token));
-		// 	}
-		// }
+		function boardFromStorage() {
+			const strBoard = localStorage.getItem('currentBoard');
+			const jsonBoard = JSON.parse(strBoard);
+			if (jsonBoard) {
+				console.log('Mount from storage');
+				console.log(jsonBoard, kanban);
+				dispatch(kanbanActions.replaceBoard(jsonBoard));
+			} else {
+				dispatch(fetchBoardData(boardId, token));
+			}
+		}
 
 		if (!boardId) {
 			dispatch(createBoard('My First Board', token));
@@ -37,9 +39,16 @@ function Board(props) {
 			return;
 		}
 
-		dispatch(fetchBoardData(boardId, token));
-		// boardFromStorage();
+		boardFromStorage();
 	}, [dispatch, boardId, userId, token]);
+
+	useEffect(() => {
+		return () => {
+			console.log('Unmount');
+			console.log(kanban);
+			localStorage.setItem('currentBoard', JSON.stringify(kanban));
+		};
+	}, [kanban]);
 
 	// TODO Could be refactored
 	const dragEndHandler = (result) => {
