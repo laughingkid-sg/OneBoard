@@ -1,5 +1,6 @@
 import React from 'react';
 import Board from '../Kanban/Board';
+import Notes from '../Notes/Notes';
 import styles from './Dashboard.module.css';
 
 const DUMMY_SCHEDULE = [
@@ -16,7 +17,9 @@ function Dashboard(props) {
 	return (
 		<div className={styles.container}>
 			<div className={styles.topRow}>
-				<Card title="Notes"></Card>
+				<Card title="Notes">
+					<Notes />
+				</Card>
 				<Card title="Total Expenses">
 					<p className={styles.subtitle}>for May 2021</p>
 					<p className={styles.expenses}>$21.00</p>

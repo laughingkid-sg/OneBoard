@@ -4,6 +4,14 @@ const initState = {
 	tasks: {},
 	columns: {},
 	columnOrder: [],
+	labels: {
+		primary: '',
+		secondary: '',
+		success: '',
+		info: '',
+		warning: '',
+		danger: '',
+	},
 };
 
 const kanbanSlice = createSlice({

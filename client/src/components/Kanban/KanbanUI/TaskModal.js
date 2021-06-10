@@ -2,11 +2,28 @@ import React, { useContext, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
-import Button from '../../../UI/Button';
-import Modal from '../../../UI/Modal';
+import {
+	Badge,
+	Button,
+	Modal,
+	ModalBody,
+	ModalFooter,
+	ModalHeader,
+} from 'reactstrap';
+import LabelSelect from './Label/LabelSelect';
 import styles from './TaskModal.module.css';
 import { updateTask } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
+import { AddSubtask, SubtaskList } from './Subtask';
+
+const LABEL_TYPES = [
+	'primary',
+	'secondary',
+	'success',
+	'info',
+	'warning',
+	'danger',
+];
 
 function TaskModal(props) {
 	const dispatch = useDispatch();
@@ -61,30 +78,37 @@ function TaskModal(props) {
 	};
 
 	const renderButtons = isWrite ? (
-		<div className={styles.btnContainer}>
-			<Button onClick={confirmEditHandler} className={styles.confirm}>
+		<React.Fragment>
+			<Button color="success" onClick={confirmEditHandler}>
 				Confirm Changes
 			</Button>
-			<Button onClick={toggleEditHandler}>Cancel Changes</Button>
-		</div>
+			<Button color="danger" outline onClick={toggleEditHandler}>
+				Cancel Changes
+			</Button>
+		</React.Fragment>
 	) : (
-		<div className={styles.btnContainer}>
-			<Button onClick={deleteTaskHandler} className={styles.delete}>
+		<React.Fragment>
+			<Button onClick={deleteTaskHandler} color="danger">
 				Delete Task
 			</Button>
-			<Button onClick={toggleEditHandler}>Edit Task</Button>
-		</div>
+			<Button onClick={toggleEditHandler} color="warning">
+				Edit Task
+			</Button>
+		</React.Fragment>
 	);
 
 	return (
-		<Modal onClose={modalContext.hideModal}>
-			<div className={styles.container}>
-				<AiOutlineClose
-					onClick={modalContext.hideModal}
-					className={styles.close}
-				/>
-
-				<div className={styles.taskinfo}>
+		<Modal
+			isOpen={modalContext.isVisible}
+			toggle={modalContext.hideModal}
+			className="my-1"
+		>
+			<AiOutlineClose
+				onClick={modalContext.hideModal}
+				className={`${styles.close} me-3 mt-3`}
+			/>
+			<ModalHeader>
+				<React.Fragment>
 					{!isWrite && (
 						<h2 className={styles.title}>{beforeChange.name}</h2>
 					)}
@@ -98,33 +122,41 @@ function TaskModal(props) {
 						/>
 					)}
 					<p className={styles.subtitle}>in {props.columnTitle}</p>
-				</div>
-
-				<div className={styles.taskinfo}>
-					<h3 className={styles.header}>Description</h3>
-					{!isWrite && (
-						<p className={styles.description}>
-							{beforeChange.description}
-						</p>
-					)}
-					{isWrite && (
-						<textarea
-							rows="10"
-							ref={description}
-							defaultValue={beforeChange.description}
-							className={styles.input}
-						/>
-					)}
-				</div>
+				</React.Fragment>
+			</ModalHeader>
+			<ModalBody>
+				<h3 className={styles.header}>Description</h3>
+				{!isWrite && (
+					<p className={styles.description}>
+						{beforeChange.description || ' '}
+					</p>
+				)}
+				{isWrite && (
+					<textarea
+						rows="10"
+						ref={description}
+						defaultValue={beforeChange.description}
+						className={styles.input}
+					/>
+				)}
 
 				{/* Labels */}
-				{/* <h3>Labels</h3> */}
+				<h3>Labels</h3>
+				{/* TODO Style this */}
+				<div className="d-flex align-items-center">
+					{/* DUMMY LABEL - to be replaced by a map()*/}
+					<Badge className="bg-primary m-0">Low Priority</Badge>
+					<LabelSelect labelTypes={LABEL_TYPES} />
+				</div>
 
 				{/* Subtasks */}
-				{/* <h3>Subtasks</h3> */}
+				<h3>Subtasks </h3>
+				<AddSubtask />
+				{/* TODO Supply subtasks into SubtaskList */}
+				<SubtaskList />
+			</ModalBody>
 
-				{renderButtons}
-			</div>
+			<ModalFooter>{renderButtons}</ModalFooter>
 		</Modal>
 	);
 }

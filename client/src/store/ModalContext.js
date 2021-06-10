@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 
-const ModalContext = React.createContext({
+const initModal = {
 	isVisible: false,
 	modal: null,
 	showModal: (modal) => {},
 	hideModal: () => {},
-});
+};
+
+const ModalContext = React.createContext(initModal);
 
 export const ModalContextProvider = (props) => {
 	const [isVisible, setIsVisible] = useState(false);
