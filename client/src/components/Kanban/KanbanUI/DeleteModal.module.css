@@ -1,32 +1,36 @@
-.container,.btnContainer {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+.container,
+.btnContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .btnContainer {
-    flex-direction: row;
-    justify-content: space-around;
-    margin: 40px 0;
-    width: 100%;
+	flex-direction: row;
+	justify-content: space-around;
+	margin: 40px 0;
+	width: 100%;
 }
 
-.title, .warning {
-    text-align:center;
+.title,
+.warning {
+	text-align: center;
 }
 
 .warning {
-    width: 75%;
-    margin-top: 22px;
-    color: red;
+	width: 75%;
+	margin-left: auto;
+	margin-right: auto;
+	color: red;
+	text-align: justify;
 }
 
 .delete {
-    background-color: rgb(247, 38, 38);
+	background-color: rgb(247, 38, 38);
 	border: 1px solid rgb(247, 38, 38);
 }
 
 .delete:hover {
-    background-color: rgb(255, 92, 92);
+	background-color: rgb(255, 92, 92);
 	border: 1px solid rgb(255, 92, 92);
 }

@@ -37,6 +37,9 @@ const kanbanSlice = createSlice({
 			newColumn.title = columnName;
 			state.columns = { ...state.columns, [colId]: newColumn };
 		},
+		storeBoard(state) {
+			localStorage.setItem('currentBoard', JSON.stringify(state));
+		},
 	},
 });
 

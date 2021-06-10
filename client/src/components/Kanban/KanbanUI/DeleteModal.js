@@ -1,8 +1,6 @@
 import React, { useContext } from 'react';
-// import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import Button from '../../../UI/Button';
-import Modal from '../../../UI/Modal';
 import styles from './DeleteModal.module.css';
 import { deleteData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
@@ -12,6 +10,7 @@ function DeleteModal(props) {
 	const dispatch = useDispatch();
 	const token = useSelector((state) => state.user.token);
 
+	// ! Not working yet
 	const deleteHandler = () => {
 		if (props.isCol) {
 			dispatch(
@@ -37,26 +36,26 @@ function DeleteModal(props) {
 	};
 
 	return (
-		<Modal onClose={modalContext.hideModal}>
-			<div className={styles.container}>
-				<h2 className={styles.title}>
-					Are you sure you want to delete this{' '}
-					{props.isCol ? 'Column' : 'Task'}?
-				</h2>
-				{props.isCol && (
-					<p className={styles.warning}>
-						If this column is deleted, all tasks in the column would
-						be deleted too! Relocate your tasks to other columns to
-						prevent them from being deleted!
-					</p>
-				)}
-				<div className={styles.btnContainer}>
-					<Button onClick={deleteHandler} className={styles.delete}>
-						Delete {props.isCol ? 'Column' : 'Task'}
-					</Button>
-					<Button onClick={modalContext.hideModal}>Go Back</Button>
-				</div>
-			</div>
+		<Modal isOpen={modalContext.isVisible} toggle={modalContext.hideModal}>
+			<ModalHeader>
+				Are you sure you want to delete this{' '}
+				{props.isCol ? 'Column' : 'Task'}?
+			</ModalHeader>
+			{props.isCol && (
+				<ModalBody className={styles.warning}>
+					If this column is deleted, all tasks in the column would be
+					deleted too! Relocate your tasks to other columns to prevent
+					them from being deleted!
+				</ModalBody>
+			)}
+			<ModalFooter>
+				<Button onClick={deleteHandler} color="danger">
+					Delete {props.isCol ? 'Column' : 'Task'}
+				</Button>
+				<Button onClick={modalContext.hideModal} outline>
+					Go Back
+				</Button>
+			</ModalFooter>
 		</Modal>
 	);
 }

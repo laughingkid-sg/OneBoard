@@ -40,15 +40,11 @@ function Board(props) {
 		}
 
 		boardFromStorage();
-	}, [dispatch, boardId, userId, token]);
-
-	useEffect(() => {
 		return () => {
 			console.log('Unmount');
-			console.log(kanban);
-			localStorage.setItem('currentBoard', JSON.stringify(kanban));
+			dispatch(kanbanActions.storeBoard());
 		};
-	}, [kanban]);
+	}, [dispatch, boardId, userId, token]);
 
 	// TODO Could be refactored
 	const dragEndHandler = (result) => {

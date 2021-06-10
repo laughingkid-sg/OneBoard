@@ -7,6 +7,7 @@ import {
 	DropdownMenu,
 	DropdownToggle,
 } from 'reactstrap';
+
 const LabelSelect = (props) => {
 	const { labelTypes } = props;
 	const [labelDropDownOpen, setLabelDropdownOpen] = useState(false);
@@ -14,6 +15,7 @@ const LabelSelect = (props) => {
 	const toggleDropdownHandler = () => {
 		setLabelDropdownOpen((prevOpen) => !prevOpen);
 	};
+
 	return (
 		<Dropdown isOpen={labelDropDownOpen} toggle={toggleDropdownHandler}>
 			<DropdownToggle>
@@ -22,7 +24,8 @@ const LabelSelect = (props) => {
 			<DropdownMenu>
 				<DropdownItem header>Label</DropdownItem>
 				{labelTypes.map((label) => (
-					<DropdownItem>
+					// ! Probably need to adjust key
+					<DropdownItem key={label}>
 						<Badge className={`bg-${label} m-0`}>{label}</Badge>
 					</DropdownItem>
 				))}
