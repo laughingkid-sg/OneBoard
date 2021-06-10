@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { NavItem, Nav, NavLink, NavbarBrand, Navbar } from 'reactstrap';
 import Button from '../UI/Button';
 import Sidebar from '../components/Dashboard/Sidebar';
-import { RiLogoutBoxFill } from 'react-icons/ri';
+import { FiLogOut } from 'react-icons/fi';
 import AuthContext from '../store/AuthContext';
+import { IconContext } from 'react-icons';
 
 function MainLayout(props) {
 	const authContext = useContext(AuthContext);
@@ -40,8 +41,10 @@ function MainLayout(props) {
 					</NavItem>
 					<NavItem>
 						<Button onClick={logoutHandler}>
-							<RiLogoutBoxFill />
-							Logout
+							<IconContext.Provider value={{ color: '#fff' }}>
+								<FiLogOut />
+							</IconContext.Provider>
+							{'  '}Logout
 						</Button>
 					</NavItem>
 				</Nav>
