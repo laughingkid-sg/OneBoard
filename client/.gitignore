@@ -8,6 +8,8 @@ package-lock.json
 
 # testing
 /coverage
+text.txt
+/.vscode
 
 # production
 /build

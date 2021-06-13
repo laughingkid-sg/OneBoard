@@ -16,6 +16,7 @@ import AuthContext from './store/AuthContext';
 import { userActions } from './store/user';
 import { kanbanActions } from './store/kanban';
 import { fetchUserData } from './store/user-actions';
+import Calendar from './components/Calendar/Calendar';
 
 function App() {
 	const dispatch = useDispatch();
@@ -53,6 +54,9 @@ function App() {
 			</Route>
 			<Route path="/editprofile">
 				{isLoggedIn ? <EditUser /> : <Redirect to="/" />}
+			</Route>
+			<Route path="/calendar">
+				<Calendar />
 			</Route>
 		</React.Fragment>
 	);
