@@ -6,7 +6,7 @@ const {errorHandler} = require("../helpers/dbErrorHander")
 /*
     User Sign up
 */
-exports.signup = (req, res) => {
+exports.signup = (req, res, next) => {
 
     //console.log("req.body", req.body);
 
@@ -26,9 +26,16 @@ exports.signup = (req, res) => {
         user.hashed_password = undefined
 
         // Return User Information
+        /*
         res.json({
             user
         });
+        */
+       req.body.name = "Sample Board";
+       req.body.newUser = true;
+       req.auth = { "_id": user._id };
+       req.user = user;
+       next();
     })
 };
 
@@ -56,7 +63,7 @@ exports.signin = (req, res) => {
             }
 
             // Generate a signed token with user id and secret 
-            const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET)
+            const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, { expiresIn: 60 * 60 })
 
             // Presist the token as 't' in cookie with expiry date
             res.cookie('t', token, {expire: new Date() + 3600 })
