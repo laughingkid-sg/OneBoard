@@ -21,6 +21,8 @@ mongoose
     })
     .then(() => console.log('DB Connected'));
 
+
+
 // middlewares
 app.use(morgan('dev'));
 app.use(express.json());

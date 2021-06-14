@@ -32,7 +32,8 @@ const boardSchema = new mongoose.Schema(
                         'dark', 
                         'success'
                     ], 
-                    required: true 
+                    required: true ,
+                    unique: true
                 }
             },
         ]

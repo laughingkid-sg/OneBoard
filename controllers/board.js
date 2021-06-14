@@ -88,6 +88,7 @@ exports.createBoard = async (req, res) => {
 
 // Get Boards
 exports.getBoards = async (req, res) => { 
+    
      User.findById(req.auth._id).populate('boards').exec((err, user) => {         
         if (err || !user) {
             return res.status(400).json({
@@ -96,27 +97,71 @@ exports.getBoards = async (req, res) => {
         }
         res.json(user.boards);
     })
+
+
 }
 
 // Get Single Board
 exports.boardById = (req, res, next, id) => {
-    Board.findById(id).exec((err, board) => {
+    Board.aggregate(
+        [
+            {
+                $match: {
+                    _id: ObjectId(id) 
+                }
+            },
+            {
+                $lookup: {
+                    from: 'columns',
+                    localField: 'columns',
+                    foreignField: '_id',
+                    as: 'columns'         
+                }                  
+            }, {
+                $unwind: '$columns' 
+            },
+            {
+                $lookup: {
+                    from: 'tasks',
+                    localField: 'columns.tasks',
+                    foreignField: '_id',
+                    as: 'columns.tasks'         
+                }
+            },
+            {
+                $group: {
+                    '_id':{
+                        '_id':'$_id',
+                        'name':'$name', 
+                        'labels': '$labels',
+                        'createdAt': '$createdAt',
+                        'updatedAt': '$updatedAt'
+                    },
+                'columns': {
+                    '$push': '$columns'
+                    }
+                }
+            }
+        ]
+    ).exec((err, board) => {
         if (err || !board) {
             return res.status(400).json({
                 error: 'Board not found'
             })
         }
-        req.board = board;
+        req.board = board[0];
+        req.board.details = req.board._id;
+        req.board._id = req.board.details._id;
         next();
     });
 };
 
 exports.getBoard = (req, res) => {  
-
+    
     User.findOne({
         boards: {
             $elemMatch: {
-                $eq: ObjectId(req.board._id)
+                $eq: ObjectId(req.board.details._id)
             }
         }
     }).exec((err, user) => {        
@@ -139,8 +184,28 @@ exports.getBoard = (req, res) => {
 
 exports.delBoard = async (req, res) => {
    try {
+       //console.log(req.profile.boards)
+       console.log(req.board._id)
     if (req.profile.boards.some(board => { return board.equals(req.board._id) })) {
+        let columns = await Board.findById(req.board._id, { columns: 1, _id: 0 });
+        columns['columns'].forEach(async column_id => {
+            // Delete column's tasks.
+            let tasks = await Column.findById(column_id, { tasks: 1, _id: 0 });
+            tasks['tasks'].forEach(async task_id => {
+                await Task.findByIdAndDelete(task_id);
+            });
+            await Column.findByIdAndDelete(column_id);
+            let delBoard = await Board.deleteOne({ _id: req.board._id });
 
+            if (delBoard.deletedCount && delBoard.deletedCount > 0) {
+                await User.findByIdAndUpdate(req.user._id, { "$pull": { "projects": req.board._id } }, { "new": true, "upsert": true });
+                res.status(200).json({ status: true, result: delBoard });
+            } else {
+                return res.status(400).json({
+                    error: 'Access Denied1'
+                });
+            }    
+        });
     } else {
         return res.status(400).json({
             error: 'Access Denied'
@@ -161,7 +226,7 @@ exports.updateBoard = async (req, res, next) => {
             let board = new Board(req.body);
             await board.validate(req.body); 
             board = await Board.findByIdAndUpdate(req.board._id, { $set: req.body }, { new: true });
-            res.status(200).json({ status: true, message: 'Project successfully updated.' });
+            res.status(200).json({ status: true, message: 'Board successfully updated.' });
 
         } else {
             return res.status(400).json({

@@ -15,6 +15,18 @@ const taskSchema = new mongoose.Schema(
         expireAt: { 
             type: Date, 
             required: false 
+        },
+        labelType: { 
+            type: String, 
+            enum: [
+                'danger', 
+                'warning', 
+                'primary', 
+                'info', 
+                'dark', 
+                'success'
+            ], 
+            required: false 
         }
     }, 
     {
@@ -26,9 +38,7 @@ const taskSchema = new mongoose.Schema(
         title: Joi.string().min(3).max(60).required(),
         description: Joi.string().min(3).max(2000),
         column_id: Joi.string(),
-        expireAt: Joi.date(),
-        label: Joi.string().min(3).max(15),
-        labelType: Joi.string().valid("danger", "warning", "primary", "success", "info", "dark")
+        expireAt: Joi.date()
     })
     return Joi.validate(obj, taskSchema);
 }
