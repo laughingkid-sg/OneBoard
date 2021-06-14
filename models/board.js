@@ -14,7 +14,29 @@ const boardSchema = new mongoose.Schema(
                 type: ObjectId, 
                 ref: 'Column' 
             }
+        ],
+        labels: [
+            {
+                labelName: { 
+                    type: String, 
+                    required: true,
+                    maxlength: 16
+                },
+                labelType: { 
+                    type: String, 
+                    enum: [
+                        'danger', 
+                        'warning', 
+                        'primary', 
+                        'info', 
+                        'dark', 
+                        'success'
+                    ], 
+                    required: true 
+                }
+            },
         ]
+       
     }, 
     {
         timestamps : true

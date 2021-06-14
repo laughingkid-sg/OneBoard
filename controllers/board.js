@@ -6,7 +6,7 @@ const Task = require("../models/task");
 const ObjectId = require('mongodb').ObjectID;
 
 // Create Board
-exports.createBoard = async (req, res, next) => {
+exports.createBoard = async (req, res) => {
     try {
         let board = new Board(req.body);
         await board.validate(req.body); 

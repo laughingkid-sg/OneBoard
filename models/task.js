@@ -15,23 +15,7 @@ const taskSchema = new mongoose.Schema(
         expireAt: { 
             type: Date, 
             required: false 
-        },
-        label: { 
-            type: String, 
-            required: false 
-        },
-        labelType: { 
-            type: String, 
-            enum: [
-                'danger', 
-                'warning', 
-                'primary', 
-                'info', 
-                'dark', 
-                'success'
-            ], 
-            required: false 
-            }
+        }
     }, 
     {
         timestamps : true
