@@ -6,8 +6,8 @@ import EventModal from './EventModal';
 
 function formatDate(date, allDay) {
 	return allDay
-		? moment(date).format('DD-MMM-YY')
-		: moment(date).format('DD-MMM-YY h:mm a');
+		? moment(date).format('DD MMM, YYYY')
+		: moment(date).format('DD MMM, YYYY, h:mm a');
 }
 
 const ViewEvent = (props) => {
@@ -27,10 +27,10 @@ const ViewEvent = (props) => {
 		<React.Fragment>
 			<ModalBody>
 				<h4>Duration</h4>
-				<p>{`${formatDate(start, allDay)} to ${formatDate(
-					end,
+				<p style={{ fontSize: '16px' }}>{`${formatDate(
+					start,
 					allDay
-				)}`}</p>
+				)} — ${formatDate(end, allDay)}`}</p>
 				{desc && (
 					<React.Fragment>
 						<h4>Description</h4>

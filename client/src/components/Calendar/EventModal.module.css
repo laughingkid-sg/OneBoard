@@ -8,3 +8,11 @@
 .close:hover {
 	color: #272727;
 }
+
+.modal label {
+	font-size: 18px;
+}
+
+.modal h5 {
+	font-size: 24px;
+}

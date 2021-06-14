@@ -32,7 +32,7 @@ function EventModal(props) {
 		<Modal
 			isOpen={modalContext.isVisible}
 			toggle={modalContext.hideModal}
-			className="my-1"
+			className={`my-1 ${styles.modal}`}
 		>
 			<AiOutlineClose
 				onClick={modalContext.hideModal}
