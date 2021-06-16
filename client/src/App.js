@@ -16,11 +16,12 @@ import AuthContext from './store/AuthContext';
 import { userActions } from './store/user';
 import { kanbanActions } from './store/kanban';
 import { fetchUserData } from './store/user-actions';
-import Calendar from './components/Calendar/Calendar';
+// import Calendar from './components/Calendar/Calendar';
+import { noteActions } from './store/note';
 
 function App() {
 	const dispatch = useDispatch();
-	const [cookies] = useCookies(['t', 'id']);
+	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
 	const id = localStorage.getItem('id') || '';
 	const authContext = useContext(AuthContext);
@@ -28,6 +29,7 @@ function App() {
 	const isLoggedIn = authContext.isLoggedIn;
 
 	// Only used for persistence
+	// Need to check if token has expired
 	useEffect(() => {
 		if (token) {
 			authContext.login(token);
@@ -39,6 +41,7 @@ function App() {
 		if (!isLoggedIn && !token) {
 			dispatch(userActions.logout());
 			dispatch(kanbanActions.resetBoard());
+			dispatch(noteActions.clear());
 			modalContext.hideModal();
 			localStorage.clear();
 		}
@@ -55,9 +58,9 @@ function App() {
 			<Route path="/editprofile">
 				{isLoggedIn ? <EditUser /> : <Redirect to="/" />}
 			</Route>
-			<Route path="/calendar">
+			{/* <Route path="/calendar">
 				<Calendar />
-			</Route>
+			</Route> */}
 		</React.Fragment>
 	);
 

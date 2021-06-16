@@ -33,6 +33,7 @@ function Board(props) {
 			}
 		}
 
+		// ! To be superseded by new API
 		if (!boardId) {
 			dispatch(createBoard('My First Board', token));
 			dispatch(fetchUserData(userId, token));

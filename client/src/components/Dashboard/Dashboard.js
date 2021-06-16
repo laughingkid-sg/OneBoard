@@ -1,6 +1,7 @@
 import React from 'react';
 import Board from '../Kanban/Board';
 import Notes from '../Notes/Notes';
+import Calendar from '../Calendar/Calendar';
 import styles from './Dashboard.module.css';
 
 const DUMMY_SCHEDULE = [
@@ -25,16 +26,7 @@ function Dashboard(props) {
 					<p className={styles.expenses}>$21.00</p>
 				</Card>
 				<Card title="Schedule">
-					<div style={{ overflow: 'auto', height: '75%' }}>
-						<ul className={styles.scheduleList}>
-							{DUMMY_SCHEDULE.map((event) => (
-								<ScheduleListItem
-									time={event.time}
-									activity={event.activity}
-								/>
-							))}
-						</ul>
-					</div>
+					<Calendar />
 				</Card>
 			</div>
 			<div className={styles.bottomRow}>

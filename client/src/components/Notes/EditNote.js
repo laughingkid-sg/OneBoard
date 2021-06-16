@@ -1,7 +1,11 @@
-import { Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
+import { useDispatch } from 'react-redux';
+import { Input, InputGroup } from 'reactstrap';
+import { noteActions } from '../../store/note';
 
 const EditNote = (props) => {
-	const { isTitle, onCancel, data } = props;
+	const { isTitle, onCancel, data, noteId } = props;
+	const dispatch = useDispatch();
+
 	const cancelHandler = (e) => {
 		const newData = e.target.value;
 		if (newData === data) {
@@ -10,20 +14,12 @@ const EditNote = (props) => {
 		}
 
 		// ! POST Request to make changes
+		dispatch(noteActions.updateNotes({ isTitle, newData, noteId }));
 		onCancel();
 	};
 
 	return (
 		<InputGroup>
-			{/* ! Description Mode height does not match w textarea */}
-			{/* <InputGroupAddon addonType="prepend">
-				<InputGroupText
-					className="m-0"
-					style={{ whiteSpace: 'pre-line' }}
-				>
-					Edit {isTitle ? 'Title' : `\nDescription`}
-				</InputGroupText>
-			</InputGroupAddon> */}
 			<Input
 				type={isTitle ? 'text' : 'textarea'}
 				onBlur={cancelHandler}

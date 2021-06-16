@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlinePlus, AiOutlineClose, AiOutlineSearch } from 'react-icons/ai';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
 import AddNote from './AddNote';
@@ -6,28 +7,13 @@ import DeleteNote from './DeleteNote';
 import SearchNote from './SearchNote';
 import EditNote from './EditNote';
 import ModalContext from '../../store/ModalContext';
+import { noteActions } from '../../store/note';
 
-const ITEMS = {
-	'task-1': {
-		id: 'task-1',
-		title: 'Sciencey',
-		description: 'mitochondria is the powerhouse of the cell',
-	},
-	'task-2': {
-		id: 'task-2',
-		title: 'Prof Aaron',
-		description: "it's fun time!",
-	},
-	'task-3': {
-		id: 'task-3',
-		title: 'Lost somewhere',
-		description: 'Why am I writing this',
-	},
-};
-
-const keys = Object.keys(ITEMS);
-function Notes(props) {
-	// TODO this should be moved to redux slice
+function Notes() {
+	// TODO Persistence
+	const dispatch = useDispatch();
+	const noteStore = useSelector((state) => state.note);
+	const { isEmpty, keys, notes } = noteStore;
 	const [index, setIndex] = useState(0);
 	const [key, setKey] = useState(keys[index]);
 	const [isAdd, setIsAdd] = useState(false);
@@ -35,21 +21,45 @@ function Notes(props) {
 	const modalContext = useContext(ModalContext);
 
 	useEffect(() => {
+		function notesFromStorage() {
+			const strNotes = localStorage.getItem('notes');
+			const jsonNotes = JSON.parse(strNotes);
+			if (jsonNotes) {
+				console.log('Mount notes from storage');
+				dispatch(noteActions.replaceNotes(jsonNotes));
+			} else {
+				// Fetch notes from server
+				console.log('Fetch from server');
+			}
+		}
+
+		notesFromStorage();
+
+		return () => {
+			console.log('Unmount Notes');
+			dispatch(noteActions.store());
+		};
+	}, [dispatch]);
+
+	useEffect(() => {
 		setKey(keys[index]);
-	}, [index]);
+	}, [keys, index]);
 
 	const nextHandler = () => {
-		if (index === ITEMS.length - 1) return;
+		if (isEmpty) return;
+		if (index === keys.length - 1) return;
 		setIndex(index + 1);
 	};
 
 	const previousHandler = () => {
+		if (isEmpty) return;
 		if (index === 0) return;
 		setIndex(index - 1);
 	};
 
 	const deleteHandler = () => {
-		modalContext.showModal(<DeleteNote note={ITEMS[key]} />);
+		if (isEmpty) return;
+		modalContext.showModal(<DeleteNote note={notes[key]} />);
 	};
 
 	const addHandler = () => {
@@ -62,6 +72,7 @@ function Notes(props) {
 	};
 
 	const searchHandler = () => {
+		if (isEmpty) return;
 		modalContext.showModal(<SearchNote goTo={goToHandler} />);
 	};
 
@@ -81,12 +92,14 @@ function Notes(props) {
 
 	const makeEditNote = (isTitle) => (
 		<EditNote
+			noteId={key}
 			onCancel={isTitle ? titleToggleHandler : descriptionToggleHandler}
-			data={isTitle ? ITEMS[key].title : ITEMS[key].description}
+			data={isTitle ? notes[key].title : notes[key].description}
 			isTitle={isTitle}
 		/>
 	);
 
+	// If user is adding Note, return AddNote Component instead
 	if (isAdd) {
 		return (
 			<AddNote
@@ -97,39 +110,76 @@ function Notes(props) {
 		);
 	}
 
-	const titleComponent = isEdit.title ? (
-		makeEditNote(true)
-	) : (
-		<h4 onClick={titleToggleHandler}>{ITEMS[key].title}</h4>
-	);
-
-	const descriptionComponent = isEdit.description ? (
-		makeEditNote(false)
-	) : (
-		<p onClick={descriptionToggleHandler}>{ITEMS[key].description}</p>
-	);
-
 	return (
 		<div className="d-flex flex-column justify-content-between">
 			<div>
-				{titleComponent}
-				{descriptionComponent}
+				{keys.length === 0 ? (
+					<p>No notes. Create one by pressing the "+" icon below</p>
+				) : (
+					<NoteContent
+						titleChange={titleToggleHandler}
+						descriptionChange={descriptionToggleHandler}
+						title={notes[key] ? notes[key].title : ''}
+						description={notes[key] ? notes[key].description : ''}
+						isEdit={isEdit}
+						onEdit={makeEditNote}
+					/>
+				)}
 			</div>
 			<div style={{ fontSize: '1.75rem', cursor: 'pointer' }}>
 				<FaCaretLeft
 					onClick={previousHandler}
-					color={index === 0 ? 'grey' : 'black'}
+					color={index === 0 || isEmpty ? 'grey' : 'black'}
 				/>
 				<AiOutlinePlus onClick={addHandler} />
-				<AiOutlineSearch onClick={searchHandler} />
-				<AiOutlineClose onClick={deleteHandler} />
+				<AiOutlineSearch
+					onClick={searchHandler}
+					color={isEmpty ? 'grey' : 'black'}
+				/>
+				<AiOutlineClose
+					onClick={deleteHandler}
+					color={isEmpty ? 'grey' : 'black'}
+				/>
 				<FaCaretRight
 					onClick={nextHandler}
-					color={index === ITEMS.length - 1 ? 'grey' : 'black'}
+					color={
+						index === keys.length - 1 || isEmpty ? 'grey' : 'black'
+					}
 				/>
 			</div>
 		</div>
 	);
 }
+
+const NoteContent = (props) => {
+	const { title, description, isEdit, titleChange, descriptionChange } =
+		props;
+
+	const toAddDescription =
+		description === '' ? (
+			<p onClick={descriptionChange}>
+				No description. Click to add description
+			</p>
+		) : (
+			<p onClick={descriptionChange}>{description}</p>
+		);
+
+	const titleComponent = isEdit.title ? (
+		props.onEdit(true)
+	) : (
+		<h4 onClick={titleChange}>{title}</h4>
+	);
+
+	const descriptionComponent = isEdit.description
+		? props.onEdit(false)
+		: toAddDescription;
+
+	return (
+		<React.Fragment>
+			{titleComponent}
+			{descriptionComponent}
+		</React.Fragment>
+	);
+};
 
 export default Notes;

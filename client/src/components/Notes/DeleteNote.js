@@ -1,15 +1,21 @@
 import { useContext } from 'react';
+import { useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { AiOutlineClose } from 'react-icons/ai';
 import ModalContext from '../../store/ModalContext';
 import styles from './DeleteNote.module.css';
+import { noteActions } from '../../store/note';
 
 const DeleteNote = (props) => {
 	const { note } = props;
 	const modalContext = useContext(ModalContext);
+	const dispatch = useDispatch();
 
 	const deleteHandler = () => {
 		console.log('Delete Task');
+		const { id } = note;
+		dispatch(noteActions.deleteNote(id));
+		modalContext.hideModal();
 	};
 
 	return (

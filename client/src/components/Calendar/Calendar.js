@@ -57,14 +57,15 @@ function Calendar() {
 		<React.Fragment>
 			<DnDCalendar
 				defaultDate={moment().toDate()}
-				defaultView={'month'}
+				defaultView={'day'}
 				events={events}
 				localizer={localizer}
-				style={{ height: '50vh' }}
+				style={{ height: '500px' }}
 				onEventDrop={eventDropHandler}
 				onEventResize={eventDropHandler}
 				onSelectSlot={addEventHandler}
 				onSelectEvent={viewEventHandler}
+				views={{ month: true, day: true }}
 				resizable
 				selectable
 				popup

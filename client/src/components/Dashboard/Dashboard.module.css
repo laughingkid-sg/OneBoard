@@ -4,7 +4,7 @@
 	justify-content: space-between;
 	/* margin: 1.5% 2.5%; */
 	/* padding: 0 1.5%; */
-	height: 91vh;
+	/* height: 91vh; */
 }
 
 .topRow {
@@ -12,7 +12,8 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-around;
-	height: 50vh;
+	/* height: 70vh; */
+	min-height: 65vh;
 }
 
 .bottomRow {
@@ -39,7 +40,7 @@
 /* CSS for Card */
 .placeholder {
 	height: 85%;
-	width: 25%;
+	width: 30%;
 	padding: 1.5% 2%;
 	border-radius: 20px;
 	background-color: #43c6ae;
