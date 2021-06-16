@@ -18,6 +18,7 @@ import { kanbanActions } from './store/kanban';
 import { fetchUserData } from './store/user-actions';
 // import Calendar from './components/Calendar/Calendar';
 import { noteActions } from './store/note';
+import { eventActions } from './store/event';
 
 function App() {
 	const dispatch = useDispatch();
@@ -29,7 +30,7 @@ function App() {
 	const isLoggedIn = authContext.isLoggedIn;
 
 	// Only used for persistence
-	// Need to check if token has expired
+	// Need to check if token is expiring
 	useEffect(() => {
 		if (token) {
 			authContext.login(token);
@@ -42,6 +43,7 @@ function App() {
 			dispatch(userActions.logout());
 			dispatch(kanbanActions.resetBoard());
 			dispatch(noteActions.clear());
+			dispatch(eventActions.clear());
 			modalContext.hideModal();
 			localStorage.clear();
 		}

@@ -57,8 +57,8 @@ function EditEvent(props) {
 		}
 
 		if (
-			title === event.title &&
-			event.allDay === allDay &&
+			initEvent.title === title &&
+			initEvent.allDay === allDay &&
 			initEvent.desc === newDesc &&
 			moment(event.start).isSame(start) &&
 			moment(event.end).isSame(end)

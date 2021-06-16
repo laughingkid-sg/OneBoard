@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Calendar as Cal, momentLocalizer } from 'react-big-calendar';
 import EventModal from './EventModal';
@@ -36,6 +36,23 @@ function Calendar() {
 	const modalContext = useContext(ModalContext);
 	const events = useSelector((state) => state.event);
 	const dispatch = useDispatch();
+
+	useEffect(() => {
+		function eventsFromStorage() {
+			const stringEvents = localStorage.getItem('event');
+			const parsedEvents = JSON.parse(stringEvents);
+			if (parsedEvents) {
+				dispatch(eventActions.replace(parsedEvents));
+			} else {
+				console.log('Fetch events from server');
+			}
+		}
+		eventsFromStorage();
+		return () => {
+			console.log('Unmount event');
+			dispatch(eventActions.store());
+		};
+	}, [dispatch]);
 
 	const eventDropHandler = (data) => {
 		// ! To be placed within the event action creator
