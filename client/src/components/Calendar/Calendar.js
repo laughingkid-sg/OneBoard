@@ -32,7 +32,6 @@ function serializeEvent(data) {
 }
 
 function Calendar() {
-	// TODO Persistence for Calendar
 	const modalContext = useContext(ModalContext);
 	const events = useSelector((state) => state.event);
 	const dispatch = useDispatch();
@@ -49,7 +48,6 @@ function Calendar() {
 		}
 		eventsFromStorage();
 		return () => {
-			console.log('Unmount event');
 			dispatch(eventActions.store());
 		};
 	}, [dispatch]);

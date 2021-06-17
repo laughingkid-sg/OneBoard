@@ -15,7 +15,7 @@ function initializeEvent(event, addStart) {
 	const title = event ? event.title : '';
 	const dateTime = event
 		? [moment(event.start), moment(event.end)]
-		: [moment(addStart), null];
+		: [moment(addStart), moment(addStart).add(1, 'hour')];
 	const desc = event ? event.desc : '';
 	const allDay = event ? event.allDay : false;
 	return { isAdd, allDay, title, dateTime, desc, allDay };

@@ -4,16 +4,6 @@ import Notes from '../Notes/Notes';
 import Calendar from '../Calendar/Calendar';
 import styles from './Dashboard.module.css';
 
-const DUMMY_SCHEDULE = [
-	{ time: '9am', activity: 'CS2100 Tutorial' },
-	{ time: '10am', activity: '' },
-	{ time: '10:30am', activity: 'Gym' },
-	{ time: '11am', activity: '' },
-	{ time: '12pm', activity: '' },
-	{ time: '1pm', activity: 'CS2100 Lecture' },
-	{ time: '3pm', activity: '' },
-];
-
 function Dashboard(props) {
 	return (
 		<div className={styles.container}>
@@ -36,6 +26,7 @@ function Dashboard(props) {
 	);
 }
 
+// Soon to be deleted
 const Card = (props) => {
 	return (
 		<div className={styles.placeholder}>
@@ -45,12 +36,4 @@ const Card = (props) => {
 	);
 };
 
-const ScheduleListItem = (props) => {
-	return (
-		<li className={styles.scheduleItem}>
-			<span>{props.time}</span>
-			<span className={styles.activity}>{props.activity}</span>
-		</li>
-	);
-};
 export default Dashboard;
