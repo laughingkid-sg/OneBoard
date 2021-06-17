@@ -4,6 +4,14 @@ const initState = {
 	tasks: {},
 	columns: {},
 	columnOrder: [],
+	labels: {
+		primary: '',
+		secondary: '',
+		success: '',
+		info: '',
+		warning: '',
+		danger: '',
+	},
 };
 
 const kanbanSlice = createSlice({
@@ -28,6 +36,9 @@ const kanbanSlice = createSlice({
 			const newColumn = { ...state.columns[colId] };
 			newColumn.title = columnName;
 			state.columns = { ...state.columns, [colId]: newColumn };
+		},
+		storeBoard(state) {
+			localStorage.setItem('currentBoard', JSON.stringify(state));
 		},
 	},
 });

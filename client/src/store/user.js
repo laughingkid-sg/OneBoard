@@ -26,6 +26,10 @@ const userSlice = createSlice({
 		logout(state) {
 			return initialState;
 		},
+		update(state, action) {
+			const { firstName, lastName } = action.payload;
+			return { ...state, firstName, lastName };
+		},
 	},
 });
 

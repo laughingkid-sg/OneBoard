@@ -8,6 +8,7 @@
 .addColBtn {
 	width: 275px;
 	display: flex;
+	flex-shrink: 0;
 	align-items: center;
 	align-self: flex-start;
 	color: #333333;
@@ -16,7 +17,6 @@
 	margin: 11px auto;
 	border-radius: 15px;
 	cursor: pointer;
-	flex-shrink: 0;
 }
 
 .addColBtn h3 {

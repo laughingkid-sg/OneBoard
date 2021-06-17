@@ -10,16 +10,19 @@ import {
 } from 'react-router-dom';
 import Login from './components/Login/Login';
 import Register from './components/Login/Register';
-import { ComingSoon, Home, KanbanBoard } from './pages';
+import { Home, EditUser } from './pages';
 import ModalContext from './store/ModalContext';
 import AuthContext from './store/AuthContext';
 import { userActions } from './store/user';
 import { kanbanActions } from './store/kanban';
 import { fetchUserData } from './store/user-actions';
+// import Calendar from './components/Calendar/Calendar';
+import { noteActions } from './store/note';
+import { eventActions } from './store/event';
 
 function App() {
 	const dispatch = useDispatch();
-	const [cookies] = useCookies(['t', 'id']);
+	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
 	const id = localStorage.getItem('id') || '';
 	const authContext = useContext(AuthContext);
@@ -27,6 +30,7 @@ function App() {
 	const isLoggedIn = authContext.isLoggedIn;
 
 	// Only used for persistence
+	// Need to check if token is expiring
 	useEffect(() => {
 		if (token) {
 			authContext.login(token);
@@ -38,6 +42,10 @@ function App() {
 		if (!isLoggedIn && !token) {
 			dispatch(userActions.logout());
 			dispatch(kanbanActions.resetBoard());
+			dispatch(noteActions.clear());
+			dispatch(eventActions.clear());
+			modalContext.hideModal();
+			localStorage.clear();
 		}
 	}, [dispatch, isLoggedIn, token]);
 
@@ -49,12 +57,12 @@ function App() {
 			<Route path="/register">
 				{!isLoggedIn ? <Register /> : <Redirect to="/" />}
 			</Route>
-			<Route path="/tasks">
-				{isLoggedIn ? <KanbanBoard /> : <Redirect to="/" />}
+			<Route path="/editprofile">
+				{isLoggedIn ? <EditUser /> : <Redirect to="/" />}
 			</Route>
-			<Route path={['/calendar', '/notes', '/profile', '/expenses']}>
-				{isLoggedIn ? <ComingSoon /> : <Redirect to="/" />}
-			</Route>
+			{/* <Route path="/calendar">
+				<Calendar />
+			</Route> */}
 		</React.Fragment>
 	);
 
