@@ -27,8 +27,12 @@ const initialState = [
 		amount: 74.94,
 		label: [{ type: 'warning', name: 'expenses' }],
 	},
-];
+].sort(sortExpenses);
 // const initialState = [];
+
+function sortExpenses(expA, expB) {
+	return expA.date.valueOf() - expB.date.valueOf();
+}
 
 const expenseSlice = createSlice({
 	name: 'expense',
@@ -40,7 +44,8 @@ const expenseSlice = createSlice({
 			const { name, date: dateStr, amount } = action.payload;
 			const date = new Date(dateStr);
 			const newExpense = { name, date, amount };
-			return [...state, newExpense];
+			const newState = [...state, newExpense].sort(sortExpenses);
+			return newState;
 		},
 		deleteExpense(state, action) {
 			const id = action.payload;
@@ -51,9 +56,11 @@ const expenseSlice = createSlice({
 			const { id, date: dateStr, name, amount, label } = action.payload;
 			const date = new Date(dateStr);
 			const updatedExpense = { id, date, name, amount, label };
-			const newState = state.map((expense) =>
-				expense.id === id ? updatedExpense : expense
-			);
+			const newState = state
+				.map((expense) =>
+					expense.id === id ? updatedExpense : expense
+				)
+				.sort(sortExpenses);
 			return newState;
 		},
 		store(state) {
