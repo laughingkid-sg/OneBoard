@@ -1,32 +1,32 @@
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { Table } from 'reactstrap';
-import { expenseActions } from '../../store/expense';
 import ExpenseItem from './ExpenseItem';
 
 const ExpenseTable = (props) => {
 	const { expenses } = props;
-	const dispatch = useDispatch();
-
-	const deleteHandler = (key) => {
-		dispatch(expenseActions.deleteExpense(key));
-	};
 
 	const renderExpenses = expenses.map((expense) => (
 		<ExpenseItem expense={expense} />
 	));
 
 	return (
-		<Table striped>
-			<thead>
-				<tr>
-					<th>Date</th>
-					<th>Name</th>
-					<th>Amount ($)</th>
-					<th>Edit/Delete</th>
-				</tr>
-			</thead>
-			<tbody>{renderExpenses}</tbody>
-		</Table>
+		// TODO Make scrollable after 13 (TBC) transactions
+		<React.Fragment>
+			<Table striped>
+				<thead>
+					<tr key="header">
+						<th>Date</th>
+						<th>Name</th>
+						<th>Amount ($)</th>
+						<th>Edit/Delete</th>
+					</tr>
+				</thead>
+				{renderExpenses.length > 0 && <tbody>{renderExpenses}</tbody>}
+			</Table>
+			{renderExpenses.length === 0 && (
+				<h4 className="text-center">No Expenses Found</h4>
+			)}
+		</React.Fragment>
 	);
 };
 

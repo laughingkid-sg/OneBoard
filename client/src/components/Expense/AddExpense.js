@@ -15,6 +15,7 @@ import { Select } from 'antd';
 import 'antd/dist/antd.css';
 import useInput from '../hooks/use-input';
 import { expenseActions } from '../../store/expense';
+import styles from './AddExpense.module.css';
 
 const { Option } = Select;
 
@@ -23,8 +24,7 @@ function isNumeric(value) {
 	return !(isNaN(value) || isNaN(parseFloat(value)));
 }
 
-function AddExpense() {
-	// TODO Redux
+function AddExpense(props) {
 	const expenses = useSelector((state) => state.expense);
 	const dispatch = useDispatch();
 	const {
@@ -65,8 +65,7 @@ function AddExpense() {
 	};
 
 	return (
-		<React.Fragment>
-			<h3>Add Expense</h3>
+		<div className={` ${styles.addExpense}`}>
 			<Form>
 				{/* Name */}
 				<Label for="name">Name</Label>
@@ -110,16 +109,15 @@ function AddExpense() {
 				<Label for="label">Label</Label>
 				<Select
 					mode="multiple"
-					// To change style - currently for testing purposes
-					style={{ width: '500px' }}
+					// ? Maybe To change style - currently for testing purposes
+					style={{ width: '100%' }}
 					placeholder="Select labels"
 					optionLabelProp="label"
 					onChange={changeSelectHandler}
 					allowClear
 				>
-					{/* Badges dont seem to work here */}
 					<Option value="test" label="test">
-						<Badge color="primary">Test</Badge>
+						<Badge className={`bg-primary`}>Test</Badge>
 					</Option>
 					<Option value="abcdef" label="abcdef">
 						<p>ABCDEF</p>
@@ -128,12 +126,20 @@ function AddExpense() {
 						<p>ORD</p>
 					</Option>
 				</Select>
-				<Button color="success" onClick={addExpenseHandler}>
-					Add Expense
-				</Button>
-				<Button>Import from csv</Button>
+				<div className="mt-3">
+					<Button color="success" onClick={addExpenseHandler}>
+						Add Expense
+					</Button>
+					<Button
+						onClick={() => {
+							alert('Feature coming soon!');
+						}}
+					>
+						Import from csv
+					</Button>
+				</div>
 			</Form>
-		</React.Fragment>
+		</div>
 	);
 }
 

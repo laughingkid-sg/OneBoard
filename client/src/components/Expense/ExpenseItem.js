@@ -17,20 +17,19 @@ function ExpenseItem(props) {
 	const { expense } = props;
 	const modalContext = useContext(ModalContext);
 	const [isEdit, setIsEdit] = useState(false);
-	const [beforeChange, setBeforeChange] = useState(expense);
 	const dispatch = useDispatch();
 
 	const {
 		value: name,
 		isValid: nameIsValid,
 		onChange: nameOnChange,
-	} = useInput((value) => value.trim() !== '', beforeChange.name);
+	} = useInput((value) => value.trim() !== '', expense.name);
 
 	const {
 		value: amount,
 		isValid: amountIsValid,
 		onChange: amountOnChange,
-	} = useInput((value) => isNumeric(value), beforeChange.amount.toString());
+	} = useInput((value) => isNumeric(value), expense.amount.toString());
 	const dateRef = useRef();
 
 	const deleteHandler = () => {
@@ -47,23 +46,23 @@ function ExpenseItem(props) {
 
 		// TODO Label checking (array of Objects comparison)
 		if (
-			name === beforeChange.name &&
-			amountFloat === beforeChange.amount &&
-			moment(date, 'YYYY-MM-DD').isSame(beforeChange.date, 'day')
+			name === expense.name &&
+			amountFloat === expense.amount &&
+			moment(date, 'YYYY-MM-DD').isSame(expense.date, 'day')
 		) {
 			setIsEdit(false);
 			return;
 		}
 
 		const updatedExpense = {
-			...beforeChange,
+			...expense,
 			name,
 			date,
 			amount: parseFloat(amount),
 		};
 
 		dispatch(expenseActions.updateExpense(updatedExpense));
-		setBeforeChange(updatedExpense);
+		// setBeforeChange(updatedExpense);
 		setIsEdit(false);
 	};
 
@@ -72,9 +71,7 @@ function ExpenseItem(props) {
 			<td>
 				<Input
 					type="date"
-					defaultValue={moment(beforeChange.date).format(
-						'YYYY-MM-DD'
-					)}
+					defaultValue={moment(expense.date).format('YYYY-MM-DD')}
 					innerRef={dateRef}
 				/>
 			</td>
