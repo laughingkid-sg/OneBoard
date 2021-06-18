@@ -18,6 +18,7 @@ const initialState = [
 		date: new Date(2021, 5, 6),
 		name: 'Shopee 6.6 purchase',
 		amount: 750.5,
+		label: [],
 	},
 	{
 		id: '2',
@@ -44,6 +45,15 @@ const expenseSlice = createSlice({
 		deleteExpense(state, action) {
 			const id = action.payload;
 			const newState = state.filter((expense) => expense.id !== id);
+			return newState;
+		},
+		updateExpense(state, action) {
+			const { id, date: dateStr, name, amount, label } = action.payload;
+			const date = new Date(dateStr);
+			const updatedExpense = { id, date, name, amount, label };
+			const newState = state.map((expense) =>
+				expense.id === id ? updatedExpense : expense
+			);
 			return newState;
 		},
 		store(state) {

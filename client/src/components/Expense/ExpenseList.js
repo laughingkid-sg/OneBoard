@@ -1,37 +1,9 @@
 import React from 'react';
 import { Button, Input } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ExpenseTable from './ExpenseTable';
 import { expenseActions } from '../../store/expense';
 import useInput from '../hooks/use-input';
-
-const DUMMY_EXPENSES = [
-	{
-		id: '1',
-		name: 'LiHo',
-		date: new Date(),
-		amount: 3.5,
-		label: [
-			{
-				type: 'primary',
-				name: 'Bubble Tea',
-			},
-		],
-	},
-	{
-		id: '2',
-		date: new Date(2021, 5, 6),
-		name: 'Shopee 6.6 purchase',
-		amount: 750.5,
-	},
-	{
-		id: '3',
-		date: new Date(),
-		name: 'Gas money',
-		amount: 74.94,
-		label: [{ type: 'warning', name: 'expenses' }],
-	},
-];
 
 function ExpenseList() {
 	// TODO Integration with redux
