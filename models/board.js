@@ -35,8 +35,7 @@ const boardSchema = new mongoose.Schema(
                     required: true
                 }
             },
-        ]
-       
+        ]      
     }, 
     {
         timestamps : true

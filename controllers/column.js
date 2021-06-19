@@ -1,9 +1,7 @@
-const { ContactSupportOutlined } = require('@material-ui/icons');
 const { errorHandler } = require('../helpers/dbErrorHander');
 const Board = require("../models/board");
 const Column = require("../models/column");
 const Task = require("../models/task");
-const User = require("../models/user");
 const ObjectId = require('mongodb').ObjectID;
 
 function getOrder(boardId) {
@@ -94,6 +92,12 @@ exports.columnById = (req, res, next, id) => {
         req.column = column;
     });*/
 
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({
+            error: "Invalid Object Id"
+        });
+    }
+
     Column.aggregate(
         [
             { 
@@ -126,10 +130,16 @@ exports.columnById = (req, res, next, id) => {
             }
         ]
     ).exec((err, col) => {
+        if (err || !col || col.length == 0) {
+            return res.status(400).json({
+                error: "Column not found"
+            });
+        }
+
         req.board = col[0]['boards'];
         req.column = col[0]['columns'];  
-    });
-    next();
+        next();
+    });   
 };
 
  exports.getColumn = async (req, res, next) => {

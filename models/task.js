@@ -1,7 +1,22 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
+const Schema = mongoose.Schema;
 
-const taskSchema = new mongoose.Schema(
+const subTask = new Schema({
+    name:  {
+        type: String,
+        required: true
+    },
+    isDone:  {
+        type: Boolean,
+        default: false,
+        required: true
+    }
+}, {
+    timestamps: true
+});
+
+const taskSchema = new Schema(
     {
         name: { 
             type: String, 
@@ -24,7 +39,8 @@ const taskSchema = new mongoose.Schema(
             type: String, 
             required: false,
             maxlength: 16
-        },
+        }, 
+        subTask: [subTask]   
     }, 
     {
         timestamps : true

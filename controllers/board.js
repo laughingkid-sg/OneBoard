@@ -7,6 +7,22 @@ const ObjectId = require('mongodb').ObjectID;
 
 // Board By Id 
 // Code to be improved
+
+exports.boardById = (req, res, next, id) => {
+    Board.findById(id).populate({"path":"columns","populate":{"path":"tasks","model":"Task"}})
+    .exec((err, board) => {         
+        if (err || !board) {
+            return res.status(400).json({
+                error: "Board not found"
+            });
+        }
+        console.log(board);
+        req.board = board;
+        next();
+    })  
+}
+
+/*
 exports.boardById = (req, res, next, id) => {
     Board.aggregate(
         [
@@ -60,10 +76,11 @@ exports.boardById = (req, res, next, id) => {
         next();
     });
 };
+*/
 
 // Get Single Board
 exports.getBoard = (req, res) => {  
-    
+
     User.findOne({
         boards: {
             $elemMatch: {
@@ -241,7 +258,5 @@ exports.getBoards = async (req, res) => {
         }
         res.json(user.boards);
     })
-
-
 }
 

@@ -1,13 +1,9 @@
-const { ContactSupportOutlined } = require('@material-ui/icons');
 const { errorHandler } = require('../helpers/dbErrorHander');
 const Board = require("../models/board");
 const Column = require("../models/column");
 const Task = require("../models/task");
 const User = require("../models/user");
 const ObjectId = require('mongodb').ObjectID;
-
-
-
 
 exports.createTask = async (req, res) => {
     try {
@@ -19,7 +15,7 @@ exports.createTask = async (req, res) => {
 
             task = await task.save(req.body);
             await Column.findByIdAndUpdate(req.column._id, { "$push": { "tasks": task._id } }, { "new": true, "upsert": true });
-            res.status(200).json({ status: true, message: 'Task successfully created.' });
+            res.status(200).json({ status: true, message: 'Task successfully created.', task: task });
         } else {
             return res.status(400).json({
                 error: 'Access Denied'
@@ -55,6 +51,7 @@ exports.getTask = async (req, res) => {
 }
 
 exports.taskById = (req, res, next, id) => {
+    /*
     Task.findById(id).exec((err, task) => {
         if (err || !task) {
             return res.status(400).json({
@@ -63,7 +60,74 @@ exports.taskById = (req, res, next, id) => {
         }
         req.task = task;
         next();
-    });
+    });*/
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({
+            error: "Invalid Object Id"
+        });
+    }
+
+    Task.aggregate(
+        [
+            { 
+                "$project" : { 
+                    "_id" : 0, 
+                    "tasks" : "$$ROOT"
+                }
+            }, 
+            { 
+                "$lookup" : { 
+                    "localField" : "tasks._id", 
+                    "from" : "columns", 
+                    "foreignField" : "tasks", 
+                    "as" : "columns"
+                }
+            }, 
+            { 
+                "$unwind" : { 
+                    "path" : "$columns", 
+                    "preserveNullAndEmptyArrays" : false
+                }
+            }, 
+            { 
+                "$lookup" : { 
+                    "localField" : "columns._id", 
+                    "from" : "boards", 
+                    "foreignField" : "columns", 
+                    "as" : "boards"
+                }
+            }, 
+            { 
+                "$unwind" : { 
+                    "path" : "$boards", 
+                    "preserveNullAndEmptyArrays" : false
+                }
+            }, 
+            { 
+                "$match" : { 
+                    "tasks._id" : ObjectId(id)
+                }
+            }, 
+            { 
+                "$limit" : 1
+            }
+        ]
+    ).exec((err, task) => {
+
+        console.log(task);
+
+        if (err || !task || task.length == 0) {
+            return res.status(400).json({
+                error: "Task not found"
+            });
+        }
+
+        req.board = task[0]['boards'];
+        req.column = task[0]['columns'];  
+        req.task = task[0]['tasks'];  
+        next();
+    });   
 };
 
 exports.updateTask = async (req, res) => {
@@ -94,23 +158,22 @@ exports.updateTask = async (req, res) => {
 }
 
 exports.delTask = async (req, res) => {
-    
-}
-
-exports.getTasks = async (req, res) => {
     try {
         if (req.profile.boards.some(board => board.equals(req.board._id)) && 
-        req.board.columns.some(column => column.equals(req.column._id))) {
-            Column.findById(req.column._id).populate('tasks').exec((err, column) => {         
-            console.log(err)
-                if (err || !column) {
-                    return res.status(400).json({
-                        error: "User not found"
-                    });
+            req.board.columns.some(column => column.equals(req.column._id)) &&
+            req.column.tasks.some(task => task.equals(req.task._id))) {
+
+                let deletedTask = await Task.deleteOne({ _id: req.task._id });
+                if (deletedTask.deletedCount && deletedTask.deletedCount > 0) {
+                    await Column.findByIdAndUpdate(req.column._id, { "$pull": { "tasks": req.task._id } }, { "new": true, "upsert": true });
+                    res.status(200).json({ status: true, result: deletedTask });
                 }
-            res.json(column.tasks);
-            })
-        } 
+                     
+        } else {
+            return res.status(400).json({
+                error: 'Access Denied'
+            });
+        }    
     } catch (err) {
         console.log(err);
         return res.status(400).json({
