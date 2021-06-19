@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const { createBoard, getBoards, delBoard, updateBoard, getBoard, boardById } = require('../controllers/board.js')
+const { columnById, createColumn, getColumn, getColumns, updateColumn, delColumn} = require('../controllers/column.js')
+const {  createTask, getTask, updateTask, taskById, getTasks} = require("../controllers/kanban");
 
-const { columnById, createColumn, getColumn, getColumns, updateColumn, createTask, getTask, updateTask, taskById, getTasks} = require("../controllers/kanban");
 const { requireSignin, isAuth} = require("../controllers/auth");
 const { userById, setUser } = require("../controllers/user");
 
@@ -47,21 +48,29 @@ router.post("/kanban/:boardId/",
     createColumn
 );
 
-router.get("/:boardId/columns/", 
+router.get("/columns/:boardId/", 
     requireSignin, 
     isAuth, 
     setUser,
     getColumns
 );
 
-router.get("/kanban/:boardId/:columnId/",
+router.get("/kanban/column/:columnId/",
     requireSignin,
     isAuth, 
     setUser,
     getColumn
 );
 
-router.put("/kanban/:boardId/:columnId/",
+router.delete("/kanban/column/:columnId/",
+    requireSignin,
+    isAuth, 
+    setUser,
+    delColumn
+);
+
+
+router.put("/kanban/column/:columnId/",
     requireSignin,
     isAuth, 
     setUser,
@@ -70,13 +79,13 @@ router.put("/kanban/:boardId/:columnId/",
 
 
 
-router.post("/kanban/:boardId/:columnId/",
+router.post("/kanban/column/:columnId/",
     requireSignin,
     isAuth, 
     setUser,
     createTask
 );
-
+/*
 router.get("/kanban/:boardId/:columnId/tasks", 
     requireSignin, 
     isAuth, 
@@ -99,7 +108,7 @@ router.put("/kanban/:boardId/:columnId/:taskId/",
     updateTask
 );
 
-
+*/
 
 router.param('userId', userById)
 router.param('boardId', boardById)

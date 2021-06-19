@@ -8,6 +8,10 @@ const columnSchema = new mongoose.Schema(
             trim: true,
             required: true 
         },
+        order: { 
+            type: Number,
+            required: true 
+        },
         tasks: [
             { type: mongoose.Schema.Types.ObjectId, 
                 ref: 'Task' 

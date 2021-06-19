@@ -7,6 +7,10 @@ const taskSchema = new mongoose.Schema(
             type: String, 
             required: true 
         },
+        order: { 
+            type: Number,
+            required: true 
+        },
         description: {
             type: String,
             required: false,
@@ -16,18 +20,11 @@ const taskSchema = new mongoose.Schema(
             type: Date, 
             required: false 
         },
-        labelType: { 
+        labelName: { 
             type: String, 
-            enum: [
-                'danger', 
-                'warning', 
-                'primary', 
-                'info', 
-                'dark', 
-                'success'
-            ], 
-            required: false 
-        }
+            required: false,
+            maxlength: 16
+        },
     }, 
     {
         timestamps : true
