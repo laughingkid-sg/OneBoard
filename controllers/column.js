@@ -57,13 +57,12 @@ function getOrder(boardId) {
 
 exports.createColumn = async (req, res) => {
     try {
-        
         if (req.profile.boards.some(board => { return board.equals(req.board._id) })) {
             let column = new Column(req.body); 
             await column.validate(req.body); 
 
             column = await column.save(req.body);
-            Board.findByIdAndUpdate(req.board._id, { "$push": { "columns": column._id } }, { "upsert": true });
+            await Board.findByIdAndUpdate(req.board._id, { "$push": { "columns": column._id } }, { "upsert": true });
             res.status(200).json({ status: true, message: 'Column successfully created.', data: column
             }); 
                                    
@@ -94,7 +93,7 @@ exports.columnById = (req, res, next, id) => {
 
     if (!ObjectId.isValid(id)) {
         return res.status(400).json({
-            error: "Invalid Object Id"
+            message: "Invalid Object Id"
         });
     }
 
@@ -122,24 +121,37 @@ exports.columnById = (req, res, next, id) => {
             }, 
             { 
                 "$match" : { 
-                    "columns._id" : ObjectId(id)
+                    "columns._id" : ObjectId(id) 
+                }
+            },
+            {
+                $unwind: '$columns' 
+            },
+            {
+                $lookup: {
+                    from: 'tasks',
+                    localField: 'columns.tasks',
+                    foreignField: '_id',
+                    as: 'columns.tasks'         
                 }
             }, 
             { 
                 "$limit" : 1
             }
         ]
+      
     ).exec((err, col) => {
+        console.log(col)
         if (err || !col || col.length == 0) {
             return res.status(400).json({
                 error: "Column not found"
             });
         }
-
         req.board = col[0]['boards'];
         req.column = col[0]['columns'];  
         next();
     });   
+    
 };
 
  exports.getColumn = async (req, res, next) => {
@@ -195,7 +207,7 @@ exports.updateColumn = async (req, res) => {
             await column.validate(req.body); 
 
             column = await Column.findByIdAndUpdate(req.column._id, { $set: req.body }, { new: true });
-            res.status(200).json({ status: true, message: 'Column successfully updated.' });
+            res.status(200).json({ status: true, message: 'Column successfully updated.', column: column });
                      
         } else {
             return res.status(400).json({
@@ -224,7 +236,7 @@ exports.delColumn = async (req, res) => {
                 let deletedColumn = await Column.deleteOne({ _id: req.column._id });
                 if (deletedColumn.deletedCount && deletedColumn.deletedCount > 0) {
                      await Board.findByIdAndUpdate(req.board._id, { "$pull": { "columns": req.column._id } }, { "new": true, "upsert": true });
-                     res.status(200).json({ status: true, result: deletedColumn });
+                     res.status(200).json({ status: true, message: 'Column successfully deleted.', column: deletedColumn });
                 }                    
         } else {
             return res.status(400).json({

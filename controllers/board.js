@@ -9,6 +9,13 @@ const ObjectId = require('mongodb').ObjectID;
 // Code to be improved
 
 exports.boardById = (req, res, next, id) => {
+
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({
+            message: "Invalid Object Id"
+        });
+    }
+
     Board.findById(id).populate({"path":"columns","populate":{"path":"tasks","model":"Task"}})
     .exec((err, board) => {         
         if (err || !board) {
@@ -16,7 +23,6 @@ exports.boardById = (req, res, next, id) => {
                 error: "Board not found"
             });
         }
-        console.log(board);
         req.board = board;
         next();
     })  
@@ -172,10 +178,7 @@ exports.createBoard = async (req, res) => {
                 user
             });
         } else {
-        res.status(200).json({ 
-            message: 'Board successfully created.',
-            _id: board._id
-        });
+        res.status(200).json({ status: true, message: 'Board successfully created.', board: board });
         }
 
     } catch (err) {
@@ -195,7 +198,7 @@ exports.createBoard = async (req, res) => {
             let board = new Board(req.body);
             await board.validate(req.body); 
             board = await Board.findByIdAndUpdate(req.board._id, { $set: req.body }, { new: true });
-            res.status(200).json({ status: true, message: 'Board successfully updated.' });
+            res.status(200).json({ status: true, message: 'Board successfully updated.', board: board });
 
         } else {
             return res.status(400).json({
@@ -214,38 +217,34 @@ exports.createBoard = async (req, res) => {
 // Delete Board
 exports.delBoard = async (req, res) => {
     try {
-
-     if (req.profile.boards.some(board => { return board.equals(req.board._id) })) {
-         let columns = await Board.findById(req.board._id, { columns: 1, _id: 0 });
-         columns['columns'].forEach(async column_id => {
-             // Delete column's tasks.
-             let tasks = await Column.findById(column_id, { tasks: 1, _id: 0 });
-             tasks['tasks'].forEach(async task_id => {
-                 await Task.findByIdAndDelete(task_id);
-             });
-             await Column.findByIdAndDelete(column_id);
-             let delBoard = await Board.deleteOne({ _id: req.board._id });
- 
-             if (delBoard.deletedCount && delBoard.deletedCount > 0) {
-                 await User.findByIdAndUpdate(req.user._id, { "$pull": { "boards": req.board._id } }, { "new": true, "upsert": true });
-                 res.status(200).json({ status: true, result: delBoard });
-             } else {
-                 return res.status(400).json({
-                     error: 'Fail'
-                 });
-             }    
-         });
-     } else {
-         return res.status(400).json({
-             error: 'Access Denied'
-         });
-     }    
+        if (req.profile.boards.some(board => { return board.equals(req.board._id) })) {
+         
+            let columns = await Board.findById(req.board._id, { columns: 1, _id: 0 });
+            columns['columns'].forEach(async column_id => {
+            // Delete column's tasks.
+            let tasks = await Column.findById(column_id, { tasks: 1, _id: 0 });
+            tasks['tasks'].forEach(async task_id => {
+                await Task.findByIdAndDelete(task_id);
+                });
+                await Column.findByIdAndDelete(column_id);
+            });
+            let deletedProject = await Board.deleteOne({ _id: req.board._id });
+            if (deletedProject.deletedCount && deletedProject.deletedCount > 0) {
+            await User.findByIdAndUpdate(req.profile._id, { "$pull": { "projects": req.board._id} }, { "new": true, "upsert": true });
+            res.status(200).json({ status: true, message: 'Board successfully deleted.', board: deletedProject });
+            }           
+        } else {
+            return res.status(400).json({
+                error: 'Access Denied'
+            });
+        }    
     } catch (err) {
- 
-    }
-    
-    return res.json(req.board);
-    
+        console.log(err);
+        return res.status(400).json({
+            errorCode: 0,
+            message: "Unknow error"
+        })
+    }   
  }
 
 // Get Boards

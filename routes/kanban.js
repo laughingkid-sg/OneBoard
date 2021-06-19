@@ -50,7 +50,7 @@ router.delete("/kanban/:boardId/",
 // ----- Column ----- //
 
 // Create Column
-router.post("/kanban/:columnId/",
+router.post("/kanban/:boardId/",
     requireSignin,
     isAuth, 
     setUser,
@@ -58,7 +58,7 @@ router.post("/kanban/:columnId/",
 );
 
 // Get single Column by Id
-router.get("/columns/:boardId/", 
+router.get("/kanban/columns/:boardId/", 
     requireSignin, 
     isAuth, 
     setUser,
@@ -89,10 +89,10 @@ router.delete("/kanban/column/:columnId/",
     delColumn
 );
 
-// ----- Board ----- //
+// ----- Task ----- //
 
 // Create Task in Column Id
-router.post("/kanban/task/:columnId/",
+router.post("/kanban/task/:columnId",
     requireSignin,
     isAuth, 
     setUser,

@@ -64,7 +64,7 @@ exports.taskById = (req, res, next, id) => {
 
     if (!ObjectId.isValid(id)) {
         return res.status(400).json({
-            error: "Invalid Object Id"
+            message: "Invalid Object Id"
         });
     }
 
@@ -115,8 +115,6 @@ exports.taskById = (req, res, next, id) => {
         ]
     ).exec((err, task) => {
 
-        console.log(task);
-
         if (err || !task || task.length == 0) {
             return res.status(400).json({
                 error: "Task not found"
@@ -141,7 +139,7 @@ exports.updateTask = async (req, res) => {
             await task.validate(req.body); 
 
             task = await Task.findByIdAndUpdate(req.task._id, { $set: req.body }, { new: true });
-            res.status(200).json({ status: true, message: 'Tasks successfully updated.' });
+            res.status(200).json({ status: true, message: 'Tasks successfully updated.', task: task });
                      
         } else {
             return res.status(400).json({
@@ -166,7 +164,7 @@ exports.delTask = async (req, res) => {
                 let deletedTask = await Task.deleteOne({ _id: req.task._id });
                 if (deletedTask.deletedCount && deletedTask.deletedCount > 0) {
                     await Column.findByIdAndUpdate(req.column._id, { "$pull": { "tasks": req.task._id } }, { "new": true, "upsert": true });
-                    res.status(200).json({ status: true, result: deletedTask });
+                    res.status(200).json({ status: true, message: 'Tasks successfully deleted.', task: deletedTask });
                 }
                      
         } else {

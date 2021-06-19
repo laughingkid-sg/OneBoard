@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 const {ObjectId} = mongoose.Schema
 
 const labelSchema = new Schema({
-    label:  {
+    name:  {
         type: String,
         required: true
     },
-    labelType:  {
+    type:  {
         type: String,
         enum: [
             'danger', 
