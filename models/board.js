@@ -1,8 +1,30 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
+const Schema = mongoose.Schema;
 const {ObjectId} = mongoose.Schema
 
-const boardSchema = new mongoose.Schema(
+const labelSchema = new Schema({
+    label:  {
+        type: String,
+        required: true
+    },
+    labelType:  {
+        type: String,
+        enum: [
+            'danger', 
+            'warning', 
+            'primary', 
+            'info', 
+            'dark', 
+            'success'
+        ],
+        required: true
+    }
+}, {
+    timestamps: true
+});
+
+const boardSchema = new Schema(
     {
         name: { 
             type: String, 
@@ -15,27 +37,7 @@ const boardSchema = new mongoose.Schema(
                 ref: 'Column' 
             }
         ],
-        labels: [
-            {
-                labelName: { 
-                    type: String, 
-                    required: true,
-                    maxlength: 16
-                },
-                labelType: { 
-                    type: String, 
-                    enum: [
-                        'danger', 
-                        'warning', 
-                        'primary', 
-                        'info', 
-                        'dark', 
-                        'success'
-                    ], 
-                    required: true
-                }
-            },
-        ]      
+        labels: [labelSchema]      
     }, 
     {
         timestamps : true
