@@ -54,4 +54,4 @@ const taskSchema = new Schema(
     return Joi.validate(obj, taskSchema);
 }
 
-module.exports = mongoose.model('Tasks', taskSchema);
+module.exports = mongoose.model('Task', taskSchema);
