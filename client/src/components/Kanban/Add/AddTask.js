@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import styles from './AddTask.module.css';
-import { TYPES, addData } from '../../store/kanban-actions';
+import { TYPES, addData } from '../../../store/kanban-actions';
 
 const AddTask = (props) => {
 	const { next: order, columnId, onCancel } = props;

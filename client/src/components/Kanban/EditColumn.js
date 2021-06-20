@@ -7,9 +7,11 @@ import DeleteModal from './KanbanUI/DeleteModal';
 import styles from './EditColumn.module.css';
 import { updateColumn } from '../../store/kanban-actions';
 import ModalContext from '../../store/ModalContext';
+import { TYPES } from '../../store/kanban-actions';
 
 function EditColumn(props) {
-	const title = useRef();
+	const { title, column, onCancel } = props;
+	const titleRef = useRef();
 	const modalContext = useContext(ModalContext);
 	const [editTitle, setIsEditTitle] = useState(props.title);
 	const [cookies] = useCookies(['t']);
@@ -17,26 +19,20 @@ function EditColumn(props) {
 	const dispatch = useDispatch();
 
 	const updateColumnHandler = () => {
-		const updatedTitle = title.current.value.trim();
-		if (editTitle.previous === title.current.value || updatedTitle === '') {
+		const updatedTitle = titleRef.current.value.trim();
+		if (editTitle.previous === updatedTitle || updatedTitle === '') {
 			props.onCancel();
 			return;
 		}
-		// dispatch(
-		// 	updateColumn(props.boardId, props.columnId, updatedTitle, token)
-		// );
+		const data = { name: updatedTitle, order: column.order };
+		dispatch(updateColumn(token, column.id, data));
 		setIsEditTitle(updatedTitle);
-		props.onCancel();
+		onCancel();
 	};
 
 	const deleteColumnHandler = () => {
 		modalContext.showModal(
-			<DeleteModal
-				isCol={true}
-				title={props.title}
-				boardId={props.boardId}
-				columnId={props.columnId}
-			/>
+			<DeleteModal title={title} id={column.id} type={TYPES.COLUMN} />
 		);
 	};
 
@@ -44,8 +40,8 @@ function EditColumn(props) {
 		<div className={styles.editTitle}>
 			<input
 				autoFocus
-				ref={title}
-				placeholder={props.title}
+				ref={titleRef}
+				placeholder={title}
 				onBlur={updateColumnHandler}
 			/>
 			<FaTrash

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { AiOutlinePlus } from 'react-icons/ai';
 import Task from './Task';
-import AddTask from './AddTask';
+import AddTask from './Add/AddTask';
 import styles from './Column.module.css';
 import EditColumn from './EditColumn';
 
@@ -57,9 +57,8 @@ function Column(props) {
 	const renderEditCol = editTitle ? (
 		<EditColumn
 			title={name}
-			boardId={boardId}
 			onCancel={cancelTitleHandler}
-			columnId={columnId}
+			column={column}
 		/>
 	) : (
 		<h4 className={styles.titleText} onClick={editTitleHandler}>

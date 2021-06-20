@@ -1,11 +1,13 @@
 import { useRef } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
+import { Input } from 'reactstrap';
 import { AiOutlineClose } from 'react-icons/ai';
 import styles from './AddColumn.module.css';
-// import { addData } from '../../store/kanban-actions';
+import { addData, TYPES } from '../../../store/kanban-actions';
 
 const AddColumn = (props) => {
+	const { boardId, onCancel, next: order } = props;
 	const columnName = useRef();
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);
@@ -17,10 +19,11 @@ const AddColumn = (props) => {
 			return;
 		}
 
-		const colName = columnName.current.value.trim();
+		const name = columnName.current.value.trim();
 
-		// dispatch(addData(props.boardId, token, colName));
-		props.onCancel();
+		const data = { name, order };
+		dispatch(addData(token, TYPES.COLUMN, data, boardId));
+		onCancel();
 	};
 
 	const cancelHandler = () => {
@@ -32,7 +35,7 @@ const AddColumn = (props) => {
 
 	return (
 		<div className={styles.addCol}>
-			<input
+			<Input
 				autoFocus
 				placeholder="Enter Column here"
 				ref={columnName}

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createTask } from '../lib/kanban';
+import { createColumn, createTask } from '../lib/kanban';
 
 const initState = {
 	id: '',
@@ -35,25 +35,9 @@ const kanbanSlice = createSlice({
 			column.tasks.push(newTask);
 		},
 		updateTask(state, action) {
-			// Use createTask?
 			// TODO Add expireAt and label
-			const {
-				_id: id,
-				name,
-				description,
-				subtask,
-				expireAt,
-				label,
-				order,
-			} = action.payload;
-
-			const newTask = {
-				id,
-				name,
-				description,
-				subtask: subtask || [],
-				order,
-			};
+			const newTask = createTask(action.payload);
+			const { id } = newTask;
 
 			const taskInCol = state.columns.find((col) =>
 				col.tasks.find((task) => task.id === id)
@@ -75,6 +59,22 @@ const kanbanSlice = createSlice({
 			);
 			const newTasks = column.tasks.filter((task) => task.id !== id);
 			column.tasks = newTasks;
+		},
+		// * Column
+		addColumn(state, action) {
+			const column = createColumn(action.payload);
+			state.columns = [...state.columns, column];
+		},
+		deleteColumn(state, action) {
+			const id = action.payload;
+			state.columns = state.columns.filter((col) => col.id !== id);
+		},
+		updateColumn(state, action) {
+			const column = createColumn(action.payload);
+			const { id } = column;
+			state.columns = state.columns.map((col) =>
+				col.id === id ? column : col
+			);
 		},
 		// ?
 		addSubtask(state, action) {

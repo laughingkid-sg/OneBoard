@@ -1,3 +1,13 @@
+function sortData(dataA, dataB) {
+	return dataA.order - dataB.order;
+}
+
+export function createColumn(column) {
+	const { order, name, _id: id, tasks } = column;
+	const newTasks = tasks.sort(sortData).map((task) => createTask(task));
+	return { id, name, tasks: newTasks, order };
+}
+
 export function createTask(task) {
 	// TODO what to do with label, expireAt
 	const {

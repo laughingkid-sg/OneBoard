@@ -5,7 +5,7 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Column';
 import styles from './Board.module.css';
-import AddColumn from './AddColumn';
+import AddColumn from './Add/AddColumn';
 import { kanbanActions } from '../../store/kanban';
 import { fetchAllBoards } from '../../store/kanban-actions';
 
@@ -124,7 +124,11 @@ function Board(props) {
 	));
 
 	const renderAddCol = isEditing ? (
-		<AddColumn onCancel={cancelHandler} boardId={boardId} />
+		<AddColumn
+			onCancel={cancelHandler}
+			boardId={boardId}
+			next={columns.length}
+		/>
 	) : (
 		<div className={styles.addColBtn} onClick={addColumnHandler}>
 			<AiOutlinePlus />

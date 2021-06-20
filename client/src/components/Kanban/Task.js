@@ -32,12 +32,7 @@ function Task(props) {
 	const deleteTask = () => {
 		// TODO set onCancel
 		const deleteModal = (
-			<DeleteModal
-				isCol={false}
-				id={task.id}
-				title={task.name}
-				type={TYPES.TASK}
-			/>
+			<DeleteModal id={task.id} title={task.name} type={TYPES.TASK} />
 		);
 		modalContext.showModal(deleteModal);
 	};
