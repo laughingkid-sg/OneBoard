@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { createTask } from '../lib/kanban';
 
 const initState = {
 	id: '',
@@ -14,7 +15,7 @@ const initState = {
 					id: '',
 					name: '',
 					description: '',
-					subtask: [],
+					subtasks: [],
 					label: '', // Blanked for now
 				},
 			],
@@ -26,16 +27,56 @@ const kanbanSlice = createSlice({
 	name: 'kanban',
 	initialState: initState,
 	reducers: {
-		replace(state, action) {
-			return action.payload;
+		// * Tasks
+		addTask(state, action) {
+			const { task, id: columnId } = action.payload;
+			const newTask = createTask(task);
+			const column = state.columns.find((col) => col.id === columnId);
+			column.tasks.push(newTask);
 		},
-		clear(state) {
-			return initState;
+		updateTask(state, action) {
+			// Use createTask?
+			// TODO Add expireAt and label
+			const {
+				_id: id,
+				name,
+				description,
+				subtask,
+				expireAt,
+				label,
+				order,
+			} = action.payload;
+
+			const newTask = {
+				id,
+				name,
+				description,
+				subtask: subtask || [],
+				order,
+			};
+
+			const taskInCol = state.columns.find((col) =>
+				col.tasks.find((task) => task.id === id)
+			);
+
+			const newTasks = taskInCol.tasks.map((task) =>
+				task.id === id ? newTask : task
+			);
+
+			const newCol = { ...taskInCol, tasks: newTasks };
+			state.columns = state.columns.map((col) =>
+				col.id === newCol.id ? newCol : col
+			);
 		},
-		editTask(state, action) {
-			const taskId = action.payload.id;
-			state.tasks = { ...state.tasks, [taskId]: { ...action.payload } };
+		deleteTask(state, action) {
+			const id = action.payload;
+			const column = state.columns.find((col) =>
+				col.tasks.find((task) => task.id === id)
+			);
+			const newTasks = column.tasks.filter((task) => task.id !== id);
+			column.tasks = newTasks;
 		},
+		// ?
 		addSubtask(state, action) {
 			const { taskId, subtask } = action.payload;
 			const task = state.tasks[taskId];
@@ -46,6 +87,7 @@ const kanbanSlice = createSlice({
 				[taskId]: { ...task, subtasks: newSubtasks },
 			};
 		},
+		// ?
 		updateSubTask(state, action) {
 			const { taskId, newSubtask } = action.payload;
 			const task = state.tasks[taskId];
@@ -57,6 +99,7 @@ const kanbanSlice = createSlice({
 				[taskId]: { ...task, subtasks: newSubtasks },
 			};
 		},
+		// ?
 		editColumn(state, action) {
 			const { colId, columnName } = action.payload;
 
@@ -66,6 +109,12 @@ const kanbanSlice = createSlice({
 		},
 		store(state) {
 			localStorage.setItem('currentBoard', JSON.stringify(state));
+		},
+		replace(state, action) {
+			return action.payload;
+		},
+		clear(state) {
+			return initState;
 		},
 	},
 });

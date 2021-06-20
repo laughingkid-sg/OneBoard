@@ -12,10 +12,11 @@ import {
 } from 'reactstrap';
 import LabelSelect from './Label/LabelSelect';
 import styles from './TaskModal.module.css';
-// import { updateTask } from '../../../store/kanban-actions';
+import { updateTask } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import { AddSubtask, SubtaskList } from './Subtask';
 
+// TODO To be replaced
 const LABEL_TYPES = [
 	'primary',
 	'secondary',
@@ -27,54 +28,42 @@ const LABEL_TYPES = [
 
 function TaskModal(props) {
 	const dispatch = useDispatch();
+	const { task, columnTitle, write, onDelete } = props;
 	const modalContext = useContext(ModalContext);
-	const taskName = useRef(props.title);
-	const description = useRef(props.description);
-	const [isWrite, setIsWrite] = useState(props.write || false);
-	const [beforeChange, setBeforeChange] = useState({
-		name: props.title,
-		description: props.description,
-	});
+	const nameRef = useRef();
+	const descriptionRef = useRef();
+	const [isWrite, setIsWrite] = useState(write || false);
+	const [beforeChange, setBeforeChange] = useState({ ...task });
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
 
 	const confirmEditHandler = () => {
-		if (taskName.current.value.trim() === '') {
+		if (nameRef.current.value.trim() === '') {
 			return;
 		}
 
 		if (
-			taskName.current.value === beforeChange.name &&
-			description.current.value === beforeChange.description
+			nameRef.current.value === beforeChange.name &&
+			descriptionRef.current.value === beforeChange.description
 		) {
 			toggleEditHandler();
 			return;
 		}
 
+		// TODO Include label, expireAt, subTask
 		const updatedTask = {
-			name: taskName.current.value,
-			description: description.current.value,
+			name: nameRef.current.value,
+			description: descriptionRef.current.value,
+			order: beforeChange.order,
 		};
 
 		setBeforeChange(updatedTask);
-		// dispatch(
-		// 	updateTask(
-		// 		props.boardId,
-		// 		props.columnId,
-		// 		props.id,
-		// 		updatedTask,
-		// 		token
-		// 	)
-		// );
+		dispatch(updateTask(token, task.id, updatedTask));
 		toggleEditHandler();
 	};
 
 	const toggleEditHandler = () => {
 		setIsWrite((prevWrite) => !prevWrite);
-	};
-
-	const deleteTaskHandler = () => {
-		props.onDelete(props.id, props.title, props.index);
 	};
 
 	const renderButtons = isWrite ? (
@@ -88,7 +77,7 @@ function TaskModal(props) {
 		</React.Fragment>
 	) : (
 		<React.Fragment>
-			<Button onClick={deleteTaskHandler} color="danger">
+			<Button onClick={onDelete} color="danger">
 				Delete Task
 			</Button>
 			<Button onClick={toggleEditHandler} color="warning">
@@ -107,7 +96,7 @@ function TaskModal(props) {
 				onClick={modalContext.hideModal}
 				className={`${styles.close} me-3 mt-3`}
 			/>
-			<ModalHeader>
+			<ModalHeader tag="div">
 				<React.Fragment>
 					{!isWrite && (
 						<h2 className={styles.title}>{beforeChange.name}</h2>
@@ -116,12 +105,12 @@ function TaskModal(props) {
 						<input
 							type="text"
 							id="taskTitle"
-							ref={taskName}
+							ref={nameRef}
 							defaultValue={beforeChange.name}
 							className={styles.input}
 						/>
 					)}
-					<p className={styles.subtitle}>in {props.columnTitle}</p>
+					<p className={styles.subtitle}>in {columnTitle}</p>
 				</React.Fragment>
 			</ModalHeader>
 			<ModalBody>
@@ -134,7 +123,7 @@ function TaskModal(props) {
 				{isWrite && (
 					<textarea
 						rows="10"
-						ref={description}
+						ref={descriptionRef}
 						defaultValue={beforeChange.description}
 						className={styles.input}
 					/>
@@ -152,7 +141,7 @@ function TaskModal(props) {
 				{/* Subtasks */}
 				<h3>Subtasks </h3>
 				<AddSubtask />
-				<SubtaskList subtasks={props.subtasks} taskId={props.id} />
+				<SubtaskList subtasks={task.subtasks} taskId={task.id} />
 			</ModalBody>
 
 			<ModalFooter>{renderButtons}</ModalFooter>

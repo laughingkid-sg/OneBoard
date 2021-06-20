@@ -24,6 +24,7 @@ function Board(props) {
 			let strBoard = localStorage.getItem('currentBoard');
 			let jsonBoard = JSON.parse(strBoard);
 			if (jsonBoard) {
+				// TODO
 				// if (jsonBoard.id === boardId) {
 				// 	console.log('Mount from storage');
 				// 	console.log(jsonBoard, kanban);
@@ -46,7 +47,7 @@ function Board(props) {
 			console.log('Unmount');
 			dispatch(kanbanActions.store());
 		};
-	}, [dispatch, boardId, userId, token]);
+	}, [dispatch, userId, token]); // TODO insert boardId to dependencies
 
 	// TODO Could be refactored
 	const dragEndHandler = (result) => {
@@ -118,20 +119,6 @@ function Board(props) {
 		setIsEditing(false);
 	};
 
-	// const renderCols = columnOrder.map((colId, index) => {
-	// 	const column = columns[colId];
-	// 	const tasksInCol = column.taskIds.map((taskId) => tasks[taskId]);
-	// 	return (
-	// 		<Column
-	// 			key={column.id}
-	// 			boardId={boardId}
-	// 			index={index}
-	// 			column={column}
-	// 			tasks={tasksInCol}
-	// 			title={column.title}
-	// 		/>
-	// 	);
-	// });
 	const renderCols = columns.map((col, index) => (
 		<Column key={col.id} index={index} boardId={boardId} column={col} />
 	));

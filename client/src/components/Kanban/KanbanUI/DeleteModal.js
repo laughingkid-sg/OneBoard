@@ -1,17 +1,30 @@
 import React, { useContext } from 'react';
+import { useCookies } from 'react-cookie';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import styles from './DeleteModal.module.css';
-// import { deleteData } from '../../../store/kanban-actions';
+import { deleteData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
+import { TYPES } from '../../../store/kanban-actions';
 
 function DeleteModal(props) {
+	const { type, id } = props;
 	const modalContext = useContext(ModalContext);
 	const dispatch = useDispatch();
-	const token = useSelector((state) => state.user.token);
+	const [cookies] = useCookies(['t']);
+	const token = cookies.t;
 
 	// ! Not working yet
 	const deleteHandler = () => {
+		switch (type) {
+			case TYPES.TASK:
+				dispatch(deleteData(token, type, id));
+				break;
+			case TYPES.COLUMN:
+				break;
+			default:
+				break;
+		}
 		// if (props.isCol) {
 		// 	dispatch(
 		// 		deleteData(

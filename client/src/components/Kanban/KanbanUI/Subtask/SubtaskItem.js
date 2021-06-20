@@ -8,8 +8,7 @@ const SubtaskItem = (props) => {
 	const subtask = props.subtask;
 	const subtaskRef = useRef(subtask);
 	const [isEdit, setIsEdit] = useState(false);
-	// * || 'Test' -> FOR TESTING PURPOSES
-	const [beforeChange, setBeforeChange] = useState(subtask.title || 'Test');
+	const [beforeChange, setBeforeChange] = useState(subtask.title);
 	const [isInvalid, setIsInvalid] = useState(null);
 	const dispatch = useDispatch();
 
@@ -34,7 +33,7 @@ const SubtaskItem = (props) => {
 		}
 
 		// ! POST Request to change
-		dispatch(kanbanActions.updateSubTask());
+		// dispatch(kanbanActions.updateSubTask());
 		// Changes wont reflect for now as subtask is a constant
 		setBeforeChange(newTitle);
 		setIsInvalid(false);

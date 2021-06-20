@@ -45,6 +45,7 @@ function Column(props) {
 			boardId={boardId}
 			columnId={columnId}
 			onCancel={cancelTaskHandler}
+			next={tasks.length}
 		/>
 	) : (
 		<div className={styles.addTaskBtn} onClick={addTaskHandler}>

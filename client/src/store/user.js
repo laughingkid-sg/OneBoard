@@ -17,11 +17,6 @@ const userSlice = createSlice({
 			state.firstName = action.payload.firstName;
 			state.lastName = action.payload.lastName;
 			state.email = action.payload.email;
-			const newBoards = {
-				boards: action.payload.boards,
-				selectedBoard: action.payload.boards[0] || '',
-			};
-			state.boards = newBoards;
 		},
 		logout(state) {
 			return initialState;
@@ -29,6 +24,9 @@ const userSlice = createSlice({
 		update(state, action) {
 			const { firstName, lastName } = action.payload;
 			return { ...state, firstName, lastName };
+		},
+		setBoards(state, action) {
+			state.boards = action.payload;
 		},
 	},
 });

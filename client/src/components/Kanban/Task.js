@@ -5,9 +5,11 @@ import DeleteModal from './KanbanUI/DeleteModal';
 import TaskModal from './KanbanUI/TaskModal';
 import styles from './Task.module.css';
 import ModalContext from '../../store/ModalContext';
+import { TYPES } from '../../store/kanban-actions';
 
 function Task(props) {
-	const { task, boardId, columnId, index: taskIndex, columnTitle } = props;
+	// ! columnId, boardId not required anymore
+	const { task, index: taskIndex, columnTitle } = props;
 	const modalContext = useContext(ModalContext);
 
 	const deleteTaskHandler = (e) => {
@@ -28,13 +30,13 @@ function Task(props) {
 	};
 
 	const deleteTask = () => {
+		// TODO set onCancel
 		const deleteModal = (
 			<DeleteModal
 				isCol={false}
-				taskId={task.id}
+				id={task.id}
 				title={task.name}
-				boardId={boardId}
-				columnId={columnId}
+				type={TYPES.TASK}
 			/>
 		);
 		modalContext.showModal(deleteModal);
@@ -44,14 +46,8 @@ function Task(props) {
 		return (
 			<TaskModal
 				write={isWrite}
-				id={task.id}
-				boardId={boardId}
-				index={taskIndex}
-				title={task.name}
-				description={task.description}
+				task={task}
 				columnTitle={columnTitle}
-				columnId={columnId}
-				// onClose={task.onCancel}
 				onDelete={deleteTask}
 			/>
 		);
