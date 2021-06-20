@@ -1,7 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import EVENT_CONST from '../components/Calendar/events';
 
-// const initialState = EVENT_CONST;
 const initialState = [];
 
 const eventSlice = createSlice({

@@ -16,9 +16,9 @@ import AuthContext from './store/AuthContext';
 import { userActions } from './store/user';
 import { kanbanActions } from './store/kanban';
 import { fetchUserData } from './store/user-actions';
-// import Calendar from './components/Calendar/Calendar';
 import { noteActions } from './store/note';
 import { eventActions } from './store/event';
+import Expense from './components/Expense/Expense';
 
 function App() {
 	const dispatch = useDispatch();
@@ -60,9 +60,9 @@ function App() {
 			<Route path="/editprofile">
 				{isLoggedIn ? <EditUser /> : <Redirect to="/" />}
 			</Route>
-			{/* <Route path="/calendar">
-				<Calendar />
-			</Route> */}
+			<Route path="/expenses">
+				<Expense />
+			</Route>
 		</React.Fragment>
 	);
 
