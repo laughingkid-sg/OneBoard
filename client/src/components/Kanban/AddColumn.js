@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import styles from './AddColumn.module.css';
-import { addData } from '../../store/kanban-actions';
+// import { addData } from '../../store/kanban-actions';
 
 const AddColumn = (props) => {
 	const columnName = useRef();
@@ -19,7 +19,7 @@ const AddColumn = (props) => {
 
 		const colName = columnName.current.value.trim();
 
-		dispatch(addData(props.boardId, token, colName));
+		// dispatch(addData(props.boardId, token, colName));
 		props.onCancel();
 	};
 

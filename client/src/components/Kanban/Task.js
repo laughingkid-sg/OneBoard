@@ -7,6 +7,7 @@ import styles from './Task.module.css';
 import ModalContext from '../../store/ModalContext';
 
 function Task(props) {
+	const { task, boardId, columnId, index: taskIndex, columnTitle } = props;
 	const modalContext = useContext(ModalContext);
 
 	const deleteTaskHandler = (e) => {
@@ -30,10 +31,10 @@ function Task(props) {
 		const deleteModal = (
 			<DeleteModal
 				isCol={false}
-				taskId={props.id}
-				title={props.task.taskName}
-				boardId={props.boardId}
-				columnId={props.colId}
+				taskId={task.id}
+				title={task.name}
+				boardId={boardId}
+				columnId={columnId}
 			/>
 		);
 		modalContext.showModal(deleteModal);
@@ -43,21 +44,21 @@ function Task(props) {
 		return (
 			<TaskModal
 				write={isWrite}
-				id={props.id}
-				boardId={props.boardId}
-				index={props.index}
-				title={props.task.taskName}
-				description={props.task.description}
-				columnTitle={props.columnTitle}
-				columnId={props.colId}
-				onClose={props.onCancel}
+				id={task.id}
+				boardId={boardId}
+				index={taskIndex}
+				title={task.name}
+				description={task.description}
+				columnTitle={columnTitle}
+				columnId={columnId}
+				// onClose={task.onCancel}
 				onDelete={deleteTask}
 			/>
 		);
 	};
 
 	return (
-		<Draggable draggableId={props.id} index={props.index}>
+		<Draggable draggableId={task.id} index={taskIndex}>
 			{(provided) => {
 				return (
 					<div
@@ -67,7 +68,7 @@ function Task(props) {
 						ref={provided.innerRef}
 						onClick={showTaskHandler}
 					>
-						<p>{props.task.taskName}</p>
+						<p>{task.name}</p>
 						<EditDelete
 							onEdit={editTaskHandler}
 							onDelete={deleteTaskHandler}

@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { FaTrash } from 'react-icons/fa';
 import DeleteModal from './KanbanUI/DeleteModal';
-import { kanbanActions } from '../../store/kanban';
+// import { kanbanActions } from '../../store/kanban';
 import styles from './EditColumn.module.css';
 import { updateColumn } from '../../store/kanban-actions';
 import ModalContext from '../../store/ModalContext';
@@ -22,9 +22,9 @@ function EditColumn(props) {
 			props.onCancel();
 			return;
 		}
-		dispatch(
-			updateColumn(props.boardId, props.columnId, updatedTitle, token)
-		);
+		// dispatch(
+		// 	updateColumn(props.boardId, props.columnId, updatedTitle, token)
+		// );
 		setIsEditTitle(updatedTitle);
 		props.onCancel();
 	};

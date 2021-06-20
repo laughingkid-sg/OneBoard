@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Input, InputGroup, InputGroupAddon } from 'reactstrap';
-import { kanbanActions } from '../../../../store/kanban';
+// import { kanbanActions } from '../../../../store/kanban';
 import useInput from '../../../hooks/use-input';
 
 function AddSubtask(props) {
@@ -19,7 +19,7 @@ function AddSubtask(props) {
 	const addSubtaskHandler = () => {
 		if (!titleIsValid) return;
 		// const subtask = {};
-		dispatch(kanbanActions.addSubtask({ taskId, subtask }));
+		// dispatch(kanbanActions.addSubtask({ taskId, subtask }));
 	};
 
 	return (

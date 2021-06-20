@@ -7,6 +7,8 @@ import styles from './Column.module.css';
 import EditColumn from './EditColumn';
 
 function Column(props) {
+	const { boardId, column, index: colIndex } = props;
+	const { name, tasks, id: columnId } = column;
 	const [isEditingTask, setIsEditingTask] = useState(false);
 	const [editTitle, setIsEditTitle] = useState(false);
 
@@ -26,22 +28,22 @@ function Column(props) {
 		setIsEditTitle(false);
 	};
 
-	const renderTasks = props.tasks.map((task, index) => (
+	const renderTasks = tasks.map((task, index) => (
 		<Task
 			key={task.id}
 			task={task}
 			index={index}
 			id={task.id}
-			boardId={props.boardId}
-			colId={props.column.id}
-			columnTitle={props.title}
+			boardId={boardId}
+			colId={columnId}
+			columnTitle={name}
 		/>
 	));
 
 	const renderAddTask = isEditingTask ? (
 		<AddTask
-			boardId={props.boardId}
-			columnId={props.column.id}
+			boardId={boardId}
+			columnId={columnId}
 			onCancel={cancelTaskHandler}
 		/>
 	) : (
@@ -53,19 +55,19 @@ function Column(props) {
 
 	const renderEditCol = editTitle ? (
 		<EditColumn
-			title={props.title}
-			boardId={props.boardId}
+			title={name}
+			boardId={boardId}
 			onCancel={cancelTitleHandler}
-			columnId={props.column.id}
+			columnId={columnId}
 		/>
 	) : (
 		<h4 className={styles.titleText} onClick={editTitleHandler}>
-			{props.title}
+			{name}
 		</h4>
 	);
 
 	return (
-		<Draggable draggableId={props.column.id} index={props.index}>
+		<Draggable draggableId={columnId} index={colIndex}>
 			{(provided) => (
 				<div
 					className={styles.container}
@@ -75,7 +77,7 @@ function Column(props) {
 					<div className={styles.title} {...provided.dragHandleProps}>
 						{renderEditCol}
 					</div>
-					<Droppable droppableId={props.column.id}>
+					<Droppable droppableId={columnId}>
 						{(provided) => (
 							<React.Fragment>
 								<TaskList

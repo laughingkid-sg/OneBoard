@@ -41,7 +41,7 @@ function App() {
 	useEffect(() => {
 		if (!isLoggedIn && !token) {
 			dispatch(userActions.logout());
-			dispatch(kanbanActions.resetBoard());
+			dispatch(kanbanActions.clear());
 			dispatch(noteActions.clear());
 			dispatch(eventActions.clear());
 			modalContext.hideModal();

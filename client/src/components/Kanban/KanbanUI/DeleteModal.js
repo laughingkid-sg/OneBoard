@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import styles from './DeleteModal.module.css';
-import { deleteData } from '../../../store/kanban-actions';
+// import { deleteData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 
 function DeleteModal(props) {
@@ -12,25 +12,25 @@ function DeleteModal(props) {
 
 	// ! Not working yet
 	const deleteHandler = () => {
-		if (props.isCol) {
-			dispatch(
-				deleteData(
-					props.boardId,
-					{ columnId: props.columnId },
-					true,
-					token
-				)
-			);
-		} else {
-			dispatch(
-				deleteData(
-					props.boardId,
-					{ columnId: props.columnId, taskId: props.taskId },
-					false,
-					token
-				)
-			);
-		}
+		// if (props.isCol) {
+		// 	dispatch(
+		// 		deleteData(
+		// 			props.boardId,
+		// 			{ columnId: props.columnId },
+		// 			true,
+		// 			token
+		// 		)
+		// 	);
+		// } else {
+		// 	dispatch(
+		// 		deleteData(
+		// 			props.boardId,
+		// 			{ columnId: props.columnId, taskId: props.taskId },
+		// 			false,
+		// 			token
+		// 		)
+		// 	);
+		// }
 
 		modalContext.hideModal();
 	};

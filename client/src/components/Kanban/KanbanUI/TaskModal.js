@@ -12,7 +12,7 @@ import {
 } from 'reactstrap';
 import LabelSelect from './Label/LabelSelect';
 import styles from './TaskModal.module.css';
-import { updateTask } from '../../../store/kanban-actions';
+// import { updateTask } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import { AddSubtask, SubtaskList } from './Subtask';
 
@@ -57,15 +57,15 @@ function TaskModal(props) {
 		};
 
 		setBeforeChange(updatedTask);
-		dispatch(
-			updateTask(
-				props.boardId,
-				props.columnId,
-				props.id,
-				updatedTask,
-				token
-			)
-		);
+		// dispatch(
+		// 	updateTask(
+		// 		props.boardId,
+		// 		props.columnId,
+		// 		props.id,
+		// 		updatedTask,
+		// 		token
+		// 	)
+		// );
 		toggleEditHandler();
 	};
 

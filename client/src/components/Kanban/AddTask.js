@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import styles from './AddTask.module.css';
-import { addData } from '../../store/kanban-actions';
+// import { addData } from '../../store/kanban-actions';
 
 const AddTask = (props) => {
 	const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const AddTask = (props) => {
 			return;
 		}
 		const title = taskName.current.value.trim();
-		dispatch(addData(props.boardId, token, title, props.columnId));
+		// dispatch(addData(props.boardId, token, title, props.columnId));
 		props.onCancel();
 	};
 

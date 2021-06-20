@@ -1,29 +1,35 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initState = {
-	tasks: {},
-	columns: {},
-	columnOrder: [],
-	labels: {
-		primary: '',
-		secondary: '',
-		success: '',
-		info: '',
-		warning: '',
-		danger: '',
-	},
+	id: '',
+	name: '',
+	labels: [],
+	columns: [
+		{
+			id: '',
+			name: '',
+			order: -1,
+			tasks: [
+				{
+					id: '',
+					name: '',
+					description: '',
+					subtask: [],
+					label: '', // Blanked for now
+				},
+			],
+		},
+	],
 };
 
 const kanbanSlice = createSlice({
 	name: 'kanban',
 	initialState: initState,
 	reducers: {
-		replaceBoard(state, action) {
-			state.tasks = action.payload.tasks;
-			state.columns = action.payload.columns;
-			state.columnOrder = action.payload.columnOrder;
+		replace(state, action) {
+			return action.payload;
 		},
-		resetBoard(state) {
+		clear(state) {
 			return initState;
 		},
 		editTask(state, action) {
@@ -58,7 +64,7 @@ const kanbanSlice = createSlice({
 			newColumn.title = columnName;
 			state.columns = { ...state.columns, [colId]: newColumn };
 		},
-		storeBoard(state) {
+		store(state) {
 			localStorage.setItem('currentBoard', JSON.stringify(state));
 		},
 	},
