@@ -152,8 +152,7 @@ function TaskModal(props) {
 				{/* Subtasks */}
 				<h3>Subtasks </h3>
 				<AddSubtask />
-				{/* TODO Supply subtasks into SubtaskList */}
-				<SubtaskList />
+				<SubtaskList subtasks={props.subtasks} taskId={props.id} />
 			</ModalBody>
 
 			<ModalFooter>{renderButtons}</ModalFooter>

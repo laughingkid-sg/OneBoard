@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { FaTrash } from 'react-icons/fa';
 import { ListGroupItem, Input } from 'reactstrap';
+import { kanbanActions } from '../../../../store/kanban';
 
 const SubtaskItem = (props) => {
 	const subtask = props.subtask;
@@ -9,6 +11,7 @@ const SubtaskItem = (props) => {
 	// * || 'Test' -> FOR TESTING PURPOSES
 	const [beforeChange, setBeforeChange] = useState(subtask.title || 'Test');
 	const [isInvalid, setIsInvalid] = useState(null);
+	const dispatch = useDispatch();
 
 	const openEditHandler = () => {
 		setIsEdit(true);
@@ -31,7 +34,7 @@ const SubtaskItem = (props) => {
 		}
 
 		// ! POST Request to change
-
+		dispatch(kanbanActions.updateSubTask());
 		// Changes wont reflect for now as subtask is a constant
 		setBeforeChange(newTitle);
 		setIsInvalid(false);
@@ -50,7 +53,6 @@ const SubtaskItem = (props) => {
 			onClick={openEditHandler}
 		>
 			{/* TODO edit subtask onClick, strikethrough when done */}
-			{/* TODO convert to map() */}
 			{isEdit ? (
 				<Input
 					defaultValue={beforeChange}
