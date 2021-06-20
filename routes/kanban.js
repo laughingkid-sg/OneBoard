@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const { createBoard, getBoards, delBoard, updateBoard, getBoard, boardById } = require('../controllers/board')
-const { columnById, createColumn, getColumn, getColumns, updateColumn, delColumn} = require('../controllers/column')
+const { columnById, createColumn, getColumn, updateColumn, delColumn} = require('../controllers/column')
 const { createTask, getTask, updateTask, taskById, delTask} = require('../controllers/task');
 
 const { requireSignin, isAuth} = require("../controllers/auth");
@@ -17,7 +17,7 @@ router.post("/kanban/",
     createBoard
 );
 
-// Get all users board
+// Get all user boards
 router.get("/kanban/boards/", 
     requireSignin, 
     isAuth, 
@@ -58,14 +58,6 @@ router.post("/kanban/:boardId/",
 );
 
 // Get single Column by Id
-router.get("/kanban/columns/:boardId/", 
-    requireSignin, 
-    isAuth, 
-    setUser,
-    getColumns
-);
-
-// Get Column by Id
 router.get("/kanban/column/:columnId/",
     requireSignin,
     isAuth, 
@@ -91,7 +83,7 @@ router.delete("/kanban/column/:columnId/",
 
 // ----- Task ----- //
 
-// Create Task in Column Id
+// Create Task in Column
 router.post("/kanban/task/:columnId",
     requireSignin,
     isAuth, 

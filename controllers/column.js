@@ -175,28 +175,6 @@ exports.columnById = (req, res, next, id) => {
     }
  }
 
- exports.getColumns = async (req, res, next) => {
-    try {
-        if (req.profile.boards.some(board => board.equals(req.board._id))) {
-            Board.findById(req.board._id).populate({path: 'columns', populate: { path: 'tasks', model: 'Task'}}).exec((err, board) => {         
-                if (err || !board) {
-                    console.log(err)
-                    return res.status(400).json({
-                        error: "User not found"
-                    });
-                }
-            res.json(board.columns);
-            })
-        } 
-    } catch (err) {
-        console.log(err);
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
-        })
-    }
- }
-
 exports.updateColumn = async (req, res) => {
     try {
         if (req.profile.boards.some(board => board.equals(req.board._id)) && 
