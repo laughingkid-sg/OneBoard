@@ -48,6 +48,11 @@ const userSchema = new mongoose.Schema({
         type: ObjectId, 
         ref: 'Boards',
         required: true
+    }],
+    notes: [{
+        type: ObjectId, 
+        ref: 'Notes',
+        required: false
     }]
 }, {timestamps : true}
 );

@@ -46,12 +46,12 @@ const taskSchema = new Schema(
 
     taskSchema.methods.joiValidate = (obj) => {
     const taskSchema = Joi.object({
-        title: Joi.string().min(3).max(60).required(),
-        description: Joi.string().min(3).max(2000),
+        name: Joi.string().min(3).max(60).required(),
+        description: Joi.string().min(3).max(5000),
         column_id: Joi.string(),
         expireAt: Joi.date()
     })
     return Joi.validate(obj, taskSchema);
 }
 
-module.exports = mongoose.model('Task', taskSchema);
+module.exports = mongoose.model('Tasks', taskSchema);

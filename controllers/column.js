@@ -81,16 +81,7 @@ exports.createColumn = async (req, res) => {
 }
 
 exports.columnById = (req, res, next, id) => {
-    /*
-    Column.findById(id).exec((err, column) => {
-        if (err || !column) {
-            return res.status(400).json({
-                error: 'Column not found'
-            })
-        }
-        req.column = column;
-    });*/
-
+   
     if (!ObjectId.isValid(id)) {
         return res.status(400).json({
             message: "Invalid Object Id"

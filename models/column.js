@@ -30,4 +30,4 @@ columnSchema.methods.joiValidate = (obj) => {
     return Joi.validate(obj, columnSchema);
 }
 
-module.exports = mongoose.model('Column', columnSchema);
+module.exports = mongoose.model('Columns', columnSchema);
