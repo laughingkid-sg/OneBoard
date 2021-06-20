@@ -50,7 +50,7 @@ router.delete("/kanban/:boardId/",
 // ----- Column ----- //
 
 // Create Column
-router.post("/kanban/:boardId/",
+router.post("/kanban/column/:boardId/",
     requireSignin,
     isAuth, 
     setUser,
