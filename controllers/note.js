@@ -30,14 +30,27 @@ exports.noteById = (req, res, next, id) => {
             message: "Invalid Object Id"
         });
     }
+        if (req.profile.notes.some(note => note.equals(id))) {
+            Note.findById(id)
+                .then(note => {
+                    if (!note) {
+                        req.profile.notes.remove(id);
+                        User.findByIdAndUpdate(req.profile.id, { $set: req.profile }, { new: true })
+                            .then( user => res.status(400).json({ message: user.notes }),
+                                err => res.status(400).json({ notes: err.message } ))
+                            .catch(err => res.status(400).json({ message: err.message } ))                     
+                    } else {
+                     req.note = note; 
+                     next(); 
+                    }
+                    },
+                err => res.status(400).json({ message: err.message } ))
+                .catch(err => res.status(400).json({ message: err.message } ))
+        } else {
+            res.status(400).json({ message: "unauth" })
+        }
+  
 
-    if (req.profile.notes.some(note => note.equals(id))) {
-        Note.findById(id)
-            .then(note => { req.note = note; next(); })
-    } else {
-        res.status(400).json({ message: "unauth" })
-    }
- 
 }
 
 exports.getNote = (req, res) => {
@@ -54,8 +67,23 @@ exports.updateNote = (req, res) => {
 }
 
 exports.delNote = (req, res) => {
+    /*
     Note.findByIdAndRemove(req.note._id)
     .then((note) => res.json({ status: true, message: 'Note successfully deleted.', note: note }), 
         err => res.status(400).json({ message: err.message } )
+        
     .catch(err => res.status(400).json({ message: err.message } )));
+    */
+
+    req.profile.notes.remove(req.note._id);
+    User.findByIdAndUpdate(req.profile._id, { $set: req.profile }, { new: true })
+        .then(user => { 
+            Note.findByIdAndRemove(req.note._id)
+            .then(note => res.json({ status: true, message: 'Note successfully deleted.', note: note }), 
+                 err => res.status(400).json({ message: err.message } )      
+            .catch(err => res.status(400).json({ message: err.message })))},
+            err => res.status(400).json({ message: err.message }))
+        .catch((err) => res.status(400).json({ message: err.message } ))
+
+    
 }
