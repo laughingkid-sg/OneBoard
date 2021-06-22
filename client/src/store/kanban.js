@@ -107,7 +107,6 @@ const kanbanSlice = createSlice({
 			};
 		},
 		store(state) {
-			// console.log(JSON.stringify(state));
 			localStorage.setItem('currentBoard', JSON.stringify(state));
 		},
 		replace(state, action) {

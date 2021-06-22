@@ -1,14 +1,15 @@
 import React, { useContext } from 'react';
 import { useCookies } from 'react-cookie';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import styles from './DeleteModal.module.css';
 import { deleteData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import { TYPES } from '../../../store/kanban-actions';
+import { userActions } from '../../../store/user';
 
 function DeleteModal(props) {
-	const { type, id } = props;
+	const { type, id, index } = props;
 	const modalContext = useContext(ModalContext);
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);
@@ -16,13 +17,9 @@ function DeleteModal(props) {
 
 	// ! Not working yet
 	const deleteHandler = () => {
-		switch (type) {
-			case TYPES.TASK:
-			case TYPES.COLUMN:
-				dispatch(deleteData(token, type, id));
-				break;
-			default:
-				break;
+		dispatch(deleteData(token, type, id));
+		if (type == TYPES.BOARD) {
+			dispatch(userActions.deleteBoard({ boardId: id, index }));
 		}
 
 		modalContext.hideModal();
@@ -41,7 +38,12 @@ function DeleteModal(props) {
 					them from being deleted!
 				</ModalBody>
 			)}
-			{/* {Include one for board} */}
+			{type === TYPES.BOARD && (
+				<ModalBody className={styles.warning}>
+					If this board is deleted, all information in the board will
+					be deleted!
+				</ModalBody>
+			)}
 			<ModalFooter>
 				<Button onClick={deleteHandler} color="danger">
 					Delete {type.toLowerCase()}

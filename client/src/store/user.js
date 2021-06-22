@@ -38,6 +38,15 @@ const userSlice = createSlice({
 				(board) => board._id === boardId
 			);
 		},
+		deleteBoard(state, action) {
+			const { boardId, index } = action.payload;
+			let newIndex = index - 1;
+			if (index === 0) newIndex = 1;
+			state.boards.selectedBoard = state.boards.boards[newIndex];
+			state.boards.boards = state.boards.boards.filter(
+				(board) => board._id !== boardId
+			);
+		},
 	},
 });
 
