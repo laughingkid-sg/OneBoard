@@ -77,7 +77,6 @@ function TaskModal(props) {
 
 	const dateChangeHandler = (date, dateString) => {
 		setDeadline(date);
-		// console.log(new Date(dateString).toISOString());
 	};
 
 	const renderButtons = isWrite ? (
@@ -177,8 +176,8 @@ function TaskModal(props) {
 
 				{/* Subtasks */}
 				<h3>Subtasks </h3>
-				<AddSubtask />
-				<SubtaskList subtasks={task.subtasks} taskId={task.id} />
+				{isWrite && <AddSubtask />}
+				<SubtaskList subtasks={task.subTask} taskId={task.id} />
 			</ModalBody>
 
 			<ModalFooter>{renderButtons}</ModalFooter>

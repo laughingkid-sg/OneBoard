@@ -31,35 +31,7 @@ function determineURL(type, id) {
 	return URL_HEADER + ending;
 }
 
-// TODO To be revamped
 // * BOARD
-export const createBoard = (boardName, token) => {
-	return async (dispatch) => {
-		const postData = async () => {
-			const response = await fetch('/api/kanban/', {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ name: boardName }),
-			});
-
-			if (!response.ok) {
-				throw new Error('Could not make new board');
-			}
-
-			const data = await response.json();
-
-			return data;
-		};
-
-		try {
-			await postData();
-		} catch (error) {}
-	};
-};
-
 export const fetchAllBoards = (token) => {
 	return async (dispatch) => {
 		const fetchData = async () => {
@@ -90,18 +62,19 @@ export const fetchAllBoards = (token) => {
 
 				boards[id] = { id, name, labels, columns: newColumns };
 			});
-			localStorage.setItem('boards', JSON.stringify(boards));
 
 			const boardKeys = Object.keys(boards);
 			const boardKey = boardKeys[0];
 
-			let boardDict = {};
-			boardKeys.forEach((key) => (boardDict[key] = boards[key].name));
+			let boardArr = [];
+			boardKeys.forEach((key) =>
+				boardArr.push({ _id: key, name: boards[key].name })
+			);
 
 			dispatch(
 				userActions.setBoards({
-					boards: boardDict,
-					selectedBoard: boardKey,
+					boards: boardArr,
+					selectedBoard: boardArr[0],
 				})
 			);
 			const boardToLoad = boards[boardKey];
@@ -113,37 +86,40 @@ export const fetchAllBoards = (token) => {
 	};
 };
 
-// // NOT WORKING
-// export const updateColOrder = (boardId, newColumnOrder, token) => {
-// 	return async (dispatch) => {
-// 		const postData = async () => {
-// 			console.log(boardId, newColumnOrder);
-// 			const response = await fetch(
-// 				`/api/kanban/column/order/${boardId}`,
-// 				{
-// 					method: 'PUT',
-// 					headers: {
-// 						Authorization: `Bearer ${token}`,
-// 						'Content-Type': 'application/json',
-// 					},
-// 					body: JSON.stringify({ columns: newColumnOrder }),
-// 				}
-// 			);
+export const getBoard = (token, id) => {
+	return async (dispatch) => {
+		const getData = async () => {
+			const response = await fetch(determineURL(TYPES.BOARD, id), {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
-// 			if (!response.ok) {
-// 				throw new Error('Could not change column order');
-// 			}
+			if (!response.ok) {
+				throw new Error('Could not retrieve board!');
+			}
 
-// 			const data = await response.json();
+			const data = await response.json();
 
-// 			return data;
-// 		};
+			return data;
+		};
 
-// 		try {
-// 			await postData();
-// 		} catch (error) {}
-// 	};
-// };
+		try {
+			const board = await getData();
+			const { name, labels, columns, _id: id } = board;
+			const newColumns = columns
+				.sort(sortData)
+				.map((col) => createColumn(col));
+
+			const newBoard = { id, name, labels, columns: newColumns };
+			dispatch(kanbanActions.replace(newBoard));
+			localStorage.setItem('currentBoard', JSON.stringify(newBoard));
+		} catch (error) {
+			alert(error.message);
+		}
+	};
+};
 
 // * See try blocks for all
 export const addData = (token, type, data, id = '') => {
@@ -181,6 +157,8 @@ export const addData = (token, type, data, id = '') => {
 					break;
 				default:
 					// ! Special things need to be done for add Board
+					const { _id, name } = response.board;
+					dispatch(userActions.addBoard({ _id, name }));
 					break;
 			}
 		} catch (error) {}

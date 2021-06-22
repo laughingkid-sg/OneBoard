@@ -25,8 +25,18 @@ const userSlice = createSlice({
 			const { firstName, lastName } = action.payload;
 			return { ...state, firstName, lastName };
 		},
+		addBoard(state, action) {
+			state.boards.boards.push(action.payload);
+		},
 		setBoards(state, action) {
 			state.boards = action.payload;
+		},
+		setSelectedBoard(state, action) {
+			const boardId = action.payload;
+			const boards = state.boards.boards;
+			state.boards.selectedBoard = boards.find(
+				(board) => board._id === boardId
+			);
 		},
 	},
 });

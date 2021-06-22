@@ -17,7 +17,9 @@ export function createTask(task) {
 	const formatExpireAt = expireAt ? new Date(expireAt).valueOf() : '';
 
 	return {
-		...task,
+		_id,
+		name,
+		order,
 		description: formatDesc,
 		subTask: formatSubtask,
 		expireAt: formatExpireAt,

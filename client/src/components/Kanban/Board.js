@@ -1,41 +1,69 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlinePlus } from 'react-icons/ai';
+import { Button, Input } from 'reactstrap';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Column';
 import styles from './Board.module.css';
 import AddColumn from './Add/AddColumn';
 import { kanbanActions } from '../../store/kanban';
-import { TYPES, fetchAllBoards, updateData } from '../../store/kanban-actions';
+import {
+	TYPES,
+	fetchAllBoards,
+	updateData,
+	addData,
+} from '../../store/kanban-actions';
+import EditDelete from './KanbanUI/EditDelete';
+import { getBoard } from '../../store/kanban-actions';
+import useInput from '../hooks/use-input';
+import { userActions } from '../../store/user';
 
 function Board(props) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
-	// const userId = localStorage.getItem('id');
-	// const boardId = useSelector((state) => state.user.boards.selectedBoard);
+	const boards = useSelector((state) => state.user.boards);
 	const kanban = useSelector((state) => state.kanban);
 	const { columns, id: boardId } = kanban;
 	const dispatch = useDispatch();
 
-	// TODO insert boardId to dependencies
+	// For board operations
+	const selectBoardRef = useRef();
+	const [boardAdd, setBoardAdd] = useState(false);
+	const toggleBoardAdd = () => {
+		setBoardAdd((prevAdd) => !prevAdd);
+	};
+	const addBoardHandler = () => {
+		if (!boardNameIsValid) return;
+		const data = { name: boardName };
+		dispatch(addData(token, TYPES.BOARD, data));
+		boardNameReset();
+		toggleBoardAdd();
+	};
+
+	const boardSelectChangeHandler = () => {
+		const newBoardId = selectBoardRef.current.value;
+		dispatch(getBoard(token, newBoardId));
+		dispatch(userActions.setSelectedBoard(newBoardId));
+	};
+
+	const {
+		value: boardName,
+		isValid: boardNameIsValid,
+		// hasError: boardNameHasError,
+		onChange: boardNameOnChange,
+		onBlur: boardNameOnBlur,
+		reset: boardNameReset,
+	} = useInput((value) => value.trim() !== '', '');
+
+	// TODO useEffect when board changes
 	useEffect(() => {
 		function boardFromStorage() {
 			let strBoard = localStorage.getItem('currentBoard');
 			let jsonBoard = JSON.parse(strBoard);
-			if (jsonBoard) {
-				// TODO
-				// if (jsonBoard.id === boardId) {
-				// 	console.log('Mount from storage');
-				// 	console.log(jsonBoard, kanban);
-				// } else {
-				// 	strBoard = localStorage.getItem('boards');
-				// 	jsonBoard = JSON.parse(strBoard).filter(
-				// 		(board) => board.id === boardId
-				// 	);
-				// }
-				console.log('Mount from storage');
+			if (strBoard === JSON.stringify(kanban)) {
+				console.log('Mount from storage', jsonBoard);
 				dispatch(kanbanActions.replace(jsonBoard));
 			} else {
 				console.log('Fetch from server');
@@ -45,25 +73,20 @@ function Board(props) {
 
 		boardFromStorage();
 		return () => {
-			console.log('Unmount');
+			// console.log('Unmount');
 			dispatch(kanbanActions.store());
 		};
 	}, [dispatch, token]);
 
-	// TODO Could be refactored
 	const dragEndHandler = (result) => {
 		const { source, destination, draggableId, type } = result;
-		console.log(source, destination, draggableId, type);
 
 		// Draggable dropped outside of DnD
-		if (!destination) {
-			return;
-		}
-
 		// Draggable has no change in position
 		if (
-			source.droppableId === destination.droppableId &&
-			source.index === destination.index
+			!destination ||
+			(source.droppableId === destination.droppableId &&
+				source.index === destination.index)
 		) {
 			return;
 		}
@@ -87,16 +110,11 @@ function Board(props) {
 			(col) => col._id === destination.droppableId
 		);
 
-		const { name, order, _id } = start;
-		let data = {};
 		// * Operation for same column
 		if (start === finish) {
+			const { name, order, _id } = start;
 			let tasksInCol = [...start.tasks];
-			const taskIndex = tasksInCol.findIndex(
-				(task) => task._id === draggableId
-			);
-			const taskToMove = tasksInCol[taskIndex];
-			tasksInCol.splice(taskIndex, 1);
+			const [taskToMove] = tasksInCol.splice(source.index, 1);
 			tasksInCol.splice(destination.index, 0, taskToMove);
 			tasksInCol = tasksInCol.map((task, index) => {
 				return {
@@ -107,12 +125,10 @@ function Board(props) {
 				};
 			});
 
-			data = { name, order, tasks: tasksInCol };
+			const data = { name, order, tasks: tasksInCol };
 			dispatch(updateData(token, TYPES.COLUMN, data, _id));
 		} else {
 			// * Operation for different column
-			// * DraggableId is the task being moved
-			console.log('Moving task to different column');
 			let tasksInStart = [...start.tasks];
 			let tasksInFin = [...finish.tasks];
 			const [taskToMove] = tasksInStart.splice(source.index, 1);
@@ -125,12 +141,8 @@ function Board(props) {
 		return;
 	};
 
-	const addColumnHandler = () => {
-		setIsEditing(true);
-	};
-
-	const cancelHandler = () => {
-		setIsEditing(false);
+	const toggleAddColumn = () => {
+		setIsEditing((prev) => !prev);
 	};
 
 	const renderCols = columns.map((col, index) => (
@@ -139,38 +151,73 @@ function Board(props) {
 
 	const renderAddCol = isEditing ? (
 		<AddColumn
-			onCancel={cancelHandler}
+			onCancel={toggleAddColumn}
 			boardId={boardId}
 			next={columns.length}
 		/>
 	) : (
-		<div className={styles.addColBtn} onClick={addColumnHandler}>
+		<div className={styles.addColBtn} onClick={toggleAddColumn}>
 			<AiOutlinePlus />
 			<h4>Add Column</h4>
 		</div>
 	);
 
 	return (
-		<div style={{ display: 'flex', flexDirection: 'row' }}>
-			<DragDropContext onDragEnd={dragEndHandler}>
-				<Droppable
-					droppableId="all-cols"
-					direction="horizontal"
-					type="column"
+		<div className="d-flex flex-column">
+			{boardAdd ? (
+				<Input
+					type="text"
+					name="boardName"
+					id="boardId"
+					value={boardName}
+					onChange={boardNameOnChange}
+					onBlur={boardNameOnBlur}
+					placeholder="Enter board name"
+				/>
+			) : (
+				<Input
+					type="select"
+					name="boardSelect"
+					id="boardSelect"
+					innerRef={selectBoardRef}
+					// Useful for swapping boards later
+					defaultValue={kanban.name}
+					onChange={boardSelectChangeHandler}
 				>
-					{(provided) => (
-						<div
-							className={styles.board}
-							{...provided.droppableProps}
-							ref={provided.innerRef}
-						>
-							{renderCols}
-							{provided.placeholder}
-						</div>
-					)}
-				</Droppable>
-			</DragDropContext>
-			{renderAddCol}
+					{boards.boards.map((board) => (
+						<option value={board._id} key={board._id}>
+							{board.name}
+						</option>
+					))}
+				</Input>
+			)}
+			<Button onClick={boardAdd ? addBoardHandler : toggleBoardAdd}>
+				Add Board
+			</Button>
+			{boardAdd && <Button onClick={toggleBoardAdd}>Cancel</Button>}
+			{/* <EditDelete /> */}
+			{/* The kanban board itself */}
+			<div className="d-flex flex-row">
+				<DragDropContext onDragEnd={dragEndHandler}>
+					<Droppable
+						droppableId="all-cols"
+						direction="horizontal"
+						type="column"
+					>
+						{(provided) => (
+							<div
+								className={styles.board}
+								{...provided.droppableProps}
+								ref={provided.innerRef}
+							>
+								{renderCols}
+								{provided.placeholder}
+							</div>
+						)}
+					</Droppable>
+				</DragDropContext>
+				{renderAddCol}
+			</div>
 		</div>
 	);
 }
