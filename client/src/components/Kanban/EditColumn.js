@@ -3,9 +3,8 @@ import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { FaTrash } from 'react-icons/fa';
 import DeleteModal from './KanbanUI/DeleteModal';
-// import { kanbanActions } from '../../store/kanban';
 import styles from './EditColumn.module.css';
-import { updateColumn } from '../../store/kanban-actions';
+import { updateData } from '../../store/kanban-actions';
 import ModalContext from '../../store/ModalContext';
 import { TYPES } from '../../store/kanban-actions';
 
@@ -25,14 +24,14 @@ function EditColumn(props) {
 			return;
 		}
 		const data = { name: updatedTitle, order: column.order };
-		dispatch(updateColumn(token, column.id, data));
+		dispatch(updateData(token, TYPES.COLUMN, data, column._id));
 		setIsEditTitle(updatedTitle);
 		onCancel();
 	};
 
 	const deleteColumnHandler = () => {
 		modalContext.showModal(
-			<DeleteModal title={title} id={column.id} type={TYPES.COLUMN} />
+			<DeleteModal title={title} id={column._id} type={TYPES.COLUMN} />
 		);
 	};
 

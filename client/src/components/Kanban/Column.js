@@ -8,7 +8,7 @@ import EditColumn from './EditColumn';
 
 function Column(props) {
 	const { boardId, column, index: colIndex } = props;
-	const { name, tasks, id: columnId } = column;
+	const { name, tasks, _id: columnId } = column;
 	const [isEditingTask, setIsEditingTask] = useState(false);
 	const [editTitle, setIsEditTitle] = useState(false);
 
@@ -30,10 +30,10 @@ function Column(props) {
 
 	const renderTasks = tasks.map((task, index) => (
 		<Task
-			key={task.id}
+			key={task._id}
 			task={task}
 			index={index}
-			id={task.id}
+			// id={task._id}
 			boardId={boardId}
 			colId={columnId}
 			columnTitle={name}
@@ -77,7 +77,7 @@ function Column(props) {
 					<div className={styles.title} {...provided.dragHandleProps}>
 						{renderEditCol}
 					</div>
-					<Droppable droppableId={columnId}>
+					<Droppable droppableId={columnId} type="task">
 						{(provided) => (
 							<React.Fragment>
 								<TaskList

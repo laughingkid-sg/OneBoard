@@ -3,35 +3,24 @@ function sortData(dataA, dataB) {
 }
 
 export function createColumn(column) {
-	const { order, name, _id: id, tasks } = column;
+	const { _id, order, name, tasks } = column;
 	const newTasks = tasks.sort(sortData).map((task) => createTask(task));
-	return { id, name, tasks: newTasks, order };
+	return { _id, order, name, tasks: newTasks };
 }
 
 export function createTask(task) {
 	// TODO what to do with label, expireAt
-	const {
-		_id: id,
-		name,
-		description,
-		subtask,
-		expireAt,
-		label,
-		order,
-	} = task;
-
-	// * Just convert to Date object?
-	// console.log(expireAt, typeof expireAt);
+	const { _id, name, description, subTask, expireAt, label, order } = task;
 
 	const formatDesc = description || '';
-	const formatSubtask = createSubtask(subtask);
+	const formatSubtask = subTask || [];
+	const formatExpireAt = expireAt ? new Date(expireAt).valueOf() : '';
 
 	return {
-		id,
-		name,
+		...task,
 		description: formatDesc,
-		subtasks: formatSubtask,
-		order,
+		subTask: formatSubtask,
+		expireAt: formatExpireAt,
 	};
 }
 

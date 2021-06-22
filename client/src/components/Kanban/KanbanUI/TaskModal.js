@@ -1,10 +1,13 @@
+import moment from 'moment';
 import React, { useContext, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
+import { DatePicker } from 'antd';
 import {
 	Badge,
 	Button,
+	Input,
 	Modal,
 	ModalBody,
 	ModalFooter,
@@ -12,7 +15,7 @@ import {
 } from 'reactstrap';
 import LabelSelect from './Label/LabelSelect';
 import styles from './TaskModal.module.css';
-import { updateTask } from '../../../store/kanban-actions';
+import { TYPES, updateData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import { AddSubtask, SubtaskList } from './Subtask';
 
@@ -34,6 +37,9 @@ function TaskModal(props) {
 	const descriptionRef = useRef();
 	const [isWrite, setIsWrite] = useState(write || false);
 	const [beforeChange, setBeforeChange] = useState({ ...task });
+	const [deadline, setDeadline] = useState(
+		task.expireAt ? moment(task.expireAt) : null
+	);
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
 
@@ -44,26 +50,34 @@ function TaskModal(props) {
 
 		if (
 			nameRef.current.value === beforeChange.name &&
-			descriptionRef.current.value === beforeChange.description
+			descriptionRef.current.value === beforeChange.description &&
+			deadline.isSame(moment(beforeChange.expireAt))
 		) {
 			toggleEditHandler();
 			return;
 		}
 
 		// TODO Include label, expireAt, subTask
+		// * expireAt needs to be an ISOString for backend
 		const updatedTask = {
 			name: nameRef.current.value,
 			description: descriptionRef.current.value,
 			order: beforeChange.order,
+			expireAt: deadline,
 		};
 
 		setBeforeChange(updatedTask);
-		dispatch(updateTask(token, task.id, updatedTask));
+		dispatch(updateData(token, TYPES.TASK, updatedTask, task._id));
 		toggleEditHandler();
 	};
 
 	const toggleEditHandler = () => {
 		setIsWrite((prevWrite) => !prevWrite);
+	};
+
+	const dateChangeHandler = (date, dateString) => {
+		setDeadline(date);
+		// console.log(new Date(dateString).toISOString());
 	};
 
 	const renderButtons = isWrite ? (
@@ -102,10 +116,10 @@ function TaskModal(props) {
 						<h2 className={styles.title}>{beforeChange.name}</h2>
 					)}
 					{isWrite && (
-						<input
+						<Input
 							type="text"
 							id="taskTitle"
-							ref={nameRef}
+							innerRef={nameRef}
 							defaultValue={beforeChange.name}
 							className={styles.input}
 						/>
@@ -121,15 +135,38 @@ function TaskModal(props) {
 					</p>
 				)}
 				{isWrite && (
-					<textarea
-						rows="10"
-						ref={descriptionRef}
+					// <textarea
+					// 	rows="10"
+					// 	ref={descriptionRef}
+					// 	defaultValue={beforeChange.description}
+					// 	className={styles.input}
+					// />
+					<Input
+						type="textarea"
+						innerRef={descriptionRef}
 						defaultValue={beforeChange.description}
 						className={styles.input}
 					/>
 				)}
 
-				{/* Labels */}
+				{/* Deadline */}
+				<h3>Deadline</h3>
+				{isWrite && (
+					<DatePicker
+						allowClear
+						defaultValue={deadline || moment()}
+						onChange={dateChangeHandler}
+					/>
+				)}
+				{!isWrite && (
+					<p>
+						{deadline
+							? deadline.format('DD/MM/YYYY')
+							: 'No deadline'}
+					</p>
+				)}
+
+				{/* Labels - Recycle from Expenses there*/}
 				<h3>Labels</h3>
 				{/* TODO Style this */}
 				<div className="d-flex align-items-center">

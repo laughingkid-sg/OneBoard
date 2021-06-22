@@ -32,7 +32,7 @@ function Task(props) {
 	const deleteTask = () => {
 		// TODO set onCancel
 		const deleteModal = (
-			<DeleteModal id={task.id} title={task.name} type={TYPES.TASK} />
+			<DeleteModal id={task._id} title={task.name} type={TYPES.TASK} />
 		);
 		modalContext.showModal(deleteModal);
 	};
@@ -49,7 +49,7 @@ function Task(props) {
 	};
 
 	return (
-		<Draggable draggableId={task.id} index={taskIndex}>
+		<Draggable draggableId={task._id} index={taskIndex}>
 			{(provided) => {
 				return (
 					<div

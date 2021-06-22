@@ -38,7 +38,7 @@ const AddColumn = (props) => {
 			<Input
 				autoFocus
 				placeholder="Enter Column here"
-				ref={columnName}
+				innerRef={columnName}
 				onBlur={cancelHandler}
 			/>
 			<div className={styles.btnRow}>
