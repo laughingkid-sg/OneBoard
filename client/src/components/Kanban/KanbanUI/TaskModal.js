@@ -42,8 +42,39 @@ function TaskModal(props) {
 			return;
 		}
 
+		let dateChanged = true;
+		let newExpiry;
+		if (deadline === null) {
+			console.log('New deadline null, checking against old value');
+			dateChanged = !!beforeChange.expireAt;
+		} else {
+			console.log('Deadline is a time, checking against old value');
+			dateChanged = !deadline.isSame(beforeChange.expireAt, 'day');
+		}
+		if (dateChanged) {
+			newExpiry = deadline.toDate().toISOString();
+		} else {
+			if (beforeChange.expireAt === '') newExpiry = '';
+			else newExpiry = new Date(beforeChange.expireAt).toISOString();
+		}
+
+		let newLabels;
+		let labelsChanged = false;
+		if (labelSelect.length !== beforeChange.label.length) {
+			newLabels = labelSelect;
+			labelsChanged = true;
+		}
+
+		if (!labelsChanged) {
+			for (let i = 0; i < labelSelect.length; i++) {
+				const labelSel = labelSelect[i];
+				if (!beforeChange.label.some((label) => label === labelSel)) {
+					labelsChanged = true;
+				}
+			}
+		}
+
 		// ? Existing task changes not tested yet
-		// Naive check if there was changes
 		let subTaskChanged = subTasks.length !== task.subTask.length;
 		let newSubtask = subTaskChanged ? subTasks : [];
 
@@ -62,28 +93,11 @@ function TaskModal(props) {
 			}
 		}
 
-		let dateChanged = true;
-		let newExpiry;
-		if (deadline === null) {
-			console.log('New deadline null, checking against old value');
-			dateChanged = !!beforeChange.expireAt;
-		} else {
-			console.log('Deadline is a time, checking against old value');
-			dateChanged = !deadline.isSame(beforeChange.expireAt, 'day');
-		}
-		if (dateChanged) {
-			newExpiry = deadline.toDate().toISOString();
-		} else {
-			if (beforeChange.expireAt === '') newExpiry = '';
-			else newExpiry = new Date(beforeChange.expireAt).toISOString();
-		}
-
 		if (
 			nameRef.current.value === beforeChange.name &&
 			descriptionRef.current.value === beforeChange.description &&
 			!dateChanged &&
-			// converts undefined to empty string
-			(labelSelect || '') === (beforeChange.label || '') &&
+			!labelsChanged &&
 			!subTaskChanged
 		) {
 			console.log('No changes at all');
@@ -97,7 +111,7 @@ function TaskModal(props) {
 			order: beforeChange.order,
 			expireAt: newExpiry,
 			subTask: newSubtask,
-			label: labelSelect,
+			label: newLabels,
 		};
 
 		dispatch(updateData(token, TYPES.TASK, updatedTask, task._id));
@@ -127,6 +141,7 @@ function TaskModal(props) {
 	};
 
 	const updateLabelHandler = (value, option) => {
+		console.log(value);
 		setLabelSelect(value);
 	};
 
@@ -150,13 +165,26 @@ function TaskModal(props) {
 		</React.Fragment>
 	);
 
-	const renderLabel = () => {
-		if (!beforeChange.label) return 'No label';
-		const label = boardLabels.find(
-			(bLabel) => bLabel._id === beforeChange.label
-		);
-		return <Badge className={`bg-${label.type}`}>{label.name}</Badge>;
-	};
+	// const renderLabel = () => {
+	// 	if (!beforeChange.label) return 'No label';
+	// 	const label = boardLabels.find(
+	// 		(bLabel) => bLabel._id === beforeChange.label
+	// 	);
+	// 	return <Badge className={`bg-${label.type}`}>{label.name}</Badge>;
+	// };
+	const renderLabel =
+		beforeChange.label.length === 0
+			? 'No label'
+			: beforeChange.label.map((bLabel) => {
+					const label = boardLabels.find(
+						(label) => label._id === bLabel
+					);
+					return (
+						<Badge className={`bg-${label.type} mx-1`}>
+							{label.name}
+						</Badge>
+					);
+			  });
 
 	return (
 		<Modal
@@ -229,6 +257,7 @@ function TaskModal(props) {
 						style={{ minWidth: '200px', width: 'auto' }}
 						value={labelSelect}
 						onChange={updateLabelHandler}
+						mode="multiple"
 					>
 						{boardLabels
 							.filter((label) => !!label._id)
@@ -242,7 +271,7 @@ function TaskModal(props) {
 					</Select>
 				) : (
 					<div className="d-flex align-items-center">
-						{renderLabel()}
+						{renderLabel}
 					</div>
 				)}
 
