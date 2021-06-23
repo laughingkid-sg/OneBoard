@@ -1,9 +1,9 @@
 import moment from 'moment';
 import React, { useContext, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
-import { DatePicker } from 'antd';
+import { DatePicker, Select } from 'antd';
 import {
 	Badge,
 	Button,
@@ -13,25 +13,17 @@ import {
 	ModalFooter,
 	ModalHeader,
 } from 'reactstrap';
-import LabelSelect from './Label/LabelSelect';
 import styles from './TaskModal.module.css';
 import { TYPES, updateData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import { AddSubtask, SubtaskList } from './Subtask';
 
-// TODO To be replaced
-const LABEL_TYPES = [
-	'primary',
-	'secondary',
-	'success',
-	'info',
-	'warning',
-	'danger',
-];
+const { Option } = Select;
 
 function TaskModal(props) {
 	const dispatch = useDispatch();
 	const { task, columnTitle, write, onDelete } = props;
+	const boardLabels = useSelector((state) => state.kanban.labels);
 	const modalContext = useContext(ModalContext);
 	const nameRef = useRef();
 	const descriptionRef = useRef();
@@ -41,6 +33,7 @@ function TaskModal(props) {
 	const [deadline, setDeadline] = useState(
 		task.expireAt ? moment(task.expireAt) : null
 	);
+	const [labelSelect, setLabelSelect] = useState(task.label);
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
 
@@ -49,7 +42,7 @@ function TaskModal(props) {
 			return;
 		}
 
-		// ! Existing task changes not tested yet
+		// ? Existing task changes not tested yet
 		// Naive check if there was changes
 		let subTaskChanged = subTasks.length !== task.subTask.length;
 		let newSubtask = subTaskChanged ? subTasks : [];
@@ -89,6 +82,8 @@ function TaskModal(props) {
 			nameRef.current.value === beforeChange.name &&
 			descriptionRef.current.value === beforeChange.description &&
 			!dateChanged &&
+			// converts undefined to empty string
+			(labelSelect || '') === (beforeChange.label || '') &&
 			!subTaskChanged
 		) {
 			console.log('No changes at all');
@@ -102,11 +97,12 @@ function TaskModal(props) {
 			order: beforeChange.order,
 			expireAt: newExpiry,
 			subTask: newSubtask,
+			label: labelSelect,
 		};
 
 		dispatch(updateData(token, TYPES.TASK, updatedTask, task._id));
 		setBeforeChange(updatedTask);
-		// toggleEditHandler();
+		toggleEditHandler();
 	};
 
 	const toggleEditHandler = () => {
@@ -130,6 +126,10 @@ function TaskModal(props) {
 		setSubTasks(newSubtasks);
 	};
 
+	const updateLabelHandler = (value, option) => {
+		setLabelSelect(value);
+	};
+
 	const renderButtons = isWrite ? (
 		<React.Fragment>
 			<Button color="success" onClick={confirmEditHandler}>
@@ -149,6 +149,14 @@ function TaskModal(props) {
 			</Button>
 		</React.Fragment>
 	);
+
+	const renderLabel = () => {
+		if (!beforeChange.label) return 'No label';
+		const label = boardLabels.find(
+			(bLabel) => bLabel._id === beforeChange.label
+		);
+		return <Badge className={`bg-${label.type}`}>{label.name}</Badge>;
+	};
 
 	return (
 		<Modal
@@ -211,14 +219,32 @@ function TaskModal(props) {
 					</p>
 				)}
 
-				{/* Labels - Recycle from Expenses there*/}
+				{/* Labels */}
 				<h3 className="mt-2">Labels</h3>
-				{/* TODO Style this */}
-				<div className="d-flex align-items-center">
-					{/* DUMMY LABEL - to be replaced by a map()*/}
-					<Badge className="bg-primary m-0">Low Priority</Badge>
-					<LabelSelect labelTypes={LABEL_TYPES} />
-				</div>
+				{isWrite ? (
+					<Select
+						showSearch
+						allowClear
+						placeholder="Select label"
+						style={{ minWidth: '200px', width: 'auto' }}
+						value={labelSelect}
+						onChange={updateLabelHandler}
+					>
+						{boardLabels
+							.filter((label) => !!label._id)
+							.map((label) => (
+								<Option value={label._id} key={label._id}>
+									<Badge className={`bg-${label.type}`}>
+										{label.name}
+									</Badge>
+								</Option>
+							))}
+					</Select>
+				) : (
+					<div className="d-flex align-items-center">
+						{renderLabel()}
+					</div>
+				)}
 
 				{/* Subtasks */}
 				<h3 className="mt-2">Subtasks </h3>
