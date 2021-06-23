@@ -5,15 +5,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import EditDelete from '../KanbanUI/EditDelete';
 import useInput from '../../hooks/use-input';
 import { userActions } from '../../../store/user';
-import { addData, getBoard, TYPES } from '../../../store/kanban-actions';
+import { addData, TYPES } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import DeleteModal from '../KanbanUI/DeleteModal';
+import EditBoard from '../Edit/EditBoard';
+import styles from './AddBoard.module.css';
 
 function AddBoard(props) {
-	const { name } = props;
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
 	const boards = useSelector((state) => state.user.boards);
+	const selectedBoard = { boards };
 	const selectBoardRef = useRef();
 	const [boardAdd, setBoardAdd] = useState(false);
 	const modalContext = useContext(ModalContext);
@@ -49,11 +51,24 @@ function AddBoard(props) {
 		modalContext.showModal(
 			<DeleteModal
 				type={TYPES.BOARD}
-				id={boards.selectedBoard._id}
+				id={selectedBoard._id}
 				index={selectBoardRef.current.selectedIndex}
 			/>
 		);
 	};
+
+	const editBoardHandler = () => {
+		// alert('Edit Board');
+		modalContext.showModal(<EditBoard />);
+	};
+
+	const renderOptions = boards.boards.map((board) => (
+		<option value={board._id} key={board._id}>
+			{board.name}
+		</option>
+	));
+
+	// const selectedName = selectedBoard.name;
 
 	return (
 		<div className="d-flex flex-row">
@@ -66,6 +81,7 @@ function AddBoard(props) {
 					onChange={boardNameOnChange}
 					onBlur={boardNameOnBlur}
 					placeholder="Enter board name"
+					style={{ width: '75%' }}
 				/>
 			) : (
 				<Input
@@ -74,14 +90,11 @@ function AddBoard(props) {
 					id="boardSelect"
 					innerRef={selectBoardRef}
 					// Useful for swapping boards later
-					defaultValue={boards.selectedBoard.name}
+					defaultValue={selectedBoard.name}
 					onChange={boardSelectChangeHandler}
+					style={{ width: '75%' }}
 				>
-					{boards.boards.map((board) => (
-						<option value={board._id} key={board._id}>
-							{board.name}
-						</option>
-					))}
+					{renderOptions}
 				</Input>
 			)}
 			<Button onClick={boardAdd ? addBoardHandler : toggleBoardAdd}>
@@ -89,10 +102,9 @@ function AddBoard(props) {
 			</Button>
 			{boardAdd && <Button onClick={toggleBoardAdd}>Cancel</Button>}
 			<EditDelete
-				onEdit={() => {
-					alert('Edit Board');
-				}}
+				onEdit={editBoardHandler}
 				onDelete={deleteBoardHandler}
+				className={styles.icons}
 			/>
 		</div>
 	);

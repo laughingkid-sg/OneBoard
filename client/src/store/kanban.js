@@ -40,17 +40,18 @@ const kanbanSlice = createSlice({
 			const newTask = createTask(action.payload);
 			const { _id } = newTask;
 
+			console.log(newTask);
 			const taskInCol = state.columns.find((col) =>
 				col.tasks.find((task) => task._id === _id)
 			);
 
 			const newTasks = taskInCol.tasks.map((task) =>
-				task.id === _id ? newTask : task
+				task._id === _id ? newTask : task
 			);
 
 			const newCol = { ...taskInCol, tasks: newTasks };
 			state.columns = state.columns.map((col) =>
-				col._id === newCol.id ? newCol : col
+				col._id === newCol._id ? newCol : col
 			);
 		},
 		deleteTask(state, action) {
@@ -83,28 +84,10 @@ const kanbanSlice = createSlice({
 			const newBoard = action.payload;
 			return { ...state, ...newBoard };
 		},
-		// ?
-		addSubtask(state, action) {
-			const { taskId, subtask } = action.payload;
-			const task = state.tasks[taskId];
-			const { subtasks } = task;
-			const newSubtasks = subtasks.push(subtask);
-			state.tasks = {
-				...state.tasks,
-				[taskId]: { ...task, subtasks: newSubtasks },
-			};
-		},
-		// ?
-		updateSubTask(state, action) {
-			const { taskId, newSubtask } = action.payload;
-			const task = state.tasks[taskId];
-			const newSubtasks = task.subtask.map((subtask) =>
-				subtask.id === newSubtask.id ? newSubtask : subtask
-			);
-			state.tasks = {
-				...state.tasks,
-				[taskId]: { ...task, subtasks: newSubtasks },
-			};
+		updateLabels(state, action) {
+			const { name, labels } = action.payload;
+			state.name = name;
+			state.labels = labels;
 		},
 		store(state) {
 			localStorage.setItem('currentBoard', JSON.stringify(state));

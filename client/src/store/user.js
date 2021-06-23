@@ -38,6 +38,13 @@ const userSlice = createSlice({
 				(board) => board._id === boardId
 			);
 		},
+		updateBoard(state, action) {
+			const { _id } = action.payload;
+			state.boards.boards = state.boards.boards.map((board) =>
+				board._id === _id ? action.payload : board
+			);
+			state.boards.selectedBoard = action.payload;
+		},
 		deleteBoard(state, action) {
 			const { boardId, index } = action.payload;
 			let newIndex = index - 1;

@@ -37,6 +37,7 @@ function TaskModal(props) {
 	const descriptionRef = useRef();
 	const [isWrite, setIsWrite] = useState(write || false);
 	const [beforeChange, setBeforeChange] = useState({ ...task });
+	const [subTasks, setSubTasks] = useState(task.subTask);
 	const [deadline, setDeadline] = useState(
 		task.expireAt ? moment(task.expireAt) : null
 	);
@@ -48,27 +49,64 @@ function TaskModal(props) {
 			return;
 		}
 
+		// ! Existing task changes not tested yet
+		// Naive check if there was changes
+		let subTaskChanged = subTasks.length !== task.subTask.length;
+		let newSubtask = subTaskChanged ? subTasks : [];
+
+		// If lengths are the same manually find changes
+		if (!subTaskChanged) {
+			for (let i = 0; i < subTasks.length; i++) {
+				if (
+					JSON.stringify(subTasks[i]) ===
+						JSON.stringify(task.subTask[i]) ||
+					subTasks[i]._id
+				) {
+					newSubtask.push(subTasks[i]);
+					// Existing data added is not counted as a change
+					if (!subTasks[i]._id) subTaskChanged = true;
+				}
+			}
+		}
+
+		let dateChanged = true;
+		let newExpiry;
+		if (deadline === null) {
+			console.log('New deadline null, checking against old value');
+			dateChanged = !!beforeChange.expireAt;
+		} else {
+			console.log('Deadline is a time, checking against old value');
+			dateChanged = !deadline.isSame(beforeChange.expireAt, 'day');
+		}
+		if (dateChanged) {
+			newExpiry = deadline.toDate().toISOString();
+		} else {
+			if (beforeChange.expireAt === '') newExpiry = '';
+			else newExpiry = new Date(beforeChange.expireAt).toISOString();
+		}
+
 		if (
 			nameRef.current.value === beforeChange.name &&
 			descriptionRef.current.value === beforeChange.description &&
-			deadline.isSame(moment(beforeChange.expireAt))
+			!dateChanged &&
+			!subTaskChanged
 		) {
+			console.log('No changes at all');
 			toggleEditHandler();
 			return;
 		}
 
-		// TODO Include label, expireAt, subTask
-		// * expireAt needs to be an ISOString for backend
 		const updatedTask = {
 			name: nameRef.current.value,
 			description: descriptionRef.current.value,
 			order: beforeChange.order,
-			expireAt: deadline,
+			expireAt: newExpiry,
+			subTask: newSubtask,
 		};
 
-		setBeforeChange(updatedTask);
 		dispatch(updateData(token, TYPES.TASK, updatedTask, task._id));
-		toggleEditHandler();
+		setBeforeChange(updatedTask);
+		// toggleEditHandler();
 	};
 
 	const toggleEditHandler = () => {
@@ -77,6 +115,19 @@ function TaskModal(props) {
 
 	const dateChangeHandler = (date, dateString) => {
 		setDeadline(date);
+	};
+
+	const addSubTaskHandler = (subtask) => {
+		const newSubtasks = [...subTasks];
+		newSubtasks.push(subtask);
+		setSubTasks(newSubtasks);
+	};
+
+	const updateSubtaskHandler = (index, subtask = null) => {
+		const newSubtasks = [...subTasks];
+		if (subtask) newSubtasks.splice(index, 1, subtask);
+		else newSubtasks.splice(index, 1);
+		setSubTasks(newSubtasks);
 	};
 
 	const renderButtons = isWrite ? (
@@ -127,19 +178,13 @@ function TaskModal(props) {
 				</React.Fragment>
 			</ModalHeader>
 			<ModalBody>
-				<h3 className={styles.header}>Description</h3>
+				<h3 className={`styles.header mt-2`}>Description</h3>
 				{!isWrite && (
 					<p className={styles.description}>
 						{beforeChange.description || ' '}
 					</p>
 				)}
 				{isWrite && (
-					// <textarea
-					// 	rows="10"
-					// 	ref={descriptionRef}
-					// 	defaultValue={beforeChange.description}
-					// 	className={styles.input}
-					// />
 					<Input
 						type="textarea"
 						innerRef={descriptionRef}
@@ -149,12 +194,13 @@ function TaskModal(props) {
 				)}
 
 				{/* Deadline */}
-				<h3>Deadline</h3>
+				<h3 className="mt-2">Deadline</h3>
 				{isWrite && (
 					<DatePicker
 						allowClear
-						defaultValue={deadline || moment()}
+						defaultValue={deadline}
 						onChange={dateChangeHandler}
+						format={'DD/MM/YYYY'}
 					/>
 				)}
 				{!isWrite && (
@@ -166,7 +212,7 @@ function TaskModal(props) {
 				)}
 
 				{/* Labels - Recycle from Expenses there*/}
-				<h3>Labels</h3>
+				<h3 className="mt-2">Labels</h3>
 				{/* TODO Style this */}
 				<div className="d-flex align-items-center">
 					{/* DUMMY LABEL - to be replaced by a map()*/}
@@ -175,9 +221,18 @@ function TaskModal(props) {
 				</div>
 
 				{/* Subtasks */}
-				<h3>Subtasks </h3>
-				{isWrite && <AddSubtask />}
-				<SubtaskList subtasks={task.subTask} taskId={task.id} />
+				<h3 className="mt-2">Subtasks </h3>
+				{isWrite && (
+					<AddSubtask
+						taskId={task._id}
+						addSubtask={addSubTaskHandler}
+					/>
+				)}
+				<SubtaskList
+					subtasks={subTasks}
+					taskId={task._id}
+					onUpdate={updateSubtaskHandler}
+				/>
 			</ModalBody>
 
 			<ModalFooter>{renderButtons}</ModalFooter>

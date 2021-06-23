@@ -1,4 +1,7 @@
+import moment from 'moment';
 import React, { useContext } from 'react';
+import { Badge } from 'reactstrap';
+import { BiTime } from 'react-icons/bi';
 import { Draggable } from 'react-beautiful-dnd';
 import EditDelete from './KanbanUI/EditDelete';
 import DeleteModal from './KanbanUI/DeleteModal';
@@ -60,6 +63,14 @@ function Task(props) {
 						onClick={showTaskHandler}
 					>
 						<p>{task.name}</p>
+						{task.expireAt && (
+							<p style={{ fontSize: '16px', marginTop: '4px' }}>
+								<Badge className="bg-warning align-self-start">
+									<BiTime />{' '}
+									{moment(task.expireAt).format('DD/MM/YY')}
+								</Badge>
+							</p>
+						)}
 						<EditDelete
 							onEdit={editTaskHandler}
 							onDelete={deleteTaskHandler}

@@ -27,14 +27,13 @@ function Board(props) {
 	const { columns, id: boardId } = kanban;
 	const dispatch = useDispatch();
 
-	// TODO useEffect when board changes
 	useEffect(() => {
 		function boardFromStorage() {
 			let strBoard = localStorage.getItem('currentBoard');
 			let jsonBoard = JSON.parse(strBoard);
 
 			if (jsonBoard) console.log(jsonBoard.id, currentId);
-			if (jsonBoard && jsonBoard.id !== currentId) {
+			if (jsonBoard && jsonBoard.id !== currentId && currentId) {
 				console.log('Calling getBoard');
 				dispatch(getBoard(token, currentId));
 				return;
@@ -141,6 +140,8 @@ function Board(props) {
 
 	return (
 		<div className="d-flex flex-column">
+			{/* Handle Board Manipulation */}
+			{/* Improve refactoring at Milestone 3 */}
 			<AddBoard />
 			{/* The kanban board itself */}
 			<div className="d-flex flex-row">

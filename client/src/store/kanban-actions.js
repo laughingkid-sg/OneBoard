@@ -1,6 +1,6 @@
 import { kanbanActions } from './kanban';
 import { userActions } from './user';
-import { createColumn } from '../lib/kanban';
+import { createColumn, createLabels } from '../lib/kanban';
 
 // If none its board
 export const TYPES = {
@@ -59,8 +59,13 @@ export const fetchAllBoards = (token) => {
 				const newColumns = columns
 					.sort(sortData)
 					.map((col) => createColumn(col));
-
-				boards[id] = { id, name, labels, columns: newColumns };
+				const formatLabels = createLabels(labels);
+				boards[id] = {
+					id,
+					name,
+					labels: formatLabels,
+					columns: newColumns,
+				};
 			});
 
 			const boardKeys = Object.keys(boards);
@@ -112,12 +117,51 @@ export const getBoard = (token, id) => {
 				.sort(sortData)
 				.map((col) => createColumn(col));
 
-			const newBoard = { id, name, labels, columns: newColumns };
+			const formatLabels = createLabels(labels);
+			console.log(formatLabels);
+			const newBoard = {
+				id,
+				name,
+				labels: formatLabels,
+				columns: newColumns,
+			};
 			dispatch(kanbanActions.replace(newBoard));
 			localStorage.setItem('currentBoard', JSON.stringify(newBoard));
 		} catch (error) {
 			alert(error.message);
 		}
+	};
+};
+
+// Used for updating column information
+export const updateLabels = (token, dataReq, id) => {
+	return async (dispatch) => {
+		const postData = async () => {
+			const response = await fetch(determineURL(TYPES.BOARD, id), {
+				method: 'PUT',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(dataReq),
+			});
+
+			if (!response.ok) {
+				throw new Error(`Could not change board`);
+			}
+
+			const data = await response.json();
+
+			return data;
+		};
+		try {
+			const res = await postData();
+			const { labels, name } = res.board;
+			const formatLabels = createLabels(labels);
+			dispatch(
+				kanbanActions.updateLabels({ name, labels: formatLabels })
+			);
+		} catch (error) {}
 	};
 };
 
@@ -235,7 +279,7 @@ export const updateData = (token, type, dataReq, id) => {
 					);
 					break;
 				default:
-					// ! Special things need to be done for update Board
+					// Used for updating column order
 					dispatch(kanbanActions.updateBoard(dataReq));
 					break;
 			}

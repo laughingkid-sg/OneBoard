@@ -1,3 +1,12 @@
+export const LABEL_TYPES = [
+	'primary',
+	'dark',
+	'success',
+	'info',
+	'warning',
+	'danger',
+];
+
 function sortData(dataA, dataB) {
 	return dataA.order - dataB.order;
 }
@@ -9,7 +18,6 @@ export function createColumn(column) {
 }
 
 export function createTask(task) {
-	// TODO what to do with label, expireAt
 	const { _id, name, description, subTask, expireAt, label, order } = task;
 
 	const formatDesc = description || '';
@@ -23,13 +31,24 @@ export function createTask(task) {
 		description: formatDesc,
 		subTask: formatSubtask,
 		expireAt: formatExpireAt,
+		label,
 	};
 }
 
-export function createSubtask(subtasks) {
-	const formatted = subtasks || [];
-	return formatted.map((subtask) => {
-		const { name, isDone, _id: id } = subtask;
-		return { id, isDone, name };
+export function createLabels(labels) {
+	if (labels.length === 0)
+		return LABEL_TYPES.map((label) => {
+			return { type: label, name: '' };
+		});
+
+	return LABEL_TYPES.map((labelConst) => {
+		const labelFound = labels.find((label) => label.type === labelConst);
+		if (!labelFound)
+			return {
+				type: labelConst,
+				name: '',
+			};
+		const { _id, type, name } = labelFound;
+		return { _id, type, name };
 	});
 }
