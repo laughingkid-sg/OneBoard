@@ -35,9 +35,12 @@ const taskSchema = new Schema(
             type: Date, 
             required: false 
         },
-        label:  { type: mongoose.Schema.Types.ObjectId, 
-            ref: 'Board.Label' 
-        }, 
+        label:  [
+            {
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'Board.Label',           
+            }
+        ], 
         subTask: [subTask]   
     }, 
     {
