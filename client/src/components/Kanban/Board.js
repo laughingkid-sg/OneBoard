@@ -1,179 +1,170 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Column';
 import styles from './Board.module.css';
-import AddColumn from './AddColumn';
+import AddColumn from './Add/AddColumn';
 import { kanbanActions } from '../../store/kanban';
-import { createBoard, fetchBoardData } from '../../store/kanban-actions';
-import { fetchUserData } from '../../store/user-actions';
+import {
+	TYPES,
+	fetchAllBoards,
+	updateData,
+	getBoard,
+} from '../../store/kanban-actions';
+import AddBoard from './Add/AddBoard';
 
 function Board(props) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
-	const userId = localStorage.getItem('id');
-	const boardId = useSelector((state) => state.user.boards.selectedBoard);
+	const selectedBoard = useSelector(
+		(state) => state.user.boards.selectedBoard
+	);
+	const { _id: currentId } = selectedBoard;
 	const kanban = useSelector((state) => state.kanban);
-	const { tasks, columns, columnOrder } = kanban;
+	const { columns, id: boardId } = kanban;
 	const dispatch = useDispatch();
 
 	useEffect(() => {
 		function boardFromStorage() {
-			const strBoard = localStorage.getItem('currentBoard');
-			const jsonBoard = JSON.parse(strBoard);
-			if (jsonBoard) {
-				console.log('Mount from storage');
-				console.log(jsonBoard, kanban);
-				dispatch(kanbanActions.replaceBoard(jsonBoard));
-			} else {
-				dispatch(fetchBoardData(boardId, token));
-			}
-		}
+			let strBoard = localStorage.getItem('currentBoard');
+			let jsonBoard = JSON.parse(strBoard);
 
-		// ! To be superseded by new API
-		if (!boardId) {
-			dispatch(createBoard('My First Board', token));
-			dispatch(fetchUserData(userId, token));
-			return;
+			if (jsonBoard) console.log(jsonBoard.id, currentId);
+			if (jsonBoard && jsonBoard.id !== currentId && currentId) {
+				console.log('Calling getBoard');
+				dispatch(getBoard(token, currentId));
+				return;
+			}
+
+			if (strBoard === JSON.stringify(kanban)) {
+				console.log('Mount from storage', jsonBoard);
+				dispatch(kanbanActions.replace(jsonBoard));
+			} else {
+				console.log('Fetch from server');
+				dispatch(fetchAllBoards(token));
+			}
 		}
 
 		boardFromStorage();
 		return () => {
-			console.log('Unmount');
-			dispatch(kanbanActions.storeBoard());
+			dispatch(kanbanActions.store());
 		};
-	}, [dispatch, boardId, userId, token]);
+	}, [dispatch, token, currentId]);
 
-	// TODO Could be refactored
 	const dragEndHandler = (result) => {
 		const { source, destination, draggableId, type } = result;
 
-		if (!destination) {
-			return;
-		}
-
-		// If the Draggable has no change in position
+		// Draggable dropped outside of DnD
+		// Draggable has no change in position
 		if (
-			source.droppableId === destination.droppableId &&
-			source.index === destination.index
+			!destination ||
+			(source.droppableId === destination.droppableId &&
+				source.index === destination.index)
 		) {
 			return;
 		}
 
-		const start = columns[source.droppableId];
-		const finish = columns[destination.droppableId];
-
-		// Operation for movement between columns
+		// * Operation for movement between columns
 		if (type === 'column') {
-			const newColOrder = [...columnOrder];
-			newColOrder.splice(source.index, 1);
-			newColOrder.splice(destination.index, 0, draggableId);
-
-			dispatch(kanbanActions.columnReorder({ newColOrder }));
-			// dispatch(updateColOrder(boardId, newColOrder, token));
+			console.log('Reorder columns');
+			let columnsInOrder = [...columns];
+			const [colToMove] = columnsInOrder.splice(source.index, 1);
+			columnsInOrder.splice(destination.index, 0, colToMove);
+			columnsInOrder = columnsInOrder.map((col, index) => {
+				return { ...col, order: index };
+			});
+			const data = { name: kanban.name, columns: columnsInOrder };
+			dispatch(updateData(token, TYPES.BOARD, data, boardId));
 			return;
 		}
 
-		let newColumns = {};
+		const start = columns.find((col) => col._id === source.droppableId);
+		const finish = columns.find(
+			(col) => col._id === destination.droppableId
+		);
 
-		// Operation for same column
+		// * Operation for same column
 		if (start === finish) {
-			const newTasks = [...start.taskIds];
-			newTasks.splice(source.index, 1);
-			newTasks.splice(destination.index, 0, draggableId);
+			const { name, order, _id } = start;
+			let tasksInCol = [...start.tasks];
+			const [taskToMove] = tasksInCol.splice(source.index, 1);
+			tasksInCol.splice(destination.index, 0, taskToMove);
+			tasksInCol = tasksInCol.map((task, index) => {
+				return {
+					...task,
+					expireAt:
+						task.expireAt && new Date(task.expireAt).toISOString(),
+					order: index,
+				};
+			});
 
-			const newCol = {
-				...start,
-				taskIds: newTasks,
-			};
-
-			newColumns = {
-				...columns,
-				[newCol.id]: newCol,
-			};
+			const data = { name, order, tasks: tasksInCol };
+			dispatch(updateData(token, TYPES.COLUMN, data, _id));
 		} else {
-			// Operation for different column
-			const startTaskIds = [...start.taskIds];
-			startTaskIds.splice(source.index, 1);
-			const newStart = {
-				...start,
-				taskIds: startTaskIds,
-			};
-
-			const finTaskIds = [...finish.taskIds];
-			finTaskIds.splice(destination.index, 0, draggableId);
-			const newFin = {
-				...finish,
-				taskIds: finTaskIds,
-			};
-
-			newColumns = {
-				...columns,
-				[newStart.id]: newStart,
-				[newFin.id]: newFin,
-			};
+			// * Operation for different column
+			let tasksInStart = [...start.tasks];
+			let tasksInFin = [...finish.tasks];
+			const [taskToMove] = tasksInStart.splice(source.index, 1);
+			tasksInFin.splice(destination.index, 0, taskToMove);
+			const newStart = { ...start, tasks: tasksInStart };
+			const newFin = { ...finish, tasks: tasksInFin };
+			dispatch(updateData(token, TYPES.COLUMN, newStart, newStart._id));
+			dispatch(updateData(token, TYPES.COLUMN, newFin, newFin._id));
 		}
-
-		dispatch(kanbanActions.taskReorder({ newColumns }));
 		return;
 	};
 
-	const addColumnHandler = () => {
-		setIsEditing(true);
+	const toggleAddColumn = () => {
+		setIsEditing((prev) => !prev);
 	};
 
-	const cancelHandler = () => {
-		setIsEditing(false);
-	};
-
-	const renderCols = columnOrder.map((colId, index) => {
-		const column = columns[colId];
-		const tasksInCol = column.taskIds.map((taskId) => tasks[taskId]);
-		return (
-			<Column
-				key={column.id}
-				boardId={boardId}
-				index={index}
-				column={column}
-				tasks={tasksInCol}
-				title={column.title}
-			/>
-		);
-	});
+	const renderCols = columns.map((col, index) => (
+		<Column key={col._id} index={index} boardId={boardId} column={col} />
+	));
 
 	const renderAddCol = isEditing ? (
-		<AddColumn onCancel={cancelHandler} boardId={boardId} />
+		<AddColumn
+			onCancel={toggleAddColumn}
+			boardId={boardId}
+			next={columns.length}
+		/>
 	) : (
-		<div className={styles.addColBtn} onClick={addColumnHandler}>
+		<div className={styles.addColBtn} onClick={toggleAddColumn}>
 			<AiOutlinePlus />
 			<h4>Add Column</h4>
 		</div>
 	);
 
 	return (
-		<div style={{ display: 'flex', flexDirection: 'row' }}>
-			<DragDropContext onDragEnd={dragEndHandler}>
-				<Droppable
-					droppableId="all-cols"
-					direction="horizontal"
-					type="column"
-				>
-					{(provided) => (
-						<div
-							className={styles.board}
-							{...provided.droppableProps}
-							ref={provided.innerRef}
-						>
-							{renderCols}
-							{provided.placeholder}
-						</div>
-					)}
-				</Droppable>
-			</DragDropContext>
-			{renderAddCol}
+		<div className="d-flex flex-column">
+			{/* Handle Board Manipulation */}
+			{/* Improve refactoring at Milestone 3 */}
+			<AddBoard />
+			{/* The kanban board itself */}
+			<div className="d-flex flex-row">
+				<DragDropContext onDragEnd={dragEndHandler}>
+					<Droppable
+						droppableId="all-cols"
+						direction="horizontal"
+						type="column"
+					>
+						{(provided) => (
+							<div
+								className={styles.board}
+								{...provided.droppableProps}
+								ref={provided.innerRef}
+							>
+								{renderCols}
+								{provided.placeholder}
+							</div>
+						)}
+					</Droppable>
+				</DragDropContext>
+				{renderAddCol}
+			</div>
 		</div>
 	);
 }

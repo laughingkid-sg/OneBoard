@@ -2,16 +2,23 @@ import React from 'react';
 import { ListGroup } from 'reactstrap';
 import SubtaskItem from './SubtaskItem';
 
-const TEST_SUBTASK = { id: 1, title: 'Test', isDone: false };
-
 function SubtaskList(props) {
-	const subtasks = props.subtasks;
-	return (
-		<ListGroup>
-			{/* TODO Probably set the key */}
-			<SubtaskItem subtask={TEST_SUBTASK} id={'1'} />
-		</ListGroup>
-	);
+	const { subtasks, taskId, onDelete, onUpdate } = props;
+
+	if (subtasks.length === 0) return <p>No Subtasks</p>;
+
+	const renderSubtasks = subtasks.map((subtask, index) => (
+		<SubtaskItem
+			subtask={subtask}
+			key={index}
+			taskId={taskId}
+			index={index}
+			onUpdate={onUpdate}
+		/>
+	));
+
+	// Maybe change to a table
+	return <ListGroup>{renderSubtasks.length > 0 && renderSubtasks}</ListGroup>;
 }
 
 export default SubtaskList;

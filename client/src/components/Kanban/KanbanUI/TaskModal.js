@@ -1,71 +1,121 @@
+import moment from 'moment';
 import React, { useContext, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
+import { DatePicker, Select } from 'antd';
 import {
 	Badge,
 	Button,
+	Input,
 	Modal,
 	ModalBody,
 	ModalFooter,
 	ModalHeader,
 } from 'reactstrap';
-import LabelSelect from './Label/LabelSelect';
 import styles from './TaskModal.module.css';
-import { updateTask } from '../../../store/kanban-actions';
+import { TYPES, updateData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import { AddSubtask, SubtaskList } from './Subtask';
 
-const LABEL_TYPES = [
-	'primary',
-	'secondary',
-	'success',
-	'info',
-	'warning',
-	'danger',
-];
+const { Option } = Select;
 
 function TaskModal(props) {
 	const dispatch = useDispatch();
+	const { task, columnTitle, write, onDelete } = props;
+	const boardLabels = useSelector((state) => state.kanban.labels);
 	const modalContext = useContext(ModalContext);
-	const taskName = useRef(props.title);
-	const description = useRef(props.description);
-	const [isWrite, setIsWrite] = useState(props.write || false);
-	const [beforeChange, setBeforeChange] = useState({
-		name: props.title,
-		description: props.description,
-	});
+	const nameRef = useRef();
+	const descriptionRef = useRef();
+	const [isWrite, setIsWrite] = useState(write || false);
+	const [beforeChange, setBeforeChange] = useState({ ...task });
+	const [subTasks, setSubTasks] = useState(task.subTask);
+	const [deadline, setDeadline] = useState(
+		task.expireAt ? moment(task.expireAt) : null
+	);
+	const [labelSelect, setLabelSelect] = useState(task.label);
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
 
 	const confirmEditHandler = () => {
-		if (taskName.current.value.trim() === '') {
+		if (nameRef.current.value.trim() === '') {
 			return;
 		}
 
+		let dateChanged = true;
+		let newExpiry;
+		if (deadline === null) {
+			console.log('New deadline null, checking against old value');
+			dateChanged = !!beforeChange.expireAt;
+		} else {
+			console.log('Deadline is a time, checking against old value');
+			dateChanged = !deadline.isSame(beforeChange.expireAt, 'day');
+		}
+		if (dateChanged) {
+			newExpiry = deadline.toDate().toISOString();
+		} else {
+			if (beforeChange.expireAt === '') newExpiry = '';
+			else newExpiry = new Date(beforeChange.expireAt).toISOString();
+		}
+
+		let newLabels;
+		let labelsChanged = false;
+		if (labelSelect.length !== beforeChange.label.length) {
+			newLabels = labelSelect;
+			labelsChanged = true;
+		}
+
+		if (!labelsChanged) {
+			for (let i = 0; i < labelSelect.length; i++) {
+				const labelSel = labelSelect[i];
+				if (!beforeChange.label.some((label) => label === labelSel)) {
+					labelsChanged = true;
+				}
+			}
+		}
+
+		// ? Existing task changes not tested yet
+		let subTaskChanged = subTasks.length !== task.subTask.length;
+		let newSubtask = subTaskChanged ? subTasks : [];
+
+		// If lengths are the same manually find changes
+		if (!subTaskChanged) {
+			for (let i = 0; i < subTasks.length; i++) {
+				if (
+					JSON.stringify(subTasks[i]) ===
+						JSON.stringify(task.subTask[i]) ||
+					subTasks[i]._id
+				) {
+					newSubtask.push(subTasks[i]);
+					// Existing data added is not counted as a change
+					if (!subTasks[i]._id) subTaskChanged = true;
+				}
+			}
+		}
+
 		if (
-			taskName.current.value === beforeChange.name &&
-			description.current.value === beforeChange.description
+			nameRef.current.value === beforeChange.name &&
+			descriptionRef.current.value === beforeChange.description &&
+			!dateChanged &&
+			!labelsChanged &&
+			!subTaskChanged
 		) {
+			console.log('No changes at all');
 			toggleEditHandler();
 			return;
 		}
 
 		const updatedTask = {
-			name: taskName.current.value,
-			description: description.current.value,
+			name: nameRef.current.value,
+			description: descriptionRef.current.value,
+			order: beforeChange.order,
+			expireAt: newExpiry,
+			subTask: newSubtask,
+			label: newLabels,
 		};
 
+		dispatch(updateData(token, TYPES.TASK, updatedTask, task._id));
 		setBeforeChange(updatedTask);
-		dispatch(
-			updateTask(
-				props.boardId,
-				props.columnId,
-				props.id,
-				updatedTask,
-				token
-			)
-		);
 		toggleEditHandler();
 	};
 
@@ -73,8 +123,26 @@ function TaskModal(props) {
 		setIsWrite((prevWrite) => !prevWrite);
 	};
 
-	const deleteTaskHandler = () => {
-		props.onDelete(props.id, props.title, props.index);
+	const dateChangeHandler = (date, dateString) => {
+		setDeadline(date);
+	};
+
+	const addSubTaskHandler = (subtask) => {
+		const newSubtasks = [...subTasks];
+		newSubtasks.push(subtask);
+		setSubTasks(newSubtasks);
+	};
+
+	const updateSubtaskHandler = (index, subtask = null) => {
+		const newSubtasks = [...subTasks];
+		if (subtask) newSubtasks.splice(index, 1, subtask);
+		else newSubtasks.splice(index, 1);
+		setSubTasks(newSubtasks);
+	};
+
+	const updateLabelHandler = (value, option) => {
+		console.log(value);
+		setLabelSelect(value);
 	};
 
 	const renderButtons = isWrite ? (
@@ -88,7 +156,7 @@ function TaskModal(props) {
 		</React.Fragment>
 	) : (
 		<React.Fragment>
-			<Button onClick={deleteTaskHandler} color="danger">
+			<Button onClick={onDelete} color="danger">
 				Delete Task
 			</Button>
 			<Button onClick={toggleEditHandler} color="warning">
@@ -96,6 +164,27 @@ function TaskModal(props) {
 			</Button>
 		</React.Fragment>
 	);
+
+	// const renderLabel = () => {
+	// 	if (!beforeChange.label) return 'No label';
+	// 	const label = boardLabels.find(
+	// 		(bLabel) => bLabel._id === beforeChange.label
+	// 	);
+	// 	return <Badge className={`bg-${label.type}`}>{label.name}</Badge>;
+	// };
+	const renderLabel =
+		beforeChange.label.length === 0
+			? 'No label'
+			: beforeChange.label.map((bLabel) => {
+					const label = boardLabels.find(
+						(label) => label._id === bLabel
+					);
+					return (
+						<Badge className={`bg-${label.type} mx-1`}>
+							{label.name}
+						</Badge>
+					);
+			  });
 
 	return (
 		<Modal
@@ -107,53 +196,98 @@ function TaskModal(props) {
 				onClick={modalContext.hideModal}
 				className={`${styles.close} me-3 mt-3`}
 			/>
-			<ModalHeader>
+			<ModalHeader tag="div">
 				<React.Fragment>
 					{!isWrite && (
 						<h2 className={styles.title}>{beforeChange.name}</h2>
 					)}
 					{isWrite && (
-						<input
+						<Input
 							type="text"
 							id="taskTitle"
-							ref={taskName}
+							innerRef={nameRef}
 							defaultValue={beforeChange.name}
 							className={styles.input}
 						/>
 					)}
-					<p className={styles.subtitle}>in {props.columnTitle}</p>
+					<p className={styles.subtitle}>in {columnTitle}</p>
 				</React.Fragment>
 			</ModalHeader>
 			<ModalBody>
-				<h3 className={styles.header}>Description</h3>
+				<h3 className={`styles.header mt-2`}>Description</h3>
 				{!isWrite && (
 					<p className={styles.description}>
 						{beforeChange.description || ' '}
 					</p>
 				)}
 				{isWrite && (
-					<textarea
-						rows="10"
-						ref={description}
+					<Input
+						type="textarea"
+						innerRef={descriptionRef}
 						defaultValue={beforeChange.description}
 						className={styles.input}
 					/>
 				)}
 
+				{/* Deadline */}
+				<h3 className="mt-2">Deadline</h3>
+				{isWrite && (
+					<DatePicker
+						allowClear
+						defaultValue={deadline}
+						onChange={dateChangeHandler}
+						format={'DD/MM/YYYY'}
+					/>
+				)}
+				{!isWrite && (
+					<p>
+						{deadline
+							? deadline.format('DD/MM/YYYY')
+							: 'No deadline'}
+					</p>
+				)}
+
 				{/* Labels */}
-				<h3>Labels</h3>
-				{/* TODO Style this */}
-				<div className="d-flex align-items-center">
-					{/* DUMMY LABEL - to be replaced by a map()*/}
-					<Badge className="bg-primary m-0">Low Priority</Badge>
-					<LabelSelect labelTypes={LABEL_TYPES} />
-				</div>
+				<h3 className="mt-2">Labels</h3>
+				{isWrite ? (
+					<Select
+						showSearch
+						allowClear
+						placeholder="Select label"
+						style={{ minWidth: '200px', width: 'auto' }}
+						value={labelSelect}
+						onChange={updateLabelHandler}
+						mode="multiple"
+					>
+						{boardLabels
+							.filter((label) => !!label._id)
+							.map((label) => (
+								<Option value={label._id} key={label._id}>
+									<Badge className={`bg-${label.type}`}>
+										{label.name}
+									</Badge>
+								</Option>
+							))}
+					</Select>
+				) : (
+					<div className="d-flex align-items-center">
+						{renderLabel}
+					</div>
+				)}
 
 				{/* Subtasks */}
-				<h3>Subtasks </h3>
-				<AddSubtask />
-				{/* TODO Supply subtasks into SubtaskList */}
-				<SubtaskList />
+				<h3 className="mt-2">Subtasks </h3>
+				{isWrite && (
+					<AddSubtask
+						taskId={task._id}
+						addSubtask={addSubTaskHandler}
+					/>
+				)}
+				<SubtaskList
+					subtasks={subTasks}
+					taskId={task._id}
+					onUpdate={updateSubtaskHandler}
+				/>
 			</ModalBody>
 
 			<ModalFooter>{renderButtons}</ModalFooter>

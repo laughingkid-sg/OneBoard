@@ -1,11 +1,12 @@
 import { useRef } from 'react';
 import { useCookies } from 'react-cookie';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import styles from './AddTask.module.css';
-import { addData } from '../../store/kanban-actions';
+import { TYPES, addData } from '../../../store/kanban-actions';
 
 const AddTask = (props) => {
+	const { next: order, columnId, onCancel } = props;
 	const dispatch = useDispatch();
 	const taskName = useRef();
 	const [cookies] = useCookies(['t']);
@@ -13,12 +14,14 @@ const AddTask = (props) => {
 
 	const addTaskHandler = () => {
 		if (taskName.current.value.trim() === '') {
-			props.onCancel();
+			onCancel();
 			return;
 		}
-		const title = taskName.current.value.trim();
-		dispatch(addData(props.boardId, token, title, props.columnId));
-		props.onCancel();
+
+		const name = taskName.current.value.trim();
+		const newTask = { name, order };
+		dispatch(addData(token, TYPES.TASK, newTask, columnId));
+		onCancel();
 	};
 
 	const cancelHandler = () => {
@@ -41,10 +44,7 @@ const AddTask = (props) => {
 				<button onClick={addTaskHandler} className={styles.confirm}>
 					Add Task
 				</button>
-				<AiOutlineClose
-					onClick={props.onCancel}
-					className={styles.cancel}
-				/>
+				<AiOutlineClose onClick={onCancel} className={styles.cancel} />
 			</div>
 		</div>
 	);
