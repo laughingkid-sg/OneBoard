@@ -1,20 +1,23 @@
 import { useContext } from 'react';
+import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { AiOutlineClose } from 'react-icons/ai';
 import ModalContext from '../../store/ModalContext';
 import styles from './DeleteNote.module.css';
-import { noteActions } from '../../store/note';
+import { deleteNote } from '../../store/note-actions';
 
 const DeleteNote = (props) => {
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const { note } = props;
 	const modalContext = useContext(ModalContext);
 	const dispatch = useDispatch();
 
 	const deleteHandler = () => {
 		console.log('Delete Task');
-		const { id } = note;
-		dispatch(noteActions.deleteNote(id));
+		const { _id } = note;
+		dispatch(deleteNote(token, _id));
 		modalContext.hideModal();
 	};
 
@@ -25,7 +28,7 @@ const DeleteNote = (props) => {
 				className={`${styles.close} me-3 mt-3`}
 			/>
 			<ModalHeader>Delete Note</ModalHeader>
-			<ModalBody>Are you sure you want to delete {note.title}?</ModalBody>
+			<ModalBody>Are you sure you want to delete {note.name}?</ModalBody>
 			<ModalFooter>
 				<Button color="danger" onClick={deleteHandler}>
 					Delete Task

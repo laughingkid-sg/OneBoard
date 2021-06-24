@@ -1,53 +1,40 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = { notes: {}, keys: [], isEmpty: true };
+const initialState = { notes: [], isEmpty: true };
 
 const noteSlice = createSlice({
 	name: 'note',
 	initialState,
 	reducers: {
-		// ! Simple add operation to be superseded by API
 		addNote(state, action) {
-			const newId = `${Object.keys(state.notes).length + 1}`;
-			const newNote = { ...action.payload, id: newId };
-			const newState = {
-				notes: { ...state.notes, [newId]: newNote },
-				keys: [...state.keys, newId],
-				isEmpty: false,
-			};
-			return newState;
+			const note = action.payload;
+			state.notes = [...state.notes, note];
+			state.isEmpty = false;
 		},
-		// Used to replace state retrieved from API
-		replaceNotes(state, action) {
-			console.log('Replace Notes called');
-			console.log(action.payload);
-			return action.payload;
-		},
-		updateNotes(state, action) {
-			console.log('Update Notes called');
-			const { isTitle, newData, noteId } = action.payload;
-			const newNote = state.notes[noteId];
-			if (isTitle) {
-				newNote.title = newData;
-			} else {
-				newNote.description = newData;
-			}
-
-			state.notes = { ...state.notes, [noteId]: newNote };
+		updateNote(state, action) {
+			const newNote = action.payload;
+			state.notes = state.notes.map((note) =>
+				note._id === newNote._id ? newNote : note
+			);
 		},
 		deleteNote(state, action) {
-			delete state.notes[action.payload];
-			const newKeys = state.keys.filter((id) => id !== action.payload);
-			const isEmpty = newKeys.length === 0;
-			state.keys = newKeys;
-			state.isEmpty = isEmpty;
+			const id = action.payload;
+			if (state.notes.length === 1) state.isEmpty = true;
+			state.notes = state.notes.filter((note) => note._id !== id);
+			console.log(state.notes);
+		},
+		replace(state, action) {
+			console.log('replace notes');
+			const notes = action.payload;
+			const isEmpty = notes.length === 0;
+			return { notes, isEmpty };
 		},
 		clear(state) {
 			return initialState;
 		},
-		store(state) {
-			localStorage.setItem('notes', JSON.stringify(state));
-		},
+		// store(state) {
+		// 	localStorage.setItem('notes', JSON.stringify(state));
+		// },
 	},
 });
 

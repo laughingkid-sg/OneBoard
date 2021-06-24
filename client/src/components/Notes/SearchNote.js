@@ -1,4 +1,5 @@
 import React, { useState, useContext, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import {
 	Button,
 	Modal,
@@ -13,62 +14,41 @@ import { AiOutlineClose } from 'react-icons/ai';
 import ModalContext from '../../store/ModalContext';
 import styles from './DeleteNote.module.css';
 
-const ITEMS = {
-	'task-1': {
-		id: 'task-1',
-		title: 'Sciencey',
-		description: 'mitochondria is the powerhouse of the cell',
-	},
-	'task-2': {
-		id: 'task-2',
-		title: 'Prof Aaron',
-		description: "it's fun time!",
-	},
-	'task-3': {
-		id: 'task-3',
-		title: 'Lost somewhere',
-		description: 'Why am I writing this',
-	},
-};
-
 function SearchNote(props) {
+	const notes = useSelector((state) => state.note.notes);
 	const modalContext = useContext(ModalContext);
 	const queryRef = useRef('');
-	const [filteredList, setFilteredList] = useState(ITEMS);
+	const [filteredList, setFilteredList] = useState(notes);
 	const [checkBox, setCheckBox] = useState({
-		title: true,
+		name: true,
 		description: true,
 	});
 
-	// TODO Should change to useEffect?
-	const toggleTitleHandler = () => {
-		setCheckBox({ ...checkBox, title: !checkBox.title });
+	const toggleCheckBox = (e) => {
+		const { id, checked } = e.target;
+		if (id === 'title') {
+			setCheckBox({ ...checkBox, name: checked });
+		} else {
+			setCheckBox({ ...checkBox, description: !checkBox.description });
+		}
 		searchHandler();
 	};
 
-	const toggleDescriptionHandler = () => {
-		setCheckBox({ ...checkBox, description: !checkBox.description });
-		searchHandler();
-	};
-
+	// Possible memo (useCallback?)
 	const searchHandler = () => {
 		const query = queryRef.current.value.toLowerCase();
-		if (!query || !(checkBox.description || checkBox.title)) {
-			setFilteredList(ITEMS);
+		if (!query || !(checkBox.description || checkBox.name)) {
+			setFilteredList(notes);
 		} else {
-			let hits = {};
-			for (const key in ITEMS) {
-				const note = ITEMS[key];
-				const lowerTitle = note.title.toLowerCase();
+			let hits = notes.filter((note) => {
+				const lowerName = note.name.toLowerCase();
 				const lowerDesc = note.description.toLowerCase();
-				if (
-					(lowerTitle.includes(query) && checkBox.title) ||
+				return (
+					(lowerName.includes(query) && checkBox.name) ||
 					(lowerDesc.includes(query) && checkBox.description)
-				) {
-					hits[note.id] = note;
-				}
-			}
-			// ? If the filtered list doesn't change no need to rerender
+				);
+			});
+			// console.log(hits);
 			setFilteredList(hits);
 		}
 	};
@@ -92,8 +72,8 @@ function SearchNote(props) {
 					type="checkbox"
 					id="title"
 					name="title"
-					checked={checkBox.title}
-					onChange={toggleTitleHandler}
+					checked={checkBox.name}
+					onChange={toggleCheckBox}
 				/>
 				<Label for="title">Title</Label>
 				<Input
@@ -101,7 +81,7 @@ function SearchNote(props) {
 					id="description"
 					name="description"
 					checked={checkBox.description}
-					onChange={toggleDescriptionHandler}
+					onChange={toggleCheckBox}
 				/>
 				<Label for="description">Description</Label>
 				<FilteredTable filtered={filteredList} goTo={props.goTo} />
@@ -117,26 +97,23 @@ function SearchNote(props) {
 
 const FilteredTable = (props) => {
 	const { filtered } = props;
-	const keys = Object.keys(filtered);
-	const filteredArr = keys.map((key) => filtered[key]);
 
-	const goToHandler = (key) => {
-		props.goTo(key);
-	};
-
-	const renderListItems = filteredArr.map((note, index) => (
+	const renderListItems = filtered.map((note, index) => (
 		<tr
-			onClick={goToHandler.bind(null, keys[index])}
-			key={note.id}
+			// Change to anon arrow function
+			onClick={() => {
+				props.goTo(index);
+			}}
+			key={note._id}
 			style={{ cursor: 'pointer' }}
 		>
 			<td>{index + 1}</td>
-			<td>{note.title}</td>
+			<td>{note.name}</td>
 			<td>{note.description}</td>
 		</tr>
 	));
 
-	if (keys.length === 0) return <h4>No results!</h4>;
+	if (filtered.length === 0) return <h4>No results!</h4>;
 
 	return (
 		<Table striped>

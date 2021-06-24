@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlinePlus } from 'react-icons/ai';
@@ -32,7 +32,7 @@ function Board(props) {
 			let strBoard = localStorage.getItem('currentBoard');
 			let jsonBoard = JSON.parse(strBoard);
 
-			if (jsonBoard) console.log(jsonBoard.id, currentId);
+			// if (jsonBoard) console.log(jsonBoard.id, currentId);
 			if (jsonBoard && jsonBoard.id !== currentId && currentId) {
 				console.log('Calling getBoard');
 				dispatch(getBoard(token, currentId));
