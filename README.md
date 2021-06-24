@@ -2,13 +2,19 @@
 
 ## About OneBoard
 
-OneBoard is a single-page web application whcih centralises the user's tasks, schedules and expesnes to improve productivity. 
+OneBoard is a single-page web application which centralises the user's tasks, schedules and expesnes to improve productivity. 
 
 OneBoard would consist of a dashboard with the supporting features:
 - Kanban Board
 - Calendar
 - Expense Tracker
 - Notes
+
+## Frameworks used
+- [React](https://reactjs.org/) 
+- [Redux](https://redux.js.org/) and [Redux Toolkit](https://github.com/reduxjs/redux-toolkit) to manage application data
+- [reactstrap](https://github.com/reactstrap/reactstrap) for UI components
+- [ant-design](https://github.com/ant-design/ant-design/) for UI components
 
 ## Features
 **Completed Features (as of 24 Jun 21)**
