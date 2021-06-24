@@ -4,7 +4,7 @@ const Column = require("../models/column");
 const Task = require("../models/task");
 const ObjectId = require('mongodb').ObjectID;
 
-function getOrder(boardId) {
+exports.setColOrder = (req, res, next) => {
     Column.aggregate(
         [
             { 
@@ -29,7 +29,7 @@ function getOrder(boardId) {
             }, 
             { 
                 "$match" : { 
-                    "boards._id" : ObjectId(boardId)
+                    "boards._id" : ObjectId(req.board._id)
                 }
             }, 
             { 
@@ -50,14 +50,15 @@ function getOrder(boardId) {
             }
         ]
     ).exec((err, col) => {
-        console.log(col[0]['MAX(columns᎐order)']);
-        return col[0]['MAX(columns᎐order)'];
-    })
+        req.body.order = parseInt(col[0]['MAX(columns᎐order)'], 10) + 1;
+        next();
+    })    
 }
 
 exports.createColumn = async (req, res) => {
     try {
         if (req.profile.boards.some(board => { return board.equals(req.board._id) })) {
+       
             let column = new Column(req.body); 
             await column.validate(req.body); 
 
@@ -72,12 +73,11 @@ exports.createColumn = async (req, res) => {
             });
         }    
     } catch (err) {
-        console.log(err);
-        return res.status(400).json({
+        return res.status(400).json({     
             errorCode: 0,
-            message: "Unknow error"
+            message: err.message
         })
-       }
+    }
 }
 
 exports.columnById = (req, res, next, id) => {
@@ -132,7 +132,6 @@ exports.columnById = (req, res, next, id) => {
         ]
       
     ).exec((err, col) => {
-        console.log(col)
         if (err || !col || col.length == 0) {
             return res.status(400).json({
                 error: "Column not found"
@@ -158,7 +157,6 @@ exports.columnById = (req, res, next, id) => {
             });
         }    
     } catch (err) {
-        console.log(err);
         return res.status(400).json({
             errorCode: 0,
             message: "Unknow error"
@@ -184,7 +182,6 @@ exports.updateColumn = async (req, res) => {
             });
         }    
     } catch (err) {
-        console.log(err);
         return res.status(400).json({
             errorCode: 0,
             message: "Unknow error"
@@ -213,7 +210,6 @@ exports.delColumn = async (req, res) => {
             });
         }    
     } catch (err) {
-        console.log(err);
         return res.status(400).json({
             errorCode: 0,
             message: "Unknow error"

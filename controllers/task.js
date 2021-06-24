@@ -5,6 +5,57 @@ const Task = require("../models/task");
 const User = require("../models/user");
 const ObjectId = require('mongodb').ObjectID;
 
+exports.setTaskOrder = (req, res, next) => {
+    Task.aggregate(
+        [
+            { 
+                "$project" : { 
+                    "_id" : 0, 
+                    "tasks" : "$$ROOT"
+                }
+            }, 
+            { 
+                "$lookup" : { 
+                    "localField" : "tasks._id", 
+                    "from" : "columns", 
+                    "foreignField" : "tasks", 
+                    "as" : "columns"
+                }
+            }, 
+            { 
+                "$unwind" : { 
+                    "path" : "$columns", 
+                    "preserveNullAndEmptyArrays" : false
+                }
+            }, 
+            { 
+                "$match" : { 
+                    "columns._id" : ObjectId(req.column._id)
+                }
+            }, 
+            { 
+                "$group" : { 
+                    "_id" : { 
+    
+                    }, 
+                    "MAX(tasks᎐order)" : { 
+                        "$max" : "$tasks.order"
+                    }
+                }
+            }, 
+            { 
+                "$project" : { 
+                    "MAX(tasks᎐order)" : "$MAX(tasks᎐order)", 
+                    "_id" : 0
+                }
+            }
+        ]
+    ).exec((err, task) => {
+        req.body.order = parseInt(task[0]['MAX(tasks᎐order)'], 10) + 1;
+        next();
+    })    
+}
+
 exports.createTask = async (req, res) => {
     try {
         if (req.profile.boards.some(board => board.equals(req.board._id)) && 
