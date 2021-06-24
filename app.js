@@ -10,6 +10,7 @@ const authRoutes = require('./routes/auth')
 const userRoutes = require('./routes/user')
 const kanbanRoutes = require('./routes/kanban')
 const noteRoutes = require('./routes/note')
+const eventRoutes = require('./routes/event')
 
 // app
 const app = express()
@@ -36,6 +37,7 @@ app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", kanbanRoutes);
 app.use("/api", noteRoutes);
+app.use("/api", eventRoutes);
 
 const port = process.env.PORT || 8000
 

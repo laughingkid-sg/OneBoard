@@ -37,20 +37,18 @@ exports.noteById = (req, res, next, id) => {
                         req.profile.notes.remove(id);
                         User.findByIdAndUpdate(req.profile.id, { $set: req.profile }, { new: true })
                             .then( user => res.status(400).json({ message: user.notes }),
-                                err => res.status(400).json({ notes: err.message } ))
+                                err => res.status(400).json({ message: err.message } ))
                             .catch(err => res.status(400).json({ message: err.message } ))                     
                     } else {
                      req.note = note; 
                      next(); 
                     }
-                    },
+                },
                 err => res.status(400).json({ message: err.message } ))
                 .catch(err => res.status(400).json({ message: err.message } ))
         } else {
             res.status(400).json({ message: "unauth" })
         }
-  
-
 }
 
 exports.getNote = (req, res) => {
