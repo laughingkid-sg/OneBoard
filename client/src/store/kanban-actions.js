@@ -2,7 +2,6 @@ import { kanbanActions } from './kanban';
 import { userActions } from './user';
 import { createColumn, createLabels } from '../lib/kanban';
 
-// If none its board
 export const TYPES = {
 	TASK: 'TASK',
 	COLUMN: 'COLUMN',
