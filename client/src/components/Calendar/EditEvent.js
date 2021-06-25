@@ -1,38 +1,43 @@
 import moment from 'moment';
 import React, { useState, useContext, useRef } from 'react';
+import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
-import { Button, Form, Input, Label, ModalBody, ModalFooter } from 'reactstrap';
+import {
+	Alert,
+	Button,
+	Form,
+	FormFeedback,
+	Input,
+	Label,
+	ModalBody,
+	ModalFooter,
+} from 'reactstrap';
 import { DatePicker } from 'antd';
 import 'antd/dist/antd.css';
 import EventModal from './EventModal';
 import ModalContext from '../../store/ModalContext';
-import { eventActions } from '../../store/event';
+import { addEvent } from '../../store/event-actions';
 import useInput from '../hooks/use-input';
 import { FormGroup } from 'reactstrap';
+import { initializeEvent } from '../../lib/event';
 
-function initializeEvent(event, addStart) {
-	const isAdd = !!!event;
-	const title = event ? event.title : '';
-	const dateTime = event
-		? [moment(event.start), moment(event.end)]
-		: [moment(addStart), moment(addStart).add(1, 'hour')];
-	const desc = event ? event.desc : '';
-	const allDay = event ? event.allDay : false;
-	return { isAdd, allDay, title, dateTime, desc, allDay };
-}
-
+// TODO Add Error Banner
 function EditEvent(props) {
-	const dispatch = useDispatch();
 	const { event, addStart } = props;
+	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const initEvent = initializeEvent(event, addStart);
 	const modalContext = useContext(ModalContext);
+
 	const {
 		value: title,
 		isValid: titleIsValid,
+		hasError: titleHasError,
 		onChange: titleOnChange,
 		onBlur: titleOnBlur,
 	} = useInput((value) => value.trim() !== '', initEvent.title);
-	const descRef = useRef(initEvent.desc);
+	const descRef = useRef();
 	const [dateTime, setDateTime] = useState(initEvent.dateTime);
 	const [allDay, setAllDay] = useState(initEvent.allDay);
 
@@ -46,7 +51,10 @@ function EditEvent(props) {
 		setDateTime(dates);
 	};
 
-	const submitHandler = () => {
+	// TODO Add places
+	const submitHandler = (e) => {
+		e.preventDefault();
+
 		const newDesc = descRef.current.value;
 		let [start, end] = dateTime;
 
@@ -70,33 +78,35 @@ function EditEvent(props) {
 			if (allDay) {
 				time = time.startOf('day');
 			}
-			return time.valueOf();
+			return time.toISOString();
 		});
 
 		// ! Handled by POST Requests
+		// * Add Event
 		if (initEvent.isAdd) {
-			const payload = {
+			const eventReq = {
 				start: startSerialize,
 				end: endSerialize,
 				allDay,
-				title,
-				desc: newDesc,
+				name: title,
+				description: newDesc,
 			};
-			dispatch(eventActions.addEvent(payload));
+			dispatch(addEvent(token, eventReq));
 			modalContext.hideModal();
 			return;
 		}
 
+		// * Updating Events
 		// Serialize for Redux management
-		const payload = {
-			event: { ...event, allDay, title, desc: newDesc },
-			start: startSerialize,
-			end: endSerialize,
-		};
+		// const payload = {
+		// 	event: { ...event, allDay, title, desc: newDesc },
+		// 	start: startSerialize,
+		// 	end: endSerialize,
+		// };
 
-		dispatch(eventActions.updateEvent(payload));
+		// dispatch(eventActions.updateEvent(payload));
 
-		returnToView({ ...payload.event, start, end });
+		// returnToView({ ...payload.event, start, end });
 	};
 
 	const cancelHandler = () => {
@@ -121,7 +131,11 @@ function EditEvent(props) {
 							value={title}
 							onChange={titleOnChange}
 							onBlur={titleOnBlur}
+							invalid={titleHasError}
 						/>
+						<FormFeedback invalid>
+							Title cannot be empty.
+						</FormFeedback>
 					</FormGroup>
 					<FormGroup className="mb-2">
 						<Label for="dateRange">Duration</Label>
@@ -137,7 +151,7 @@ function EditEvent(props) {
 							}
 							style={{ width: '85%' }}
 							onChange={changeDateTimeHandler}
-							format="DD/MM/YYYY h:mm a"
+							format={allDay ? 'DD/MM/YYYY' : 'DD/MM/YYYY h:mm a'}
 							value={dateTime}
 						/>
 						<div className="d-flex flex-row align-items-center">
@@ -145,8 +159,8 @@ function EditEvent(props) {
 								type="checkbox"
 								id="allDay"
 								name="allDay"
-								onChange={() => setAllDay(!allDay)}
-								checked={allDay}
+								onChange={(e) => setAllDay(e.target.checked)}
+								defaultChecked={initEvent.allDay}
 							/>
 							<Label
 								for="allDay"
@@ -170,7 +184,7 @@ function EditEvent(props) {
 				</Form>
 			</ModalBody>
 			<ModalFooter>
-				<Button color="success" onClick={submitHandler}>
+				<Button color="success" type="submit" onClick={submitHandler}>
 					Submit
 				</Button>
 				<Button color="danger" outline onClick={cancelHandler}>

@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import { Button, ModalBody, ModalFooter } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import EventModal from './EventModal';
-import { eventActions } from '../../store/event';
 import ModalContext from '../../store/ModalContext';
+import { deleteEvent } from '../../store/event-actions';
 
 function DeleteEvent(props) {
 	const { event } = props;
@@ -11,7 +11,9 @@ function DeleteEvent(props) {
 	const dispatch = useDispatch();
 
 	const deleteHandler = () => {
-		dispatch(eventActions.deleteEvent(event.id));
+		// ! Action creator
+		dispatch(deleteEvent(event._id));
+		// dispatch(eventActions.deleteEvent(event._id));
 		modalContext.hideModal();
 	};
 

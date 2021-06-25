@@ -1,61 +1,56 @@
 import moment from 'moment';
 import React, { useEffect, useContext } from 'react';
+import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { Calendar as Cal, momentLocalizer } from 'react-big-calendar';
 import EventModal from './EventModal';
 import { eventActions } from '../../store/event';
+import { fetchEvents } from '../../store/event-actions';
 import ModalContext from '../../store/ModalContext';
+import { convertToDate, updateEventTime } from '../../lib/event';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-// May be changed for other styles
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Cal);
 
-function serializeEvent(data) {
-	const { start: newStart, end: newEnd, event } = data;
-	const { start: prevStart, end: prevEnd } = event;
-	const serialDate = [newStart, newEnd, prevStart, prevEnd].map((date) =>
-		date.toJSON()
-	);
-	return {
-		...data,
-		start: serialDate[0],
-		end: serialDate[1],
-		event: {
-			...event,
-			start: serialDate[2],
-			end: serialDate[3],
-		},
-	};
-}
-
 function Calendar() {
-	const modalContext = useContext(ModalContext);
-	const events = useSelector((state) => state.event);
 	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
+	const modalContext = useContext(ModalContext);
+	const events = useSelector((state) => state.event).map(convertToDate);
 
 	useEffect(() => {
 		function eventsFromStorage() {
 			const stringEvents = localStorage.getItem('event');
 			const parsedEvents = JSON.parse(stringEvents);
 			if (parsedEvents) {
-				dispatch(eventActions.replace(parsedEvents));
-			} else {
-				console.log('Fetch events from server');
+				console.log(parsedEvents);
+				if (parsedEvents.length !== 0) {
+					console.log('Mount from storage');
+					dispatch(eventActions.replace(parsedEvents));
+					return;
+				}
 			}
+			console.log('Fetch events from server');
+			const start = moment().startOf('month').toDate();
+			const end = moment().endOf('month').toDate();
+			dispatch(fetchEvents(token, start, end));
 		}
 		eventsFromStorage();
 		return () => {
 			dispatch(eventActions.store());
 		};
-	}, [dispatch]);
+	}, [dispatch, token]);
 
 	const eventDropHandler = (data) => {
-		// ! To be placed within the event action creator
-		const serialized = serializeEvent(data);
-		dispatch(eventActions.updateEvent(serialized));
+		alert('To be updated');
+		console.log(data);
+		const updated = updateEventTime(data);
+		// ! POST To Update
+		// dispatch(updateEvent(token,updated));
 	};
 
 	const addEventHandler = (data) => {
