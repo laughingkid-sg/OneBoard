@@ -75,7 +75,7 @@ function Calendar() {
 				defaultView={'day'}
 				events={events}
 				localizer={localizer}
-				style={{ height: '500px' }}
+				style={{ height: '55vh' }}
 				onEventDrop={eventDropHandler}
 				onEventResize={eventDropHandler}
 				onSelectSlot={addEventHandler}

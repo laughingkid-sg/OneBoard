@@ -117,7 +117,7 @@ function Notes() {
 	const colorIcons = colorIcon(isEmpty);
 
 	return (
-		<div className="d-flex flex-column justify-content-between">
+		<div className="d-flex flex-column justify-content-between h-100">
 			<div>
 				{isEmpty || !notes[index] ? (
 					<p>No notes. Create one by pressing the "+" icon below</p>
@@ -150,7 +150,9 @@ const NoteContent = (props) => {
 				No description. Click to add description
 			</p>
 		) : (
-			<p onClick={descriptionChange}>{note.description}</p>
+			<p onClick={descriptionChange} style={{ whiteSpace: 'pre-line' }}>
+				{note.description}
+			</p>
 		);
 
 	const titleComponent = isEdit.title ? (

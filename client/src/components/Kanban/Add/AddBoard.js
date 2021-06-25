@@ -15,7 +15,7 @@ function AddBoard(props) {
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
 	const boards = useSelector((state) => state.user.boards);
-	const selectedBoard = { boards };
+	const { selectedBoard } = boards;
 	const selectBoardRef = useRef();
 	const [boardAdd, setBoardAdd] = useState(false);
 	const modalContext = useContext(ModalContext);

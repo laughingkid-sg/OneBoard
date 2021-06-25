@@ -27,6 +27,7 @@ function DeleteModal(props) {
 
 	return (
 		<Modal isOpen={modalContext.isVisible} toggle={modalContext.hideModal}>
+			{console.log(id)}
 			<ModalHeader>
 				Are you sure you want to delete this{' '}
 				{props.isCol ? 'Column' : 'Task'}?
