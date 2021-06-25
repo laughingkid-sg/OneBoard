@@ -5,7 +5,6 @@ export default function useError() {
 	const [errorMsg, setErrorMsg] = useState('');
 
 	useEffect(() => {
-		// console.log('change errorMsg', errorMsg);
 		if (!errorMsg) setError(false);
 		else setError(true);
 		return () => {};
@@ -14,7 +13,9 @@ export default function useError() {
 	useEffect(() => {
 		let timer;
 		if (error) {
-			timer = setTimeout(() => changeMessage(''), 5000);
+			timer = setTimeout(() => {
+				changeMessage('');
+			}, 5000);
 		}
 
 		return () => {
