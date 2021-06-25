@@ -20,11 +20,11 @@ function Dashboard(props) {
 						Expense summary goes here
 					</Card>
 				</div>
-				<Card className="col-5">
+				<Card className="col-5 shadow">
 					<Calendar />
 				</Card>
 			</div>
-			<Card className="row mb-5">
+			<Card className="row mb-5 shadow">
 				<Board />
 			</Card>
 		</div>

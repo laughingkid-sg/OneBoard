@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { AiOutlinePlus } from 'react-icons/ai';
+import { Card, CardHeader, CardFooter } from 'reactstrap';
 import Task from './Task';
 import AddTask from './Add/AddTask';
 import styles from './Column.module.css';
@@ -41,12 +42,14 @@ function Column(props) {
 	));
 
 	const renderAddTask = isEditingTask ? (
-		<AddTask
-			boardId={boardId}
-			columnId={columnId}
-			onCancel={cancelTaskHandler}
-			next={tasks.length}
-		/>
+		<CardFooter>
+			<AddTask
+				boardId={boardId}
+				columnId={columnId}
+				onCancel={cancelTaskHandler}
+				next={tasks.length}
+			/>
+		</CardFooter>
 	) : (
 		<div className={styles.addTaskBtn} onClick={addTaskHandler}>
 			<AiOutlinePlus className={styles.addTaskIcon} />
@@ -69,14 +72,17 @@ function Column(props) {
 	return (
 		<Draggable draggableId={columnId} index={colIndex}>
 			{(provided) => (
-				<div
+				<Card
 					className={styles.container}
 					{...provided.draggableProps}
-					ref={provided.innerRef}
+					innerRef={provided.innerRef}
 				>
-					<div className={styles.title} {...provided.dragHandleProps}>
+					<CardHeader
+						className={styles.title}
+						{...provided.dragHandleProps}
+					>
 						{renderEditCol}
-					</div>
+					</CardHeader>
 					<Droppable droppableId={columnId} type="task">
 						{(provided) => (
 							<React.Fragment>
@@ -91,7 +97,7 @@ function Column(props) {
 							</React.Fragment>
 						)}
 					</Droppable>
-				</div>
+				</Card>
 			)}
 		</Draggable>
 	);

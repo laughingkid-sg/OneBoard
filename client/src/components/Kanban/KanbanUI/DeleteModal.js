@@ -15,7 +15,6 @@ function DeleteModal(props) {
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
 
-	// ! Not working yet
 	const deleteHandler = () => {
 		dispatch(deleteData(token, type, id));
 		if (type == TYPES.BOARD) {
@@ -27,7 +26,6 @@ function DeleteModal(props) {
 
 	return (
 		<Modal isOpen={modalContext.isVisible} toggle={modalContext.hideModal}>
-			{console.log(id)}
 			<ModalHeader>
 				Are you sure you want to delete this{' '}
 				{props.isCol ? 'Column' : 'Task'}?

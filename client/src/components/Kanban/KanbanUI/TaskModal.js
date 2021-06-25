@@ -33,7 +33,11 @@ function TaskModal(props) {
 	const [deadline, setDeadline] = useState(
 		task.expireAt ? moment(task.expireAt) : null
 	);
-	const [labelSelect, setLabelSelect] = useState(task.label);
+	const [labelSelect, setLabelSelect] = useState(
+		task.label.filter((label) =>
+			boardLabels.find((bLabel) => bLabel._id === label)
+		)
+	);
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
 
@@ -165,13 +169,6 @@ function TaskModal(props) {
 		</React.Fragment>
 	);
 
-	// const renderLabel = () => {
-	// 	if (!beforeChange.label) return 'No label';
-	// 	const label = boardLabels.find(
-	// 		(bLabel) => bLabel._id === beforeChange.label
-	// 	);
-	// 	return <Badge className={`bg-${label.type}`}>{label.name}</Badge>;
-	// };
 	const renderLabel =
 		beforeChange.label.length === 0
 			? 'No label'
@@ -179,6 +176,7 @@ function TaskModal(props) {
 					const label = boardLabels.find(
 						(label) => label._id === bLabel
 					);
+					if (!label) return null;
 					return (
 						<Badge className={`bg-${label.type} mx-1`}>
 							{label.name}

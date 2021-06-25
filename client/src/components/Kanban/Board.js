@@ -32,7 +32,6 @@ function Board(props) {
 			let strBoard = localStorage.getItem('currentBoard');
 			let jsonBoard = JSON.parse(strBoard);
 
-			// if (jsonBoard) console.log(jsonBoard.id, currentId);
 			if (jsonBoard && jsonBoard.id !== currentId && currentId) {
 				console.log('Calling getBoard');
 				dispatch(getBoard(token, currentId));
@@ -139,7 +138,7 @@ function Board(props) {
 	);
 
 	return (
-		<div className="d-flex flex-column">
+		<div className="d-flex flex-column p-4">
 			{/* Handle Board Manipulation */}
 			{/* Improve refactoring at Milestone 3 */}
 			<AddBoard />
