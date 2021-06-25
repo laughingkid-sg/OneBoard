@@ -14,7 +14,7 @@ export default function LoginPage(props) {
 				<div className={styles.loginForm}>
 					{/* TODO: Add logo on top */}
 					<h1 className={styles.title}>{props.title}</h1>
-					<p className={styles.invalid}>{props.errorMsg}</p>
+					{/* <p className={styles.invalid}>{props.errorMsg}</p> */}
 					{props.children}
 				</div>
 			</div>

@@ -1,14 +1,25 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { NavItem, Nav, NavLink, NavbarBrand, Navbar } from 'reactstrap';
-import Button from '../UI/Button';
-import Sidebar from '../components/Dashboard/Sidebar';
+import {
+	NavItem,
+	Nav,
+	NavLink,
+	NavbarBrand,
+	Navbar,
+	UncontrolledDropdown,
+	DropdownToggle,
+} from 'reactstrap';
+import { FaUserCog } from 'react-icons/fa';
 import { FiLogOut } from 'react-icons/fi';
 import AuthContext from '../store/AuthContext';
 import { IconContext } from 'react-icons';
+import { DropdownMenu } from 'reactstrap';
+import { DropdownItem } from 'reactstrap';
+import { useSelector } from 'react-redux';
 
 function MainLayout(props) {
 	const authContext = useContext(AuthContext);
+	const user = useSelector((state) => state.user);
 
 	const logoutHandler = () => {
 		fetch('/api/signout', {
@@ -22,34 +33,65 @@ function MainLayout(props) {
 
 	return (
 		<React.Fragment>
-			<Navbar style={{ backgroundColor: '#458c7f' }} className="p-3">
-				<NavbarBrand>
-					<Link
-						to="/"
-						style={{ textDecoration: 'none', color: '#fff' }}
-						className="fs-2"
-					>
-						OneBoard
-					</Link>
-				</NavbarBrand>
-				<Nav>
-					{/* TODO Style buttons */}
-					<NavItem>
-						<Link to="/editprofile">
-							<Button>Edit Profile</Button>
+			<Navbar
+				// style={{ backgroundColor: '#458c7f' }}
+				color="light"
+				className="d-flex justify-content-between py-3 px-5 shadow-lg sticky-top"
+			>
+				<div className="d-flex flex-row align-items-center">
+					<NavbarBrand>
+						<Link
+							to="/"
+							style={{
+								textDecoration: 'none',
+								// color: '#fff'
+							}}
+							className="fs-2"
+						>
+							OneBoard
 						</Link>
-					</NavItem>
-					<NavItem>
-						<Button onClick={logoutHandler}>
-							<IconContext.Provider value={{ color: '#fff' }}>
+					</NavbarBrand>
+					<Nav className="mx-4">
+						<NavItem>
+							<NavLink href="#">Kanban Board</NavLink>
+						</NavItem>
+						<NavItem>
+							<NavLink href="#">Expense Tracker</NavLink>
+						</NavItem>
+					</Nav>
+				</div>
+				<UncontrolledDropdown>
+					<DropdownToggle nav caret className="fs-5">
+						{`Hello, ${user.firstName} ${user.lastName}`}
+					</DropdownToggle>
+					<DropdownMenu>
+						<IconContext.Provider
+							value={{
+								color: '#343a40',
+								size: '1.5em',
+								style: { margin: '4px 8px 8px 0' },
+							}}
+						>
+							<DropdownItem>
+								<Link
+									to="/editprofile"
+									style={{
+										textDecoration: 'none',
+										color: 'inherit',
+									}}
+								>
+									<FaUserCog />
+									{'Edit Profile'}
+								</Link>
+							</DropdownItem>
+							<DropdownItem onClick={logoutHandler}>
 								<FiLogOut />
-							</IconContext.Provider>
-							{'  '}Logout
-						</Button>
-					</NavItem>
-				</Nav>
+								{'Logout'}
+							</DropdownItem>
+						</IconContext.Provider>
+					</DropdownMenu>
+				</UncontrolledDropdown>
 			</Navbar>
-			{/* <Sidebar /> */}
 			{props.children}
 		</React.Fragment>
 	);
