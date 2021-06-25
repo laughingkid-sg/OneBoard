@@ -50,7 +50,7 @@ exports.setColOrder = (req, res, next) => {
             }
         ]
     ).exec((err, col) => {
-        req.body.order = parseInt(col[0]['MAX(columns᎐order)'], 10) + 1;
+        req.body.order = col[0] == undefined ? 0 : parseInt(col[0]['MAX(columns᎐order)'], 10) + 1;
         next();
     })    
 }

@@ -7,11 +7,11 @@ const { setUser } = require("../controllers/user");
 
 router.use(requireSignin, isAuth, setUser);
 
-router.route("/note")
+router.route("/")
     .post(createNote)
     .get(getNotes);
 
-router.route("/note/:noteId/")
+router.route("/:noteId/")
     .get(getNote)
     .put(updateNote)
     .delete(delNote);

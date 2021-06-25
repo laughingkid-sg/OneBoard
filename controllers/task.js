@@ -51,7 +51,7 @@ exports.setTaskOrder = (req, res, next) => {
             }
         ]
     ).exec((err, task) => {
-        req.body.order = parseInt(task[0]['MAX(tasks᎐order)'], 10) + 1;
+        req.body.order = task[0] == undefined ? 0 : parseInt(task[0]['MAX(tasks᎐order)'], 10) + 1;
         next();
     })    
 }
@@ -73,7 +73,6 @@ exports.createTask = async (req, res) => {
             });
         }    
     } catch (err) {
-        console.log(err);
         return res.status(400).json({
             errorCode: 0,
             message: "Unknow error"
@@ -93,7 +92,6 @@ exports.getTask = async (req, res) => {
             });
         }    
     } catch (err) {
-        console.log(err);
         return res.status(400).json({
             errorCode: 0,
             message: "Unknow error"
@@ -198,7 +196,6 @@ exports.updateTask = async (req, res) => {
             });
         }    
     } catch (err) {
-        console.log(err);
         return res.status(400).json({
             errorCode: 0,
             message: "Unknow error"
@@ -224,7 +221,6 @@ exports.delTask = async (req, res) => {
             });
         }    
     } catch (err) {
-        console.log(err);
         return res.status(400).json({
             errorCode: 0,
             message: "Unknow error"

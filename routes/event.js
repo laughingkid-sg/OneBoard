@@ -7,11 +7,11 @@ const { setUser } = require("../controllers/user");
 
 router.use(requireSignin, isAuth, setUser);
 
-router.route("/event")
+router.route("/")
     .get(getEvents)
     .post(createEvent)
 
-router.route("/event/:eventId/")
+router.route("/:eventId/")
     .get(getEvent)
     .put(updateEvent)
     .delete(delEvent);

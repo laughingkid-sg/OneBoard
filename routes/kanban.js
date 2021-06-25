@@ -2,120 +2,44 @@ const express = require("express");
 const router = express.Router();
 
 const { createBoard, getBoards, delBoard, updateBoard, getBoard, boardById } = require('../controllers/board')
-const { columnById, createColumn, getColumn, updateColumn, delColumn, setColOrder } = require('../controllers/column')
-const { createTask, getTask, updateTask, taskById, delTask, setTaskOrder } = require('../controllers/task');
+const { columnById, createColumn, getColumn, updateColumn, delColumn} = require('../controllers/column')
+const { createTask, getTask, updateTask, taskById, delTask} = require('../controllers/task');
 
 const { requireSignin, isAuth} = require("../controllers/auth");
 const { userById, setUser } = require("../controllers/user");
 
+router.use(requireSignin, isAuth, setUser)
+
 // ----- Board ----- //
 
-// Create Board
-router.post("/kanban/", 
-    requireSignin, 
-    isAuth,
-    createBoard
-);
+router.route("/")
+    .get(getBoards) // Create Board
+    .post(createBoard); // Get all user boards
 
-// Get all user boards
-router.get("/kanban/boards/", 
-    requireSignin, 
-    isAuth, 
-    getBoards
-);
+router.get("/boards/", getBoards); // Get all user boards
 
-// Get single Board by Id
-router.get("/kanban/:boardId/", 
-    requireSignin, 
-    isAuth, 
-    getBoard
-);
-
-// Update Board by Id
-router.put("/kanban/:boardId/",
-    requireSignin,
-    isAuth, 
-    setUser,
-    updateBoard
-);
-
-// Delete Board by Id
-router.delete("/kanban/:boardId/",
-    requireSignin,
-    isAuth, 
-    setUser,
-    delBoard
-);
+router.route("/:boardId/")
+    .get(getBoard) // Get single Board by Id
+    .put(updateBoard) // Update Board by Id
+    .delete(delBoard); // Delete Board by Id
 
 // ----- Column ----- //
 
-// Create Column
-router.post("/kanban/column/:boardId/",
-    requireSignin,
-    isAuth, 
-    setUser,
-    setColOrder,
-    createColumn
-);
+router.post("/column/:boardId/", createColumn); // Create Column
 
-// Get single Column by Id
-router.get("/kanban/column/:columnId/",
-    requireSignin,
-    isAuth, 
-    setUser,
-    getColumn
-);
-
-// Update Column by Id
-router.put("/kanban/column/:columnId/",
-    requireSignin,
-    isAuth, 
-    setUser,
-    updateColumn
-);
-
-// Delete Column by Id
-router.delete("/kanban/column/:columnId/",
-    requireSignin,
-    isAuth, 
-    setUser,
-    delColumn
-);
+router.route("/column/:columnId/")
+    .get(getColumn) // Get single Column by Id
+    .put(updateColumn) // Update Column by Id
+    .delete(delColumn); // Delete Column by Id
 
 // ----- Task ----- //
 
-// Create Task in Column
-router.post("/kanban/task/:columnId",
-    requireSignin,
-    isAuth, 
-    setUser,
-    setTaskOrder,
-    createTask
-);
+router.post("/task/:columnId", createTask); // Create Task in Column
 
-// Get Task by Id
-router.get("/kanban/task/:taskId/",
-    requireSignin,
-    isAuth, 
-    setUser,
-    getTask
-);
-
-// Update Task by Id
-router.put("/kanban/task/:taskId/",
-    requireSignin,
-    isAuth, 
-    setUser,
-    updateTask
-);
-
-// Detele Task by Id
-router.delete("/kanban/task/:taskId/",
-    requireSignin,
-    isAuth, 
-    setUser,
-    delTask
-);
+router.route("/task/:taskId/")
+    .get(getTask) // Get Task by Id
+    .put(updateTask) // Update Task by Id
+    .delete(delTask); // Detele Task by Id
 
 router.param('userId', userById)
 router.param('boardId', boardById)

@@ -35,9 +35,9 @@ app.use(expressValidator());
 // routes middleware
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
-app.use("/api", kanbanRoutes);
-app.use("/api", noteRoutes);
-app.use("/api", eventRoutes);
+app.use("/api/kanban", kanbanRoutes);
+app.use("/api/note", noteRoutes);
+app.use("/api/event", eventRoutes);
 
 const port = process.env.PORT || 8000
 

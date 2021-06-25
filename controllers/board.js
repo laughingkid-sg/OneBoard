@@ -16,16 +16,21 @@ exports.boardById = (req, res, next, id) => {
         });
     }
 
-    Board.findById(id).populate({"path":"columns","populate":{"path":"tasks","model":"Task"}})
+    Board.findById(id).populate( { "path" : "columns", "populate" : { "path" : "tasks", "model" : "Task" } } )
     .exec((err, board) => {         
-        if (err || !board) {
-            return res.status(400).json({
-                error: "Board not found"
+        if (err) {
+            return res.status(500).json({
+                message: err.message
             });
+        } else if (!board) {
+            return res.status(404).json({
+                message: "Board not found."
+            });
+        } else {
+            req.board = board;
+            next();
         }
-        req.board = board;
-        next();
-    })  
+    })
 }
 
 /*
@@ -93,14 +98,18 @@ exports.getBoard = (req, res) => {
                 $eq: ObjectId(req.board._id)
             }
         }
-    }).exec((err, user) => {        
-        if (err || !user) {
-            return res.status(400).json({
-                error: 'Board not found'
+    }).exec((err, user) => {
+        if (err) {
+            return res.status(500).json({
+                message: err.message
+            });
+        } else if (!user) {
+            return res.status(404).json({
+                message: 'Board not found.'
             });
         } else if (user._id != req.auth._id) {
-            return res.status(400).json({
-                error: 'Access Denied'
+            return res.status(401).json({
+                message: 'Access Denied.'
             });
         }        
         else {
@@ -174,18 +183,14 @@ exports.createBoard = async (req, res) => {
         if (req.body.newUser) {
             const user = req.user;
             req.user.boards = [board._id];
-            res.json({
-                user
-            });
+            res.json(user);
         } else {
-        res.status(200).json({ status: true, message: 'Board successfully created.', board: board });
+        res.status(200).json(board);
         }
 
     } catch (err) {
-        console.log(err);
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknown error"
+        res.status(500).json({
+            message: err.message
         })
     }
 }
