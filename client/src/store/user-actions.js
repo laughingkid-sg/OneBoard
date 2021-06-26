@@ -3,7 +3,7 @@ import { userActions } from './user';
 export const fetchUserData = (id, token) => {
 	return async (dispatch) => {
 		const fetchData = async () => {
-			const response = await fetch(`/api/secret/${id}`, {
+			const response = await fetch(`/api/user/`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -28,7 +28,7 @@ export const fetchUserData = (id, token) => {
 					token,
 					firstName: userData.user.firstName,
 					lastName: userData.user.lastName,
-					email: userData.user.email,
+					email: userData.user.username,
 					boards: userData.user.boards,
 				})
 			);

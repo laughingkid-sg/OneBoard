@@ -42,7 +42,7 @@ export default function Login(props) {
 			return;
 		}
 
-		const user = { email, password };
+		const user = { username: email, password };
 
 		const response = await fetch('/api/signin', {
 			method: 'POST',
