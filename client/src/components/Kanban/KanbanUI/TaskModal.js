@@ -297,7 +297,8 @@ function TaskModal(props) {
 				)}
 				<SubtaskList
 					subtasks={subTasks}
-					taskId={task._id}
+					// taskId={task._id}
+					task={task}
 					onUpdate={updateSubtaskHandler}
 				/>
 			</ModalBody>
