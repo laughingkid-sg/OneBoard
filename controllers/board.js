@@ -182,6 +182,7 @@ exports.createBoard = async (req, res) => {
                 });
         if (req.body.newUser) {
             const user = req.user;
+            console.log(user)
             req.user.boards = [board._id];
             res.json(user);
         } else {

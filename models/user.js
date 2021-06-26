@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const crypto = require('crypto')
-const uuidv1 = require('uuid/v1')
+const uuidv1 = require('uuidv1')
+
+const passportLocalMongoose = require('passport-local-mongoose');
 
 const {ObjectId} = mongoose.Schema
 
@@ -17,21 +19,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         maxlength: 64
     },
-    email: {
-        type: String,
-        trim: true,
-        required: true,
-        unique: 128
-    },
-    hashed_password: {
-        type: String,
-        required: true,
-    },
     about: {
         type: String,
         trim: true,
     },
-    salt: String,
     role: {
         type: Number,
         default: 0
@@ -63,7 +54,10 @@ const userSchema = new mongoose.Schema({
 }, {timestamps : true}
 );
 
+userSchema.plugin(passportLocalMongoose);
+
 // virtual field
+/*
 userSchema.virtual('password')
     .set(function(password) {
         this._password = password
@@ -89,6 +83,6 @@ userSchema.methods = {
             return '';
         }
     }
-};
+};*/
 
 module.exports = mongoose.model('User', userSchema);

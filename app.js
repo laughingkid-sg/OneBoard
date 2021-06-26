@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const expressValidator = require('express-validator')
 require('dotenv').config()
+const passport = require('passport')
 
 // import routes
 const authRoutes = require('./routes/auth')
@@ -31,10 +32,11 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 app.use(expressValidator());
+app.use(passport.initialize());
 
 // routes middleware
 app.use("/api", authRoutes);
-app.use("/api", userRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/kanban", kanbanRoutes);
 app.use("/api/note", noteRoutes);
 app.use("/api/event", eventRoutes);

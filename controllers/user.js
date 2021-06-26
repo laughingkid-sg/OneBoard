@@ -29,3 +29,7 @@ exports.setUser = (req, res, next) => {
         next();
     })
 }
+
+exports.getUser = (req, res) => {
+    res.json(req.profile)
+}

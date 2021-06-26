@@ -1,87 +1,50 @@
 const User = require('../models/user')
-const jwt = require("jsonwebtoken"); // to generate signed token
 const expressJwt = require("express-jwt"); // for authorization check
 const {errorHandler} = require("../helpers/dbErrorHander")
+const authenticate = require('../authenticate');
 
 /*
     User Sign up
 */
 exports.signup = (req, res, next) => {
-
-    //console.log("req.body", req.body);
-
-    // Create a new user
-    const user = new User(req.body);
-    user.save((err, user) => {
+    User.register(new User({username: req.body.email,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName
+    }), req.body.password, (err, user) => {
+    if (err) {
+      res.status(500).json({message: err.message});
+    } else {
+      user.save((err, user) => {
         if (err) {
-            console.log(err);
-            return res.status(400).json({
-                errorCode: 1,
-                message: errorHandler(err)              
-            })
+            res.status(500).json({message: err.message})
         }
 
-        // Remove salt & hashed_password from respone
         user.salt = undefined
-        user.hashed_password = undefined
+        user.hash = undefined
 
-        // Return User Information
-        /*
-        res.json({
-            user
-        });
-        */
-       req.body.name = "Sample Board";
-       req.body.newUser = true;
-       req.auth = { "_id": user._id };
-       req.user = user;
-       next();
-    })
-};
+        req.body.name = "Sample Board"
+        req.body.newUser = true
+        req.auth = { "_id": user._id }
+        req.user = user
+        next();
+      });
+    }
+  });
+}
 
 /*
     User Login
 */
 exports.signin = (req, res) => {
-
-    // Find User based on email
-    const {email, password} = req.body
-    User.findOne({email}, (err, user) => {
-        if (err || !user) {
-            return res.status(400).json({
-                errorCode: 2,
-                message: "Invalid email or account doesn't exist"
-            })
-        } else { 
-            // User is found
-            // Create authenticate method in user model
-            if (!user.authenticate(password)) {
-                return res.status(401).json({
-                    errorCode: 3,
-                    message: "Invalid password"
-                })
-            }
-
-            // Generate a signed token with user id and secret 
-            const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, { expiresIn: 60 * 60 })
-
-            // Presist the token as 't' in cookie with expiry date
-            res.cookie('t', token, {expire: new Date() + 3600 })
-
-            // Return respone with user and token to frontend client
-            const { _id, name, email, role } = user
-            return res.json({
-                token, 
-                user: {
-                    _id, 
-                    name, 
-                    email, 
-                    role
-                }
-            })
-        }
-    })
-};
+    const token = authenticate.getToken({_id: req.user._id});
+    const { _id, username, role } = req.user
+    res.cookie('t', token, {expire: new Date() + 3600 })
+    res.json({token: token, user: {
+        _id, 
+        username, 
+        role
+    }});
+}
 
 /*
     Signout
@@ -107,68 +70,16 @@ exports.requireSignin = expressJwt({
 */
 exports.isAuth = (req, res, next) => {
 
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
-
-    if (token == null) {
+    if (!authenticate.verifyUser) {
         return res.status(403).json({
             errorCode: 4,
             message: "Access denied"
         });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).json({
-                errorCode: 4,
-                message: "Access denied"
-            });
-        } 
-    });
-
     next();
 
-    /*
-      let user = req.profile && req.auth && req.profile._id == req.auth._id
-        if (!user) {
-            return res.status(403).json({
-                errorCode: 4,
-                message: "Access denied"
-            });
-        }
-      next();
-    */
 }
-
-/*
-    setAuth
-
-
-exports.setAuth = (req, res, next) => {
-
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
-
-    if (token == null) {
-        return res.status(403).json({
-            errorCode: 4,
-            message: "Access denied"
-        });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).json({
-                errorCode: 4,
-                message: "Access denied"
-            });
-        } 
-    });
-
-    next();
-}
-
-*/
 
 /*
     isAdmin - Used to check if user has admin rights
