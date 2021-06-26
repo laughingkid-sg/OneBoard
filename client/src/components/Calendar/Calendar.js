@@ -18,11 +18,11 @@ const DnDCalendar = withDragAndDrop(Cal);
 function Calendar() {
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const [calendar, setCalendar] = useState({
 		view: 'day',
 		date: moment().toDate(),
 	});
-	const { t: token } = cookies;
 	const modalContext = useContext(ModalContext);
 	const events = useSelector((state) => state.event).map(convertToDate);
 

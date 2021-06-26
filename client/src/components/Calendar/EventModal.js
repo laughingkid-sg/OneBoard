@@ -5,15 +5,20 @@ import {
 	AiFillPushpin,
 	AiOutlinePushpin,
 } from 'react-icons/ai';
-import { useSelector } from 'react-redux';
+import { useCookies } from 'react-cookie';
+import { useDispatch, useSelector } from 'react-redux';
 import DeleteEvent from './DeleteEvent';
 import EditEvent from './EditEvent';
 import ModalContext from '../../store/ModalContext';
 import styles from './EventModal.module.css';
 import ViewEvent from './ViewEvent';
+import { changeFeatured } from '../../store/event-actions';
 
 function EventModal(props) {
 	const { modalType, event } = props;
+	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const { featured: pinned } = useSelector((state) => state.user);
 	const [isFeatured, setIsFeatured] = useState(
 		pinned ? pinned === event._id : false
@@ -41,9 +46,12 @@ function EventModal(props) {
 	const changeFeaturedHandler = () => {
 		if (isFeatured) {
 			// Delete pin goes here
+			dispatch(changeFeatured(token, ''));
 			setIsFeatured(false);
 		} else {
 			// Update pin goes here
+			console.log(event._id);
+			dispatch(changeFeatured(token, event._id));
 			setIsFeatured(true);
 		}
 	};

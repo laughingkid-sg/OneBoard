@@ -5,6 +5,7 @@ const initialState = {
 	firstName: '',
 	lastName: '',
 	email: '',
+	featured: '',
 	boards: { boards: [], selectedBoard: '' },
 };
 
@@ -12,11 +13,13 @@ const userSlice = createSlice({
 	name: 'user',
 	initialState,
 	reducers: {
+		// TODO can be refactored
 		login(state, action) {
 			state.id = action.payload.id;
 			state.firstName = action.payload.firstName;
 			state.lastName = action.payload.lastName;
 			state.email = action.payload.email;
+			state.featured = action.payload.featured;
 		},
 		logout(state) {
 			return initialState;
@@ -26,6 +29,7 @@ const userSlice = createSlice({
 			const { firstName, lastName } = action.payload;
 			return { ...state, firstName, lastName };
 		},
+		// * Kanban related information
 		addBoard(state, action) {
 			state.boards.boards.push(action.payload);
 		},
@@ -54,6 +58,10 @@ const userSlice = createSlice({
 			state.boards.boards = state.boards.boards.filter(
 				(board) => board._id !== boardId
 			);
+		},
+		// * Calendar related information
+		updateFeatured(state, action) {
+			state.featured = action.payload;
 		},
 	},
 });

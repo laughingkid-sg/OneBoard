@@ -1,5 +1,6 @@
 import { createEvent } from '../lib/event';
 import { eventActions } from './event';
+import { userActions } from './user';
 
 const URL_HEADERS = '/api/event';
 
@@ -129,6 +130,35 @@ export const deleteEvent = (token, id) => {
 		try {
 			await deleteData();
 			dispatch(eventActions.deleteEvent(id));
+		} catch (error) {}
+	};
+};
+
+export const changeFeatured = (token, id) => {
+	return async (dispatch) => {
+		const options = {
+			method: id !== '' ? 'POST' : 'DELETE',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json',
+			},
+		};
+
+		const url = `${URL_HEADERS}/${id}`;
+
+		const postData = async () => {
+			const response = await fetch(url, options);
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.message);
+			}
+			return data;
+		};
+
+		try {
+			await postData();
+			dispatch(userActions.updateFeatured(id));
 		} catch (error) {}
 	};
 };

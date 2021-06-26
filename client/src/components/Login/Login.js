@@ -103,6 +103,7 @@ export default function Login(props) {
 						id="password"
 						name="password"
 						type="password"
+						placeholder="Enter your password"
 						onChange={pwOnChange}
 						onBlur={pwOnBlur}
 						value={password}
