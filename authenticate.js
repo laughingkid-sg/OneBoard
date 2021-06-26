@@ -13,7 +13,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-exports.getToken = function(user) {
+exports.getToken = (user) => {
     return jwt.sign(user, process.env.SECRETKEY,
         {expiresIn: 3600});
 };
@@ -38,6 +38,7 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
     }));
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});
+
 
 /*
 exports.verifyAdmin = (req, res, next) => {

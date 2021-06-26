@@ -59,35 +59,28 @@ const userSchema = new mongoose.Schema({
 }, {timestamps : true}
 );
 
+userSchema.methods.changePassword = (oldPassword, newPassword, cb) => {
+
+    (!oldPassword || !newPassword) ? cb(new errors.MissingPasswordError(options.errorMessages.MissingPasswordError)) : undefined;
+
+    const self = this;
+
+    this.authenticate(oldPassword, (err, authenticated) => {
+      err ? cb(err) : undefined;
+
+      (!authenticated) ? cb(new errors.IncorrectPasswordError(options.errorMessages.IncorrectPasswordError)) : undefined;
+
+      self.setPassword(newPassword, err, user => {
+        (err) ? cb(err) : undefined;
+
+        self.save((err, user) => {
+            err ? cb(err) : undefined;
+           cb(null, user);
+        });
+      });
+    });
+  };
+
 userSchema.plugin(passportLocalMongoose);
-
-// virtual field
-/*
-userSchema.virtual('password')
-    .set(function(password) {
-        this._password = password
-        this.salt = uuidv1()
-        this.hashed_password = this.encryptPassword(password)
-    })
-    .get(function() {
-    return this._password
-})
-
-userSchema.methods = {
-    authenticate: function(input) {
-        return this.encryptPassword(input) === this.hashed_password;
-    },
-
-    encryptPassword: function(password) {
-        if (!password) return '';
-        try {
-            return crypto.createHmac('sha1', this.salt)
-                .update(password)
-                .digest('hex');
-        } catch (err) {
-            return '';
-        }
-    }
-};*/
 
 module.exports = mongoose.model('User', userSchema);

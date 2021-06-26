@@ -23,8 +23,6 @@ exports.setUser = (req, res, next) => {
                 message: "User not found"
             })
         }
-        user.salt = undefined
-        user.hashed_password = undefined
         req.profile = user;
         next();
     })
@@ -32,4 +30,8 @@ exports.setUser = (req, res, next) => {
 
 exports.getUser = (req, res) => {
     res.json({user: req.profile})
+}
+
+exports.setPass = async (req, res) => {
+    await req.profile.changePassword(req.body.oldPassword, req.body.newPassword, (err, user) => err ? res.status(401).json({message: err.message}) : res.status(204))
 }
