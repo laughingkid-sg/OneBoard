@@ -1,12 +1,18 @@
+import moment from 'moment';
 import React, { useContext } from 'react';
+import { useSelector } from 'react-redux';
+import { Badge, Progress } from 'reactstrap';
+import { BiTime } from 'react-icons/bi';
 import { Draggable } from 'react-beautiful-dnd';
 import EditDelete from './KanbanUI/EditDelete';
 import DeleteModal from './KanbanUI/DeleteModal';
 import TaskModal from './KanbanUI/TaskModal';
 import styles from './Task.module.css';
 import ModalContext from '../../store/ModalContext';
+import { TYPES } from '../../store/kanban-actions';
 
 function Task(props) {
+	const { task, index: taskIndex, columnTitle } = props;
 	const modalContext = useContext(ModalContext);
 
 	const deleteTaskHandler = (e) => {
@@ -28,13 +34,7 @@ function Task(props) {
 
 	const deleteTask = () => {
 		const deleteModal = (
-			<DeleteModal
-				isCol={false}
-				taskId={props.id}
-				title={props.task.taskName}
-				boardId={props.boardId}
-				columnId={props.colId}
-			/>
+			<DeleteModal id={task._id} title={task.name} type={TYPES.TASK} />
 		);
 		modalContext.showModal(deleteModal);
 	};
@@ -43,21 +43,15 @@ function Task(props) {
 		return (
 			<TaskModal
 				write={isWrite}
-				id={props.id}
-				boardId={props.boardId}
-				index={props.index}
-				title={props.task.taskName}
-				description={props.task.description}
-				columnTitle={props.columnTitle}
-				columnId={props.colId}
-				onClose={props.onCancel}
+				task={task}
+				columnTitle={columnTitle}
 				onDelete={deleteTask}
 			/>
 		);
 	};
 
 	return (
-		<Draggable draggableId={props.id} index={props.index}>
+		<Draggable draggableId={task._id} index={taskIndex}>
 			{(provided) => {
 				return (
 					<div
@@ -67,7 +61,16 @@ function Task(props) {
 						ref={provided.innerRef}
 						onClick={showTaskHandler}
 					>
-						<p>{props.task.taskName}</p>
+						<p>{task.name}</p>
+						<ProgressBar labels={task.label} />
+						{task.expireAt && (
+							<p style={{ fontSize: '16px', marginTop: '4px' }}>
+								<Badge className="bg-warning align-self-start">
+									<BiTime />{' '}
+									{moment(task.expireAt).format('DD/MM/YY')}
+								</Badge>
+							</p>
+						)}
 						<EditDelete
 							onEdit={editTaskHandler}
 							onDelete={deleteTaskHandler}
@@ -78,5 +81,30 @@ function Task(props) {
 		</Draggable>
 	);
 }
+
+const ProgressBar = (props) => {
+	const { labels } = props;
+	const boardLabels = useSelector((state) => state.kanban.labels).filter(
+		(label) => label._id
+	);
+
+	if (!labels) return null;
+
+	return (
+		<div className="my-1">
+			{labels.map((label) => {
+				const foundLabel = boardLabels.find(
+					(bLabel) => bLabel._id === label
+				);
+				if (!foundLabel) return null;
+				return (
+					<Badge className={`bg-${foundLabel.type}`} key={label}>
+						{foundLabel.name}
+					</Badge>
+				);
+			})}
+		</div>
+	);
+};
 
 export default Task;

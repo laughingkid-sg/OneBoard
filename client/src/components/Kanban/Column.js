@@ -1,12 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { AiOutlinePlus } from 'react-icons/ai';
+import { Card, CardHeader, CardFooter } from 'reactstrap';
 import Task from './Task';
-import AddTask from './AddTask';
+import AddTask from './Add/AddTask';
 import styles from './Column.module.css';
 import EditColumn from './EditColumn';
 
 function Column(props) {
+	const { boardId, column, index: colIndex } = props;
+	const { name, tasks, _id: columnId } = column;
 	const [isEditingTask, setIsEditingTask] = useState(false);
 	const [editTitle, setIsEditTitle] = useState(false);
 
@@ -26,24 +29,27 @@ function Column(props) {
 		setIsEditTitle(false);
 	};
 
-	const renderTasks = props.tasks.map((task, index) => (
+	const renderTasks = tasks.map((task, index) => (
 		<Task
-			key={task.id}
+			key={task._id}
 			task={task}
 			index={index}
-			id={task.id}
-			boardId={props.boardId}
-			colId={props.column.id}
-			columnTitle={props.title}
+			// id={task._id}
+			boardId={boardId}
+			colId={columnId}
+			columnTitle={name}
 		/>
 	));
 
 	const renderAddTask = isEditingTask ? (
-		<AddTask
-			boardId={props.boardId}
-			columnId={props.column.id}
-			onCancel={cancelTaskHandler}
-		/>
+		<CardFooter>
+			<AddTask
+				boardId={boardId}
+				columnId={columnId}
+				onCancel={cancelTaskHandler}
+				next={tasks.length}
+			/>
+		</CardFooter>
 	) : (
 		<div className={styles.addTaskBtn} onClick={addTaskHandler}>
 			<AiOutlinePlus className={styles.addTaskIcon} />
@@ -53,29 +59,31 @@ function Column(props) {
 
 	const renderEditCol = editTitle ? (
 		<EditColumn
-			title={props.title}
-			boardId={props.boardId}
+			title={name}
 			onCancel={cancelTitleHandler}
-			columnId={props.column.id}
+			column={column}
 		/>
 	) : (
 		<h4 className={styles.titleText} onClick={editTitleHandler}>
-			{props.title}
+			{name}
 		</h4>
 	);
 
 	return (
-		<Draggable draggableId={props.column.id} index={props.index}>
+		<Draggable draggableId={columnId} index={colIndex}>
 			{(provided) => (
-				<div
+				<Card
 					className={styles.container}
 					{...provided.draggableProps}
-					ref={provided.innerRef}
+					innerRef={provided.innerRef}
 				>
-					<div className={styles.title} {...provided.dragHandleProps}>
+					<CardHeader
+						className={styles.title}
+						{...provided.dragHandleProps}
+					>
 						{renderEditCol}
-					</div>
-					<Droppable droppableId={props.column.id}>
+					</CardHeader>
+					<Droppable droppableId={columnId} type="task">
 						{(provided) => (
 							<React.Fragment>
 								<TaskList
@@ -89,7 +97,7 @@ function Column(props) {
 							</React.Fragment>
 						)}
 					</Droppable>
-				</div>
+				</Card>
 			)}
 		</Draggable>
 	);

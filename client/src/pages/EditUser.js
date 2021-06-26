@@ -9,34 +9,36 @@ const EDIT = { info: 'changeInfo', password: 'changePW' };
 function Home() {
 	const [activeTab, setActiveTab] = useState(EDIT.info);
 
-	const onClickHandler = (tabChange) => {
-		setActiveTab(tabChange);
-	};
-
 	return (
 		<MainLayout>
-			<Nav tabs>
+			<Nav tabs className="mt-4 ">
 				<NavLink
-					onClick={onClickHandler.bind(null, EDIT.info)}
+					onClick={() => {
+						setActiveTab(EDIT.info);
+					}}
 					style={{ active: activeTab === EDIT.info }}
 				>
 					Edit User Information
 				</NavLink>
 				<NavLink
-					onClick={onClickHandler.bind(null, EDIT.password)}
+					onClick={() => {
+						setActiveTab(EDIT.password);
+					}}
 					style={{ active: activeTab === EDIT.password }}
 				>
 					Change Password
 				</NavLink>
 			</Nav>
-			<TabContent activeTab={activeTab}>
-				<TabPane tabId={EDIT.info}>
-					<ChangeInfo />
-				</TabPane>
-				<TabPane tabId={EDIT.password}>
-					<ChangePassword />
-				</TabPane>
-			</TabContent>
+			<div className="w-50 m-auto mt-3">
+				<TabContent activeTab={activeTab}>
+					<TabPane tabId={EDIT.info}>
+						<ChangeInfo />
+					</TabPane>
+					<TabPane tabId={EDIT.password}>
+						<ChangePassword />
+					</TabPane>
+				</TabContent>
+			</div>
 		</MainLayout>
 	);
 }

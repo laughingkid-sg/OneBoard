@@ -1,20 +1,26 @@
+import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { Input, InputGroup } from 'reactstrap';
 import { noteActions } from '../../store/note';
+import { updateNote } from '../../store/note-actions';
 
 const EditNote = (props) => {
-	const { isTitle, onCancel, data, noteId } = props;
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
+	const { isTitle, onCancel, note } = props;
 	const dispatch = useDispatch();
 
 	const cancelHandler = (e) => {
 		const newData = e.target.value;
-		if (newData === data) {
+		if (newData === (isTitle ? note.name : note.description)) {
 			onCancel();
 			return;
 		}
 
-		// ! POST Request to make changes
-		dispatch(noteActions.updateNotes({ isTitle, newData, noteId }));
+		let newNote;
+		if (isTitle) newNote = { ...note, name: newData };
+		else newNote = { ...note, description: newData };
+		dispatch(updateNote(token, note._id, newNote));
 		onCancel();
 	};
 
@@ -23,7 +29,7 @@ const EditNote = (props) => {
 			<Input
 				type={isTitle ? 'text' : 'textarea'}
 				onBlur={cancelHandler}
-				defaultValue={data}
+				defaultValue={isTitle ? note.name : note.description}
 				autoFocus
 			/>
 		</InputGroup>

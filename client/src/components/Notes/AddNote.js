@@ -1,26 +1,28 @@
 import React, { useRef } from 'react';
+import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { Form, Label, Input, Button } from 'reactstrap';
 import useInput from '../hooks/use-input';
-import { noteActions } from '../../store/note';
+import { addNote } from '../../store/note-actions';
 
 function AddNote(props) {
 	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const {
-		value: title,
-		isValid: titleIsValid,
-		onChange: titleChange,
-		onBlur: titleBlur,
+		value: name,
+		isValid: nameIsValid,
+		onChange: nameOnChange,
+		onBlur: nameOnBlur,
 	} = useInput((value) => value.trim() !== '', '');
 	const descRef = useRef('');
 
 	const addHandler = () => {
 		console.log('Adding new Note');
-		if (!titleIsValid) return;
+		if (!nameIsValid) return;
 		const description = descRef.current.value;
 
-		// ! To be replaced by POST request
-		dispatch(noteActions.addNote({ title, description }));
+		dispatch(addNote(token, { name, description }));
 		props.onCancel();
 	};
 
@@ -33,9 +35,9 @@ function AddNote(props) {
 					id="title"
 					name="title"
 					placeholder="Enter title.."
-					value={title}
-					onChange={titleChange}
-					onBlur={titleBlur}
+					value={name}
+					onChange={nameOnChange}
+					onBlur={nameOnBlur}
 				/>
 				<Label for="description">Description</Label>
 				<Input

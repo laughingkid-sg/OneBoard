@@ -1,19 +1,29 @@
-import React, { useState } from 'react';
-import { Label, Input, Form } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import {
+	Alert,
+	Button,
+	Label,
+	Input,
+	Form,
+	FormGroup,
+	FormFeedback,
+} from 'reactstrap';
+import { useDispatch } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
 import styles from './LoginCommon.module.css';
-import Button from '../../UI/Button';
 import LoginPage from './LoginPage';
 import useInput from '../hooks/use-input';
-
-const EMAIL_FORMAT =
-	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+import { isEmail, textNotEmpty } from '../../lib/validators';
+import useError from '../hooks/use-error';
+import { register, login, fetchUserData } from '../../store/user-actions';
+import AuthContext from '../../store/AuthContext';
 
 export default function Register() {
+	const dispatch = useDispatch();
+	const history = useHistory();
+	const authContext = useContext(AuthContext);
 	const [isChecked, setIsChecked] = useState(false);
 	const [checkIsTouched, setIsTouched] = useState(false);
-	const [errorMsg, setErrorMsg] = useState('');
-	const [isError, setIsError] = useState(false);
 
 	const {
 		value: fName,
@@ -21,8 +31,7 @@ export default function Register() {
 		hasError: fNameHasError,
 		onChange: fNameOnChange,
 		onBlur: fNameOnBlur,
-		reset: fNameReset,
-	} = useInput((value) => value.trim() !== '');
+	} = useInput(textNotEmpty);
 
 	const {
 		value: lName,
@@ -30,8 +39,7 @@ export default function Register() {
 		hasError: lNameHasError,
 		onChange: lNameOnChange,
 		onBlur: lNameOnBlur,
-		reset: lNameReset,
-	} = useInput((value) => value.trim() !== '');
+	} = useInput(textNotEmpty);
 
 	const {
 		value: email,
@@ -39,8 +47,7 @@ export default function Register() {
 		hasError: emailHasError,
 		onChange: emailOnChange,
 		onBlur: emailOnBlur,
-		reset: emailReset,
-	} = useInput((value) => EMAIL_FORMAT.test(value));
+	} = useInput(isEmail);
 
 	const {
 		value: password,
@@ -48,8 +55,7 @@ export default function Register() {
 		hasError: pwHasError,
 		onChange: pwOnChange,
 		onBlur: pwOnBlur,
-		reset: pwReset,
-	} = useInput((value) => value.trim() !== '');
+	} = useInput(textNotEmpty);
 
 	const {
 		value: cfmPassword,
@@ -57,12 +63,12 @@ export default function Register() {
 		hasError: cfmPwHasError,
 		onChange: cfmPwOnChange,
 		onBlur: cfmPwOnBlur,
-		reset: cfmPwReset,
-	} = useInput((value) => value.trim() !== '' && value === password);
+	} = useInput((value) => textNotEmpty(value) && value === password);
+
+	const { error, errorMsg, changeError, changeMessage } = useError();
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
-
 		if (
 			!(
 				fNameIsValid &&
@@ -73,34 +79,35 @@ export default function Register() {
 				isChecked
 			)
 		) {
+			changeMessage('Please check if all fields are valid.');
 			return;
 		}
 
 		const user = { firstName: fName, lastName: lName, email, password };
 
-		const response = await fetch('/api/signup', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(user),
-		});
+		const response = await dispatch(register(user));
 
-		const data = await response.json();
-
-		if (response.ok) {
-			setErrorMsg('Register success! You may login to OneBoard now.');
-			setIsError(false);
-			fNameReset();
-			lNameReset();
-			emailReset();
-			pwReset();
-			cfmPwReset();
-			setIsChecked(false);
-			setIsTouched(false);
+		if (response.status) {
+			const loginResponse = await dispatch(login({ email, password }));
+			if (loginResponse.status) {
+				const { data } = loginResponse;
+				const id = data.user._id;
+				const token = data.token;
+				const userData = await dispatch(fetchUserData(id, token));
+				if (userData.isSuccess) {
+					localStorage.setItem('id', id);
+					authContext.login(token);
+					history.push('/');
+					return;
+				} else {
+					changeMessage(userData.errorMsg);
+					return;
+				}
+			}
+			changeMessage(loginResponse.message);
 			return;
 		}
-
-		setErrorMsg(data.message);
-		setIsError(true);
+		changeMessage(response.message);
 		return;
 	};
 
@@ -110,82 +117,100 @@ export default function Register() {
 	};
 
 	return (
-		<LoginPage title="Register" errorMsg={errorMsg} isError={isError}>
-			<Form onSubmit={submitHandler}>
-				<Label for="fName">First Name</Label>
-				<Input
-					id="fName"
-					type="text"
-					onChange={fNameOnChange}
-					onBlur={fNameOnBlur}
-					className={`${fNameHasError ? styles.invalid : ''}`}
-					value={fName}
-				/>
-				{fNameHasError && (
-					<p className={styles.invalid}>
-						Please enter a valid First Name.
-					</p>
-				)}
+		<LoginPage title="Register">
+			<Alert
+				color="danger"
+				className="w-25"
+				isOpen={error}
+				toggle={() => changeError(!error)}
+				fade={false}
+			>
+				{errorMsg}
+			</Alert>
+			<Form onSubmit={submitHandler} className="w-50">
+				<div className="row">
+					<FormGroup className="col">
+						<Label for="fName">First Name</Label>
+						<Input
+							id="fName"
+							type="text"
+							onChange={fNameOnChange}
+							onBlur={fNameOnBlur}
+							value={fName}
+							valid={fNameIsValid}
+							invalid={fNameHasError}
+						/>
+						<FormFeedback invalid>
+							First name should not be empty
+						</FormFeedback>
+					</FormGroup>
+					<FormGroup className="col">
+						<Label for="lName">Last Name</Label>
+						<Input
+							id="lName"
+							type="text"
+							onChange={lNameOnChange}
+							onBlur={lNameOnBlur}
+							value={lName}
+							valid={lNameIsValid}
+							invalid={lNameHasError}
+						/>
+						<FormFeedback invalid>
+							Last name should not be empty
+						</FormFeedback>
+					</FormGroup>
+				</div>
 
-				<Label for="lName">Last Name</Label>
-				<Input
-					id="lName"
-					type="text"
-					onChange={lNameOnChange}
-					onBlur={lNameOnBlur}
-					className={`${lNameHasError ? styles.invalid : ''}`}
-					value={lName}
-				/>
-				{lNameHasError && (
-					<p className={styles.invalid}>
-						Please enter a valid Last Name.
-					</p>
-				)}
+				<div className="row">
+					<FormGroup className="col">
+						<Label for="email">E-mail</Label>
+						<Input
+							id="email"
+							type="email"
+							onChange={emailOnChange}
+							onBlur={emailOnBlur}
+							value={email}
+							valid={emailIsValid}
+							invalid={emailHasError}
+						/>
+						<FormFeedback invalid>
+							Please enter a valid E-mail
+						</FormFeedback>
+					</FormGroup>
+				</div>
 
-				<Label for="email">E-mail</Label>
-				<Input
-					id="email"
-					type="email"
-					onChange={emailOnChange}
-					onBlur={emailOnBlur}
-					className={`${emailHasError ? styles.invalid : ''}`}
-					value={email}
-				/>
-				{emailHasError && (
-					<p className={styles.invalid}>
-						Please enter a valid E-mail.
-					</p>
-				)}
-
-				<Label for="password">Password</Label>
-				<Input
-					id="password"
-					type="password"
-					onChange={pwOnChange}
-					onBlur={pwOnBlur}
-					className={`${pwHasError ? styles.invalid : ''}`}
-					value={password}
-				/>
-				{pwHasError && (
-					<p className={styles.invalid}>
-						Please enter your password.
-					</p>
-				)}
-
-				<Label for="cfmPassword">Confirm Password</Label>
-				<Input
-					id="cfmPassword"
-					type="password"
-					onChange={cfmPwOnChange}
-					onBlur={cfmPwOnBlur.bind(null, password)}
-					className={`${cfmPwHasError ? styles.invalid : ''}`}
-					value={cfmPassword}
-				/>
-				{cfmPwHasError && (
-					<p className={styles.invalid}>
-						Confirmed password does not match.
-					</p>
-				)}
+				<div className="row">
+					<FormGroup className="col">
+						<Label for="password">Password</Label>
+						<Input
+							id="password"
+							type="password"
+							onChange={pwOnChange}
+							onBlur={pwOnBlur}
+							value={password}
+							valid={pwIsValid}
+							invalid={pwHasError}
+						/>
+						<FormFeedback invalid>
+							Please enter your password.
+						</FormFeedback>
+					</FormGroup>
+					<FormGroup className="col">
+						<Label for="cfmPassword">Confirm Password</Label>
+						<Input
+							id="cfmPassword"
+							type="password"
+							onChange={cfmPwOnChange}
+							onBlur={cfmPwOnBlur.bind(null, password)}
+							value={cfmPassword}
+							valid={cfmPwIsValid}
+							invalid={cfmPwHasError}
+						/>
+						<FormFeedback invalid>
+							Confirmed password does not match.
+						</FormFeedback>
+					</FormGroup>
+				</div>
 
 				<div
 					className={` ${styles.checkBox} ${
@@ -209,7 +234,7 @@ export default function Register() {
 					</Label>
 				</div>
 
-				<Button type="submit" className={styles.formBtn}>
+				<Button type="submit" color="primary" className="mt-4">
 					Register
 				</Button>
 				<p className={styles.footText}>

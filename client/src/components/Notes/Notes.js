@@ -1,53 +1,55 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlinePlus, AiOutlineClose, AiOutlineSearch } from 'react-icons/ai';
-import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
+import { FaCaretLeft, FaCaretRight, FaTrash } from 'react-icons/fa';
 import AddNote from './AddNote';
 import DeleteNote from './DeleteNote';
 import SearchNote from './SearchNote';
 import EditNote from './EditNote';
 import ModalContext from '../../store/ModalContext';
-import { noteActions } from '../../store/note';
+import { fetchAllNotes } from '../../store/note-actions';
+
+function colorIcon(predicate) {
+	return predicate ? 'grey' : 'black';
+}
 
 function Notes() {
-	// TODO Persistence
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const dispatch = useDispatch();
 	const noteStore = useSelector((state) => state.note);
-	const { isEmpty, keys, notes } = noteStore;
+	const { isEmpty, notes } = noteStore;
 	const [index, setIndex] = useState(0);
-	const [key, setKey] = useState(keys[index]);
 	const [isAdd, setIsAdd] = useState(false);
 	const [isEdit, setIsEdit] = useState({ title: false, description: false });
 	const modalContext = useContext(ModalContext);
 
+	// Just fetch new notes
 	useEffect(() => {
-		function notesFromStorage() {
-			const strNotes = localStorage.getItem('notes');
-			const jsonNotes = JSON.parse(strNotes);
-			if (jsonNotes) {
-				console.log('Mount notes from storage');
-				dispatch(noteActions.replaceNotes(jsonNotes));
-			} else {
-				// Fetch notes from server
-				console.log('Fetch from server');
-			}
-		}
-
-		notesFromStorage();
-
-		return () => {
-			console.log('Unmount Notes');
-			dispatch(noteActions.store());
-		};
+		dispatch(fetchAllNotes(token));
 	}, [dispatch]);
 
+	// Handles note changes when note is deleted
 	useEffect(() => {
-		setKey(keys[index]);
-	}, [keys, index]);
+		// Default show the only element
+		if (notes.length === 1) {
+			setIndex(0);
+			// setCurrentNote(notes[0]);
+			return;
+		}
+		// Checks if accessing out of bounds (undefined)
+		if (!notes[index] && notes.length > 0) {
+			// setCurrentNote(notes[index - 1]);
+			setIndex(index - 1);
+		}
+
+		return () => {};
+	}, [notes.length]);
 
 	const nextHandler = () => {
 		if (isEmpty) return;
-		if (index === keys.length - 1) return;
+		if (index === notes.length - 1) return;
 		setIndex(index + 1);
 	};
 
@@ -59,14 +61,12 @@ function Notes() {
 
 	const deleteHandler = () => {
 		if (isEmpty) return;
-		modalContext.showModal(<DeleteNote note={notes[key]} />);
+		modalContext.showModal(<DeleteNote note={notes[index]} />);
 	};
 
 	const addHandler = () => {
-		// Ensures that the user is not editing before adding new task
-		for (const key in isEdit) {
-			if (isEdit[key]) return;
-		}
+		// Ensures that the user is not editing anything
+		if (Object.values(isEdit).some((e) => e)) return;
 
 		setIsAdd(true);
 	};
@@ -76,9 +76,8 @@ function Notes() {
 		modalContext.showModal(<SearchNote goTo={goToHandler} />);
 	};
 
-	const goToHandler = (key) => {
-		const selectedIndex = keys.indexOf(key);
-		setIndex(selectedIndex);
+	const goToHandler = (index) => {
+		setIndex(index);
 		modalContext.hideModal();
 	};
 
@@ -90,14 +89,17 @@ function Notes() {
 		setIsEdit({ ...isEdit, description: !isEdit.description });
 	};
 
-	const makeEditNote = (isTitle) => (
-		<EditNote
-			noteId={key}
-			onCancel={isTitle ? titleToggleHandler : descriptionToggleHandler}
-			data={isTitle ? notes[key].title : notes[key].description}
-			isTitle={isTitle}
-		/>
-	);
+	const makeEditNote = (isTitle) => {
+		return (
+			<EditNote
+				onCancel={
+					isTitle ? titleToggleHandler : descriptionToggleHandler
+				}
+				note={notes[index]}
+				isTitle={isTitle}
+			/>
+		);
+	};
 
 	// If user is adding Note, return AddNote Component instead
 	if (isAdd) {
@@ -110,68 +112,57 @@ function Notes() {
 		);
 	}
 
+	const rightDisable = colorIcon(index === notes.length - 1 || isEmpty);
+	const leftDisable = colorIcon(index === 0 || isEmpty);
+	const colorIcons = colorIcon(isEmpty);
+
 	return (
-		<div className="d-flex flex-column justify-content-between">
+		<div className="d-flex flex-column justify-content-between h-100">
 			<div>
-				{keys.length === 0 ? (
+				{isEmpty || !notes[index] ? (
 					<p>No notes. Create one by pressing the "+" icon below</p>
 				) : (
 					<NoteContent
 						titleChange={titleToggleHandler}
 						descriptionChange={descriptionToggleHandler}
-						title={notes[key] ? notes[key].title : ''}
-						description={notes[key] ? notes[key].description : ''}
+						note={notes[index]}
 						isEdit={isEdit}
 						onEdit={makeEditNote}
 					/>
 				)}
 			</div>
 			<div style={{ fontSize: '1.75rem', cursor: 'pointer' }}>
-				<FaCaretLeft
-					onClick={previousHandler}
-					color={index === 0 || isEmpty ? 'grey' : 'black'}
-				/>
+				<FaCaretLeft onClick={previousHandler} color={leftDisable} />
 				<AiOutlinePlus onClick={addHandler} />
-				<AiOutlineSearch
-					onClick={searchHandler}
-					color={isEmpty ? 'grey' : 'black'}
-				/>
-				<AiOutlineClose
-					onClick={deleteHandler}
-					color={isEmpty ? 'grey' : 'black'}
-				/>
-				<FaCaretRight
-					onClick={nextHandler}
-					color={
-						index === keys.length - 1 || isEmpty ? 'grey' : 'black'
-					}
-				/>
+				<AiOutlineSearch onClick={searchHandler} color={colorIcons} />
+				<FaTrash onClick={deleteHandler} color={colorIcons} />
+				<FaCaretRight onClick={nextHandler} color={rightDisable} />
 			</div>
 		</div>
 	);
 }
 
 const NoteContent = (props) => {
-	const { title, description, isEdit, titleChange, descriptionChange } =
-		props;
-
+	const { note, isEdit, titleChange, descriptionChange, onEdit } = props;
 	const toAddDescription =
-		description === '' ? (
+		note.description === '' ? (
 			<p onClick={descriptionChange}>
 				No description. Click to add description
 			</p>
 		) : (
-			<p onClick={descriptionChange}>{description}</p>
+			<p onClick={descriptionChange} style={{ whiteSpace: 'pre-line' }}>
+				{note.description}
+			</p>
 		);
 
 	const titleComponent = isEdit.title ? (
-		props.onEdit(true)
+		onEdit(true)
 	) : (
-		<h4 onClick={titleChange}>{title}</h4>
+		<h4 onClick={titleChange}>{note.name}</h4>
 	);
 
 	const descriptionComponent = isEdit.description
-		? props.onEdit(false)
+		? onEdit(false)
 		: toAddDescription;
 
 	return (

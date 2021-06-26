@@ -1,13 +1,15 @@
 import { useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { FaTrash } from 'react-icons/fa';
 import { ListGroupItem, Input } from 'reactstrap';
+import { kanbanActions } from '../../../../store/kanban';
 
 const SubtaskItem = (props) => {
-	const subtask = props.subtask;
-	const subtaskRef = useRef(subtask);
+	const { task, subtask, index, onUpdate } = props;
+	const subtaskRef = useRef();
+	const isDoneRef = useRef();
 	const [isEdit, setIsEdit] = useState(false);
-	// * || 'Test' -> FOR TESTING PURPOSES
-	const [beforeChange, setBeforeChange] = useState(subtask.title || 'Test');
+	const [beforeChange, setBeforeChange] = useState(subtask);
 	const [isInvalid, setIsInvalid] = useState(null);
 
 	const openEditHandler = () => {
@@ -19,51 +21,62 @@ const SubtaskItem = (props) => {
 	};
 
 	const onBlurHandler = () => {
-		const newTitle = subtaskRef.current.value;
-		if (newTitle.trim() === '') {
+		const name = subtaskRef.current.value;
+		const isDone = isDoneRef.current.checked;
+		if (name.trim() === '') {
 			setIsInvalid(true);
 			return;
 		}
 
-		if (newTitle === beforeChange) {
+		if (name === beforeChange.name && isDone === beforeChange.isDone) {
 			closeEditHandler();
 			return;
 		}
 
+		const updatedSubtask = { ...beforeChange, name, isDone };
 		// ! POST Request to change
-
-		// Changes wont reflect for now as subtask is a constant
-		setBeforeChange(newTitle);
+		onUpdate(index, updatedSubtask);
+		setBeforeChange(updatedSubtask);
 		setIsInvalid(false);
 		closeEditHandler();
 	};
 
 	const subtaskTitle = subtask.isDone ? (
-		<strike>{subtask.title}</strike>
+		<strike onClick={openEditHandler} className="w-75">
+			{subtask.name}
+		</strike>
 	) : (
-		<span>{subtask.title}</span>
+		<span onClick={openEditHandler} className="w-75">
+			{subtask.name}
+		</span>
 	);
 
 	return (
-		<ListGroupItem
-			className="d-flex justify-content-between"
-			onClick={openEditHandler}
-		>
-			{/* TODO edit subtask onClick, strikethrough when done */}
-			{/* TODO convert to map() */}
+		// TODO Improve CSS
+		<ListGroupItem className="d-flex justify-content-between">
 			{isEdit ? (
 				<Input
-					defaultValue={beforeChange}
-					onBlur={onBlurHandler}
+					defaultValue={beforeChange.name}
 					innerRef={subtaskRef}
 					autoFocus
+					onBlur={onBlurHandler}
 					invalid={isInvalid}
 				/>
 			) : (
 				subtaskTitle
 			)}
 			<div>
-				<input type="checkbox" /> <FaTrash />
+				<Input
+					type="checkbox"
+					innerRef={isDoneRef}
+					defaultChecked={beforeChange.isDone}
+				/>{' '}
+				<FaTrash
+					style={{ cursor: 'pointer' }}
+					onClick={() => {
+						onUpdate(index);
+					}}
+				/>
 			</div>
 		</ListGroupItem>
 	);
