@@ -12,14 +12,16 @@ import {
 	ModalBody,
 	ModalFooter,
 } from 'reactstrap';
+import { HiLocationMarker } from 'react-icons/hi';
 import { DatePicker } from 'antd';
 import 'antd/dist/antd.css';
 import EventModal from './EventModal';
 import ModalContext from '../../store/ModalContext';
-import { addEvent } from '../../store/event-actions';
+import { addEvent, updateEvent } from '../../store/event-actions';
 import useInput from '../hooks/use-input';
+import useError from '../hooks/use-error';
 import { FormGroup } from 'reactstrap';
-import { initializeEvent } from '../../lib/event';
+import { durationIsSame, initializeEvent } from '../../lib/event';
 
 // TODO Add Error Banner
 function EditEvent(props) {
@@ -38,8 +40,10 @@ function EditEvent(props) {
 		onBlur: titleOnBlur,
 	} = useInput((value) => value.trim() !== '', initEvent.title);
 	const descRef = useRef();
+	const placeRef = useRef();
 	const [dateTime, setDateTime] = useState(initEvent.dateTime);
 	const [allDay, setAllDay] = useState(initEvent.allDay);
+	const { error, errorMsg, changeMessage } = useError();
 
 	const returnToView = (selectedEvent) => {
 		modalContext.showModal(
@@ -51,26 +55,29 @@ function EditEvent(props) {
 		setDateTime(dates);
 	};
 
-	// TODO Add places
 	const submitHandler = (e) => {
 		e.preventDefault();
 
 		const newDesc = descRef.current.value;
+		const newPlace = placeRef.current.value;
 		let [start, end] = dateTime;
 
 		if (!titleIsValid || start === null || end == null) {
-			// TODO Handle invalids
-			alert('Invalid');
+			changeMessage('Please make sure title and duration is not empty.');
 			return;
 		}
 
 		if (
 			initEvent.title === title &&
 			initEvent.allDay === allDay &&
-			initEvent.desc === newDesc &&
-			moment(event.start).isSame(start) &&
-			moment(event.end).isSame(end)
+			initEvent.description === newDesc &&
+			initEvent.place === newPlace &&
+			durationIsSame(
+				{ start: event.start, end: event.end },
+				{ start, end }
+			)
 		) {
+			alert('Return to view');
 			return;
 		}
 
@@ -81,30 +88,26 @@ function EditEvent(props) {
 			return time.toISOString();
 		});
 
-		// ! Handled by POST Requests
+		const eventReq = {
+			start: startSerialize,
+			end: endSerialize,
+			allDay,
+			name: title,
+			description: newDesc,
+			place: newPlace,
+		};
+
 		// * Add Event
 		if (initEvent.isAdd) {
-			const eventReq = {
-				start: startSerialize,
-				end: endSerialize,
-				allDay,
-				name: title,
-				description: newDesc,
-			};
 			dispatch(addEvent(token, eventReq));
 			modalContext.hideModal();
 			return;
 		}
 
 		// * Updating Events
-		// Serialize for Redux management
-		// const payload = {
-		// 	event: { ...event, allDay, title, desc: newDesc },
-		// 	start: startSerialize,
-		// 	end: endSerialize,
-		// };
-
-		// dispatch(eventActions.updateEvent(payload));
+		eventReq['_id'] = event._id;
+		dispatch(updateEvent(token, eventReq));
+		alert('Return to view');
 
 		// returnToView({ ...payload.event, start, end });
 	};
@@ -122,6 +125,15 @@ function EditEvent(props) {
 			<ModalBody>
 				<Form>
 					<FormGroup className="mb-2">
+						<Alert
+							color="danger"
+							isOpen={error}
+							toggle={() => {
+								changeMessage('');
+							}}
+						>
+							{errorMsg}
+						</Alert>
 						<Label for="title">Title</Label>
 						<Input
 							type="text"
@@ -171,6 +183,20 @@ function EditEvent(props) {
 						</div>
 					</FormGroup>
 					<FormGroup className="mb-2">
+						<Label for="place">
+							<HiLocationMarker />
+							Location
+						</Label>
+						<Input
+							type="text"
+							id="place"
+							name="place"
+							innerRef={placeRef}
+							placeholder="Add a place"
+							defaultValue={initEvent.resource}
+						/>
+					</FormGroup>
+					<FormGroup className="mb-2">
 						<Label for="description">Description</Label>
 						<Input
 							type="textarea"
@@ -178,7 +204,7 @@ function EditEvent(props) {
 							name="description"
 							placeholder="Add a description"
 							innerRef={descRef}
-							defaultValue={initEvent.desc}
+							defaultValue={initEvent.description}
 						/>
 					</FormGroup>
 				</Form>

@@ -1,13 +1,13 @@
 import moment from 'moment';
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { Calendar as Cal, momentLocalizer } from 'react-big-calendar';
 import EventModal from './EventModal';
 import { eventActions } from '../../store/event';
-import { fetchEvents } from '../../store/event-actions';
+import { fetchEvents, updateEvent } from '../../store/event-actions';
 import ModalContext from '../../store/ModalContext';
-import { convertToDate, updateEventTime } from '../../lib/event';
+import { convertToDate, durationIsSame } from '../../lib/event';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -18,6 +18,10 @@ const DnDCalendar = withDragAndDrop(Cal);
 function Calendar() {
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);
+	const [calendar, setCalendar] = useState({
+		view: 'day',
+		date: moment().toDate(),
+	});
 	const { t: token } = cookies;
 	const modalContext = useContext(ModalContext);
 	const events = useSelector((state) => state.event).map(convertToDate);
@@ -26,6 +30,7 @@ function Calendar() {
 		function eventsFromStorage() {
 			const stringEvents = localStorage.getItem('event');
 			const parsedEvents = JSON.parse(stringEvents);
+			// * This is causing events to collapse on its own
 			if (parsedEvents) {
 				console.log(parsedEvents);
 				if (parsedEvents.length !== 0) {
@@ -46,11 +51,21 @@ function Calendar() {
 	}, [dispatch, token]);
 
 	const eventDropHandler = (data) => {
-		alert('To be updated');
-		console.log(data);
-		const updated = updateEventTime(data);
-		// ! POST To Update
-		// dispatch(updateEvent(token,updated));
+		if (
+			durationIsSame(
+				{ start: data.event.start, end: data.event.end },
+				{ start: data.start, end: data.end }
+			)
+		) {
+			return;
+		}
+
+		const newEvent = {
+			...data.event,
+			start: data.start.toISOString(),
+			end: data.end.toISOString(),
+		};
+		dispatch(updateEvent(token, newEvent));
 	};
 
 	const addEventHandler = (data) => {
@@ -63,11 +78,27 @@ function Calendar() {
 		modalContext.showModal(<EventModal modalType="Read" event={event} />);
 	};
 
+	const dateChangeHandler = (date) => {
+		setCalendar({ ...calendar, date });
+
+		if (calendar.view === 'month') {
+			const start = moment(date).startOf('month').toDate();
+			const end = moment(date).endOf('month').toDate();
+			console.log(start, end);
+			dispatch(fetchEvents(token, start, end));
+		}
+	};
+
+	const viewChangeHandler = (view) => {
+		setCalendar({ ...calendar, view });
+	};
+
 	return (
 		<React.Fragment>
 			<DnDCalendar
-				defaultDate={moment().toDate()}
-				defaultView={'day'}
+				{...calendar}
+				onNavigate={dateChangeHandler}
+				onView={viewChangeHandler}
 				events={events}
 				localizer={localizer}
 				style={{ height: '55vh' }}
@@ -75,7 +106,7 @@ function Calendar() {
 				onEventResize={eventDropHandler}
 				onSelectSlot={addEventHandler}
 				onSelectEvent={viewEventHandler}
-				views={{ month: true, day: true }}
+				views={['month', 'day']}
 				resizable
 				selectable
 				popup

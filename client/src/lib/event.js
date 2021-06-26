@@ -1,9 +1,16 @@
 import moment from 'moment';
 
-// TODO Add Places
 export function createEvent(event) {
-	const { _id, name, description, allDay, start, end } = event;
-	return { _id, title: name, description, allDay, start, end };
+	const { _id, name, description, allDay, start, end, place } = event;
+	return {
+		_id,
+		title: name,
+		description,
+		allDay,
+		start,
+		end,
+		resource: place,
+	};
 }
 
 export function convertToDate(event) {
@@ -18,9 +25,10 @@ export function initializeEvent(event, addStart) {
 	const dateTime = event
 		? [moment(event.start), moment(event.end)]
 		: [moment(addStart), moment(addStart).add(1, 'hour')];
-	const desc = event ? event.desc : '';
+	const description = event ? event.desc || '' : '';
 	const allDay = event ? event.allDay : false;
-	return { isAdd, allDay, title, dateTime, desc };
+	const resource = event ? event.resource || '' : '';
+	return { isAdd, allDay, title, dateTime, description, resource };
 }
 
 export function updateEventTime(data) {
@@ -37,4 +45,15 @@ export function formatDate(date, allDay) {
 	return allDay
 		? moment(date).format('DD MMM, YYYY')
 		: moment(date).format('DD MMM, YYYY, h:mm a');
+}
+
+export function durationIsSame(currentDuration, durationToCompare) {
+	const keys = Object.keys(currentDuration);
+	return keys
+		.map((key) => {
+			const currentTime = currentDuration[key];
+			const compareTime = durationToCompare[key];
+			return moment(currentTime).isSame(compareTime);
+		})
+		.some((isSame) => isSame);
 }

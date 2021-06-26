@@ -1,13 +1,14 @@
 import moment from 'moment';
 import { Button, ModalBody, ModalFooter } from 'reactstrap';
 import React, { useContext } from 'react';
+import { HiLocationMarker } from 'react-icons/hi';
 import ModalContext from '../../store/ModalContext';
 import { formatDate } from '../../lib/event';
 import EventModal from './EventModal';
 
 const ViewEvent = (props) => {
 	const { event } = props;
-	const { start, end, allDay, description } = event;
+	const { start, end, allDay, description, resource } = event;
 	const modalContext = useContext(ModalContext);
 
 	const editHandler = () => {
@@ -26,6 +27,11 @@ const ViewEvent = (props) => {
 					start,
 					allDay
 				)} — ${formatDate(end, allDay)}`}</p>
+				<h4>
+					<HiLocationMarker />
+					Location
+				</h4>
+				<p>{resource || 'No location'}</p>
 				<h4>Description</h4>
 				<p>{description || 'No description'}</p>
 			</ModalBody>

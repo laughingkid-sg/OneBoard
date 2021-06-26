@@ -76,7 +76,6 @@ export const addEvent = (token, event) => {
 	};
 };
 
-// ! Not working yet
 export const updateEvent = (token, eventUpd) => {
 	return async (dispatch) => {
 		const updateData = async () => {
@@ -99,16 +98,17 @@ export const updateEvent = (token, eventUpd) => {
 		};
 
 		try {
-			const responseData = await updateData();
-			// const updatedEvent = createEvent()
+			const { event } = await updateData();
+			const formatEvent = createEvent(event);
+			dispatch(eventActions.updateEvent(formatEvent));
 		} catch (error) {}
 	};
 };
 
-// ! Not tested yet
 export const deleteEvent = (token, id) => {
 	return async (dispatch) => {
 		const deleteData = async () => {
+			console.log(formatId(id));
 			const response = await fetch(formatId(id), {
 				method: 'DELETE',
 				headers: {
@@ -127,8 +127,8 @@ export const deleteEvent = (token, id) => {
 		};
 
 		try {
-			const responseData = await deleteData();
-			// const updatedEvent = createEvent()
+			await deleteData();
+			dispatch(eventActions.deleteEvent(id));
 		} catch (error) {}
 	};
 };

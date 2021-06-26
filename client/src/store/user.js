@@ -21,6 +21,7 @@ const userSlice = createSlice({
 		logout(state) {
 			return initialState;
 		},
+		// TODO To change soon
 		update(state, action) {
 			const { firstName, lastName } = action.payload;
 			return { ...state, firstName, lastName };
