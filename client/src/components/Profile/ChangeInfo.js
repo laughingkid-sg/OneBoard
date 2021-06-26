@@ -1,13 +1,26 @@
 import React, { useState } from 'react';
-import { Form, Label, Input } from 'reactstrap';
+import {
+	Alert,
+	Button,
+	Form,
+	FormFeedback,
+	FormGroup,
+	Label,
+	Input,
+} from 'reactstrap';
+import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
-import Button from '../../UI/Button';
 import useInput from '../hooks/use-input';
-import { userActions } from '../../store/user';
+import useError from '../hooks/use-error';
+import { updateName } from '../../store/user-actions';
+import { textNotEmpty } from '../../lib/validators';
 
 function ChangeInfo() {
 	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const user = useSelector((state) => state.user);
+	const [isSuccess, setIsSuccess] = useState(false);
 	const [beforeChange, setBeforeChange] = useState({
 		firstName: user.firstName,
 		lastName: user.lastName,
@@ -19,7 +32,7 @@ function ChangeInfo() {
 		hasError: fNameHasError,
 		onChange: fNameOnChange,
 		onBlur: fNameOnBlur,
-	} = useInput((value) => value.trim() !== '', user.firstName);
+	} = useInput(textNotEmpty, user.firstName);
 
 	const {
 		value: lastName,
@@ -27,52 +40,84 @@ function ChangeInfo() {
 		hasError: lNameHasError,
 		onChange: lNameOnChange,
 		onBlur: lNameOnBlur,
-	} = useInput((value) => value.trim() !== '', user.lastName);
+	} = useInput(textNotEmpty, user.lastName);
+
+	const { error, errorMsg, changeMessage } = useError();
 
 	const onSubmitHandler = (e) => {
 		e.preventDefault();
 
-		if (!(fNameIsValid && lNameIsValid)) return;
+		if (!(fNameIsValid && lNameIsValid)) {
+			setIsSuccess(false);
+			changeMessage('Please ensure all fields are valid.');
+			return;
+		}
+
 		if (
 			firstName === beforeChange.firstName &&
 			lastName === beforeChange.lastName
 		) {
+			setIsSuccess(true);
+			changeMessage('No changes made.');
 			return;
 		}
 
 		const updatedUser = { firstName, lastName };
-
-		// ! POST to server to update user information
-		// TODO Move this function to user-actions
-		dispatch(userActions.update(updatedUser));
-		setBeforeChange({ firstName, lastName });
+		dispatch(updateName(token, updatedUser));
+		setBeforeChange(updatedUser);
+		setIsSuccess(true);
+		changeMessage('Successfully updated.');
 	};
 
 	return (
 		<React.Fragment>
 			<h3>Change User Information</h3>
+			<Alert
+				color={isSuccess ? 'success' : 'danger'}
+				isOpen={error}
+				toggle={() => {
+					changeMessage('');
+				}}
+			>
+				{errorMsg}
+			</Alert>
 			<Form onSubmit={onSubmitHandler}>
-				<Label for="fName">First Name</Label>
-				<Input
-					id="fName"
-					type="text"
-					onBlur={fNameOnBlur}
-					onChange={fNameOnChange}
-					// className={`${fNameHasError ? styles.invalid : ''}`}
-					value={firstName}
-				/>
+				<FormGroup>
+					<Label for="fName">First Name</Label>
+					<Input
+						id="fName"
+						type="text"
+						onBlur={fNameOnBlur}
+						onChange={fNameOnChange}
+						value={firstName}
+						invalid={fNameHasError}
+					/>
+					<FormFeedback invalid>
+						Please ensure field is not empty.
+					</FormFeedback>
+				</FormGroup>
 
-				<Label for="lName">Last Name</Label>
-				<Input
-					id="lName"
-					type="text"
-					onBlur={lNameOnBlur}
-					onChange={lNameOnChange}
-					// className={`${lNameHasError ? styles.invalid : ''}`}
-					value={lastName}
-				/>
+				<FormGroup>
+					<Label for="lName">Last Name</Label>
+					<Input
+						id="lName"
+						type="text"
+						onBlur={lNameOnBlur}
+						onChange={lNameOnChange}
+						value={lastName}
+						invalid={lNameHasError}
+					/>
+					<FormFeedback invalid>
+						Please ensure field is not empty.
+					</FormFeedback>
+				</FormGroup>
 
-				<Button type="submit">Update Information</Button>
+				<div className="mt-4">
+					<Button type="submit" color="success">
+						Update Information
+					</Button>
+					<Button outline>Go back</Button>
+				</div>
 			</Form>
 		</React.Fragment>
 	);

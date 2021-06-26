@@ -26,8 +26,9 @@ const userSlice = createSlice({
 		},
 		// TODO To change soon
 		update(state, action) {
-			const { firstName, lastName } = action.payload;
-			return { ...state, firstName, lastName };
+			return { ...state, ...action.payload };
+			// const { firstName, lastName } = action.payload;
+			// return { ...state, firstName, lastName };
 		},
 		// * Kanban related information
 		addBoard(state, action) {
