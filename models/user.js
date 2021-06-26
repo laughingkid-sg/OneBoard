@@ -44,8 +44,7 @@ const userSchema = new mongoose.Schema({
         type: ObjectId, 
         ref: 'Notes',
         required: false
-    }]
-    ,
+    }],
     events: [{
         type: ObjectId, 
         ref: 'Events',

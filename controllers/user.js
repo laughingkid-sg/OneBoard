@@ -35,3 +35,11 @@ exports.getUser = (req, res) => {
 exports.setPass = async (req, res) => {
     await req.profile.changePassword(req.body.oldPassword, req.body.newPassword, (err, user) => err ? res.status(401).json({message: err.message}) : res.status(204))
 }
+
+exports.updateUser = (req, res) => {
+    req.profile.firstName = req.body.firstName;
+    req.profile.lastName = req.body.lastName;
+    req.profile.save().then((user) => res.status(200).json(user), 
+        err => res.status(500).json({ message: err.message} ))
+    .catch(err => res.status(500).json({ message: err.message} ))   
+}

@@ -140,3 +140,24 @@ exports.delEvent = (req, res) => {
             err => res.status(400).json({ message: err.message }))
         .catch((err) => res.status(400).json({ message: err.message } ))
 }
+
+exports.updateFeatured = (req, res) => {
+    req.profile.featured = req.event._id;
+    User.findByIdAndUpdate(req.profile._id, { $set: req.profile }, { new: true }).then(
+        user => res.status(204).json(user),
+        err => res.status(400).json({ message: err.message })
+        .catch((err) => res.status(400).json({ message: err.message } ))
+    )
+}
+
+exports.removeFeatured = (req, res) => {
+    if (!req.profile.featured) {
+        res.status(400).json({ message: "No featured event set." } )
+    } else {
+        User.findByIdAndUpdate(req.profile._id, { $unset: { featured: "" }}).then(
+            user => res.status(204).json(user),
+            err => res.status(400).json({ message: err.message })
+            .catch((err) => res.status(400).json({ message: err.message } ))
+        )
+    }
+}

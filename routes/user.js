@@ -5,11 +5,16 @@ const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 
 const {  setUser, getUser } = require("../controllers/user");
 
-const { userById, setPass } = require("../controllers/user");
+const { userById, setPass, updateUser } = require("../controllers/user");
 
+router.use(requireSignin, isAuth, setUser)
 
-router.route("/").get(requireSignin, isAuth, setUser, getUser)
-router.route("/pass").post(requireSignin, isAuth, setUser, setPass)
+router.route("/")
+    .get(getUser)
+    .post(updateUser);
+
+router.route("/pass")
+    .post(setPass)
 
 router.param('userId', userById)
 
