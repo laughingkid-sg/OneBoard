@@ -3,7 +3,7 @@ import { ListGroup } from 'reactstrap';
 import SubtaskItem from './SubtaskItem';
 
 function SubtaskList(props) {
-	const { subtasks, taskId, onDelete, onUpdate } = props;
+	const { subtasks, task, onDelete, onUpdate } = props;
 
 	if (subtasks.length === 0) return <p>No Subtasks</p>;
 
@@ -11,7 +11,7 @@ function SubtaskList(props) {
 		<SubtaskItem
 			subtask={subtask}
 			key={index}
-			taskId={taskId}
+			task={task}
 			index={index}
 			onUpdate={onUpdate}
 		/>

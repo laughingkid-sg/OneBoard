@@ -5,7 +5,7 @@ import { ListGroupItem, Input } from 'reactstrap';
 import { kanbanActions } from '../../../../store/kanban';
 
 const SubtaskItem = (props) => {
-	const { subtask, index, onUpdate } = props;
+	const { task, subtask, index, onUpdate } = props;
 	const subtaskRef = useRef();
 	const isDoneRef = useRef();
 	const [isEdit, setIsEdit] = useState(false);
@@ -42,17 +42,18 @@ const SubtaskItem = (props) => {
 	};
 
 	const subtaskTitle = subtask.isDone ? (
-		<strike>{subtask.name}</strike>
+		<strike onClick={openEditHandler} className="w-75">
+			{subtask.name}
+		</strike>
 	) : (
-		<span>{subtask.name}</span>
+		<span onClick={openEditHandler} className="w-75">
+			{subtask.name}
+		</span>
 	);
 
 	return (
 		// TODO Improve CSS
-		<ListGroupItem
-			className="d-flex justify-content-between"
-			onClick={openEditHandler}
-		>
+		<ListGroupItem className="d-flex justify-content-between">
 			{isEdit ? (
 				<Input
 					defaultValue={beforeChange.name}

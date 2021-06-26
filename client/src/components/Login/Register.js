@@ -127,7 +127,7 @@ export default function Register() {
 			>
 				{errorMsg}
 			</Alert>
-			<Form onSubmit={submitHandler}>
+			<Form onSubmit={submitHandler} className="w-50">
 				<div className="row">
 					<FormGroup className="col">
 						<Label for="fName">First Name</Label>

@@ -80,7 +80,7 @@ export default function Login(props) {
 			>
 				{errorMsg}
 			</Alert>
-			<Form onSubmit={submitHandler}>
+			<Form onSubmit={submitHandler} className="w-50">
 				<FormGroup>
 					<Label for="email">E-mail</Label>
 					<Input
