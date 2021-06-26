@@ -1,6 +1,7 @@
 import moment from 'moment';
 import React, { useContext } from 'react';
-import { Badge } from 'reactstrap';
+import { useSelector } from 'react-redux';
+import { Badge, Progress } from 'reactstrap';
 import { BiTime } from 'react-icons/bi';
 import { Draggable } from 'react-beautiful-dnd';
 import EditDelete from './KanbanUI/EditDelete';
@@ -11,7 +12,6 @@ import ModalContext from '../../store/ModalContext';
 import { TYPES } from '../../store/kanban-actions';
 
 function Task(props) {
-	// ! columnId, boardId not required anymore
 	const { task, index: taskIndex, columnTitle } = props;
 	const modalContext = useContext(ModalContext);
 
@@ -33,7 +33,6 @@ function Task(props) {
 	};
 
 	const deleteTask = () => {
-		// TODO set onCancel
 		const deleteModal = (
 			<DeleteModal id={task._id} title={task.name} type={TYPES.TASK} />
 		);
@@ -63,6 +62,7 @@ function Task(props) {
 						onClick={showTaskHandler}
 					>
 						<p>{task.name}</p>
+						<ProgressBar labels={task.label} />
 						{task.expireAt && (
 							<p style={{ fontSize: '16px', marginTop: '4px' }}>
 								<Badge className="bg-warning align-self-start">
@@ -81,5 +81,30 @@ function Task(props) {
 		</Draggable>
 	);
 }
+
+const ProgressBar = (props) => {
+	const { labels } = props;
+	const boardLabels = useSelector((state) => state.kanban.labels).filter(
+		(label) => label._id
+	);
+
+	if (!labels) return null;
+
+	return (
+		<div className="my-1">
+			{labels.map((label) => {
+				const foundLabel = boardLabels.find(
+					(bLabel) => bLabel._id === label
+				);
+				if (!foundLabel) return null;
+				return (
+					<Badge className={`bg-${foundLabel.type}`} key={label}>
+						{foundLabel.name}
+					</Badge>
+				);
+			})}
+		</div>
+	);
+};
 
 export default Task;

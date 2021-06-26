@@ -15,7 +15,6 @@ function DeleteModal(props) {
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
 
-	// ! Not working yet
 	const deleteHandler = () => {
 		dispatch(deleteData(token, type, id));
 		if (type == TYPES.BOARD) {

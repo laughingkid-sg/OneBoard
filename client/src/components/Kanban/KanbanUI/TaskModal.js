@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import { DatePicker, Select } from 'antd';
 import {
+	Alert,
 	Badge,
 	Button,
 	Input,
@@ -17,12 +18,15 @@ import styles from './TaskModal.module.css';
 import { TYPES, updateData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import { AddSubtask, SubtaskList } from './Subtask';
+import useError from '../../hooks/use-error';
 
 const { Option } = Select;
 
 function TaskModal(props) {
-	const dispatch = useDispatch();
 	const { task, columnTitle, write, onDelete } = props;
+	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const token = cookies.t;
 	const boardLabels = useSelector((state) => state.kanban.labels);
 	const modalContext = useContext(ModalContext);
 	const nameRef = useRef();
@@ -33,22 +37,26 @@ function TaskModal(props) {
 	const [deadline, setDeadline] = useState(
 		task.expireAt ? moment(task.expireAt) : null
 	);
-	const [labelSelect, setLabelSelect] = useState(task.label);
-	const [cookies] = useCookies(['t']);
-	const token = cookies.t;
+	const [labelSelect, setLabelSelect] = useState(
+		task.label.filter((label) =>
+			boardLabels.find((bLabel) => bLabel._id === label)
+		)
+	);
+	const { error, errorMsg, changeError, changeMessage } = useError();
 
 	const confirmEditHandler = () => {
 		if (nameRef.current.value.trim() === '') {
+			changeMessage('Please make sure the name field is not empty.');
 			return;
 		}
 
 		let dateChanged = true;
 		let newExpiry;
 		if (deadline === null) {
-			console.log('New deadline null, checking against old value');
+			// console.log('New deadline null, checking against old value');
 			dateChanged = !!beforeChange.expireAt;
 		} else {
-			console.log('Deadline is a time, checking against old value');
+			// console.log('Deadline is a time, checking against old value');
 			dateChanged = !deadline.isSame(beforeChange.expireAt, 'day');
 		}
 		if (dateChanged) {
@@ -58,16 +66,16 @@ function TaskModal(props) {
 			else newExpiry = new Date(beforeChange.expireAt).toISOString();
 		}
 
-		let newLabels;
 		let labelsChanged = false;
 		if (labelSelect.length !== beforeChange.label.length) {
-			newLabels = labelSelect;
 			labelsChanged = true;
 		}
 
 		if (!labelsChanged) {
 			for (let i = 0; i < labelSelect.length; i++) {
 				const labelSel = labelSelect[i];
+				// If there is some id that does not exist in the old array,
+				// then there is a change
 				if (!beforeChange.label.some((label) => label === labelSel)) {
 					labelsChanged = true;
 				}
@@ -100,7 +108,7 @@ function TaskModal(props) {
 			!labelsChanged &&
 			!subTaskChanged
 		) {
-			console.log('No changes at all');
+			changeMessage('No changes made.');
 			toggleEditHandler();
 			return;
 		}
@@ -111,11 +119,12 @@ function TaskModal(props) {
 			order: beforeChange.order,
 			expireAt: newExpiry,
 			subTask: newSubtask,
-			label: newLabels,
+			label: labelSelect,
 		};
 
 		dispatch(updateData(token, TYPES.TASK, updatedTask, task._id));
 		setBeforeChange(updatedTask);
+		changeMessage('Update success.');
 		toggleEditHandler();
 	};
 
@@ -165,13 +174,6 @@ function TaskModal(props) {
 		</React.Fragment>
 	);
 
-	// const renderLabel = () => {
-	// 	if (!beforeChange.label) return 'No label';
-	// 	const label = boardLabels.find(
-	// 		(bLabel) => bLabel._id === beforeChange.label
-	// 	);
-	// 	return <Badge className={`bg-${label.type}`}>{label.name}</Badge>;
-	// };
 	const renderLabel =
 		beforeChange.label.length === 0
 			? 'No label'
@@ -179,6 +181,7 @@ function TaskModal(props) {
 					const label = boardLabels.find(
 						(label) => label._id === bLabel
 					);
+					if (!label) return null;
 					return (
 						<Badge className={`bg-${label.type} mx-1`}>
 							{label.name}
@@ -214,6 +217,15 @@ function TaskModal(props) {
 				</React.Fragment>
 			</ModalHeader>
 			<ModalBody>
+				<Alert
+					color={error ? 'success' : 'danger'}
+					isOpen={!!errorMsg}
+					toggle={() => {
+						changeError(!error);
+					}}
+				>
+					{errorMsg}
+				</Alert>
 				<h3 className={`styles.header mt-2`}>Description</h3>
 				{!isWrite && (
 					<p className={styles.description}>

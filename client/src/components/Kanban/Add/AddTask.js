@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { useCookies } from 'react-cookie';
-import { useDispatch, useSelector } from 'react-redux';
+import { Input, Button } from 'reactstrap';
+import { useDispatch } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
 import styles from './AddTask.module.css';
 import { TYPES, addData } from '../../../store/kanban-actions';
@@ -12,13 +13,15 @@ const AddTask = (props) => {
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
 
-	const addTaskHandler = () => {
+	const addTaskHandler = (e) => {
+		e.preventDefault();
+
 		if (taskName.current.value.trim() === '') {
 			onCancel();
 			return;
 		}
 
-		const name = taskName.current.value.trim();
+		const name = taskName.current.value.trim().replace(/\n/g, ' ');
 		const newTask = { name, order };
 		dispatch(addData(token, TYPES.TASK, newTask, columnId));
 		onCancel();
@@ -33,17 +36,23 @@ const AddTask = (props) => {
 
 	return (
 		<div className={styles.addTask}>
-			<textarea
+			<Input
 				autoFocus
+				type="textarea"
+				rows="2"
 				placeholder="Enter Task here"
-				ref={taskName}
+				innerRef={taskName}
 				className={styles.text}
 				onBlur={cancelHandler}
 			/>
-			<div>
-				<button onClick={addTaskHandler} className={styles.confirm}>
+			<div className="mt-2">
+				<Button
+					type="submit"
+					onClick={addTaskHandler}
+					className={styles.confirm}
+				>
 					Add Task
-				</button>
+				</Button>
 				<AiOutlineClose onClick={onCancel} className={styles.cancel} />
 			</div>
 		</div>

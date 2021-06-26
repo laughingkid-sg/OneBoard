@@ -15,7 +15,7 @@ function AddBoard(props) {
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
 	const boards = useSelector((state) => state.user.boards);
-	const selectedBoard = { boards };
+	const { selectedBoard } = boards;
 	const selectBoardRef = useRef();
 	const [boardAdd, setBoardAdd] = useState(false);
 	const modalContext = useContext(ModalContext);
@@ -58,7 +58,6 @@ function AddBoard(props) {
 	};
 
 	const editBoardHandler = () => {
-		// alert('Edit Board');
 		modalContext.showModal(<EditBoard />);
 	};
 
@@ -67,8 +66,6 @@ function AddBoard(props) {
 			{board.name}
 		</option>
 	));
-
-	// const selectedName = selectedBoard.name;
 
 	return (
 		<div className="d-flex flex-row">
@@ -97,10 +94,17 @@ function AddBoard(props) {
 					{renderOptions}
 				</Input>
 			)}
-			<Button onClick={boardAdd ? addBoardHandler : toggleBoardAdd}>
+			<Button
+				onClick={boardAdd ? addBoardHandler : toggleBoardAdd}
+				color={boardAdd ? 'success' : 'secondary'}
+			>
 				Add Board
 			</Button>
-			{boardAdd && <Button onClick={toggleBoardAdd}>Cancel</Button>}
+			{boardAdd && (
+				<Button onClick={toggleBoardAdd} color="danger" outline>
+					Cancel
+				</Button>
+			)}
 			<EditDelete
 				onEdit={editBoardHandler}
 				onDelete={deleteBoardHandler}
