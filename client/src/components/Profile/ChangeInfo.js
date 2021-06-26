@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
-import { Form, Label, Input } from 'reactstrap';
+import {
+	Button,
+	Form,
+	FormFeedback,
+	FormGroup,
+	Label,
+	Input,
+} from 'reactstrap';
+import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
-import Button from '../../UI/Button';
 import useInput from '../hooks/use-input';
-import { userActions } from '../../store/user';
+import { updateName } from '../../store/user-actions';
+import { textNotEmpty } from '../../lib/validators';
 
 function ChangeInfo() {
 	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const user = useSelector((state) => state.user);
 	const [beforeChange, setBeforeChange] = useState({
 		firstName: user.firstName,
@@ -19,7 +29,7 @@ function ChangeInfo() {
 		hasError: fNameHasError,
 		onChange: fNameOnChange,
 		onBlur: fNameOnBlur,
-	} = useInput((value) => value.trim() !== '', user.firstName);
+	} = useInput(textNotEmpty, user.firstName);
 
 	const {
 		value: lastName,
@@ -27,7 +37,7 @@ function ChangeInfo() {
 		hasError: lNameHasError,
 		onChange: lNameOnChange,
 		onBlur: lNameOnBlur,
-	} = useInput((value) => value.trim() !== '', user.lastName);
+	} = useInput(textNotEmpty, user.lastName);
 
 	const onSubmitHandler = (e) => {
 		e.preventDefault();
@@ -41,38 +51,49 @@ function ChangeInfo() {
 		}
 
 		const updatedUser = { firstName, lastName };
-
-		// ! POST to server to update user information
-		// TODO Move this function to user-actions
-		dispatch(userActions.update(updatedUser));
-		setBeforeChange({ firstName, lastName });
+		dispatch(updateName(token, updatedUser));
 	};
 
 	return (
 		<React.Fragment>
 			<h3>Change User Information</h3>
 			<Form onSubmit={onSubmitHandler}>
-				<Label for="fName">First Name</Label>
-				<Input
-					id="fName"
-					type="text"
-					onBlur={fNameOnBlur}
-					onChange={fNameOnChange}
-					// className={`${fNameHasError ? styles.invalid : ''}`}
-					value={firstName}
-				/>
+				<FormGroup>
+					<Label for="fName">First Name</Label>
+					<Input
+						id="fName"
+						type="text"
+						onBlur={fNameOnBlur}
+						onChange={fNameOnChange}
+						value={firstName}
+						invalid={fNameHasError}
+					/>
+					<FormFeedback invalid>
+						Please ensure field is not empty
+					</FormFeedback>
+				</FormGroup>
 
-				<Label for="lName">Last Name</Label>
-				<Input
-					id="lName"
-					type="text"
-					onBlur={lNameOnBlur}
-					onChange={lNameOnChange}
-					// className={`${lNameHasError ? styles.invalid : ''}`}
-					value={lastName}
-				/>
+				<FormGroup>
+					<Label for="lName">Last Name</Label>
+					<Input
+						id="lName"
+						type="text"
+						onBlur={lNameOnBlur}
+						onChange={lNameOnChange}
+						value={lastName}
+						invalid={lNameHasError}
+					/>
+					<FormFeedback invalid>
+						Please ensure field is not empty
+					</FormFeedback>
+				</FormGroup>
 
-				<Button type="submit">Update Information</Button>
+				<div className="mt-4">
+					<Button type="submit" color="success">
+						Update Information
+					</Button>
+					<Button outline>Go back</Button>
+				</div>
 			</Form>
 		</React.Fragment>
 	);

@@ -22,8 +22,9 @@ const userSlice = createSlice({
 			return initialState;
 		},
 		update(state, action) {
-			const { firstName, lastName } = action.payload;
-			return { ...state, firstName, lastName };
+			return { ...state, ...action.payload };
+			// const { firstName, lastName } = action.payload;
+			// return { ...state, firstName, lastName };
 		},
 		addBoard(state, action) {
 			state.boards.boards.push(action.payload);
