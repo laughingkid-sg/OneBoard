@@ -73,6 +73,7 @@ export const fetchUserData = (id, token) => {
 
 		try {
 			const userData = await fetchData();
+			console.log(userData.user.featured);
 			dispatch(
 				userActions.login({
 					id: userData.user._id,
@@ -81,6 +82,7 @@ export const fetchUserData = (id, token) => {
 					lastName: userData.user.lastName,
 					email: userData.user.username,
 					boards: userData.user.boards,
+					featured: userData.user.featured,
 				})
 			);
 

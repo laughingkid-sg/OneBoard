@@ -1,61 +1,71 @@
 import moment from 'moment';
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { Calendar as Cal, momentLocalizer } from 'react-big-calendar';
 import EventModal from './EventModal';
 import { eventActions } from '../../store/event';
+import { fetchEvents, updateEvent } from '../../store/event-actions';
 import ModalContext from '../../store/ModalContext';
+import { convertToDate, durationIsSame } from '../../lib/event';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-// May be changed for other styles
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Cal);
 
-function serializeEvent(data) {
-	const { start: newStart, end: newEnd, event } = data;
-	const { start: prevStart, end: prevEnd } = event;
-	const serialDate = [newStart, newEnd, prevStart, prevEnd].map((date) =>
-		date.toJSON()
-	);
-	return {
-		...data,
-		start: serialDate[0],
-		end: serialDate[1],
-		event: {
-			...event,
-			start: serialDate[2],
-			end: serialDate[3],
-		},
-	};
-}
-
 function Calendar() {
-	const modalContext = useContext(ModalContext);
-	const events = useSelector((state) => state.event);
 	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
+	const [calendar, setCalendar] = useState({
+		view: 'day',
+		date: moment().toDate(),
+	});
+	const modalContext = useContext(ModalContext);
+	const events = useSelector((state) => state.event).map(convertToDate);
 
 	useEffect(() => {
 		function eventsFromStorage() {
 			const stringEvents = localStorage.getItem('event');
 			const parsedEvents = JSON.parse(stringEvents);
+			// * This is causing events to collapse on its own
 			if (parsedEvents) {
-				dispatch(eventActions.replace(parsedEvents));
-			} else {
-				console.log('Fetch events from server');
+				console.log(parsedEvents);
+				if (parsedEvents.length !== 0) {
+					console.log('Mount from storage');
+					dispatch(eventActions.replace(parsedEvents));
+					return;
+				}
 			}
+			console.log('Fetch events from server');
+			const start = moment().startOf('month').toDate();
+			const end = moment().endOf('month').toDate();
+			dispatch(fetchEvents(token, start, end));
 		}
 		eventsFromStorage();
 		return () => {
 			dispatch(eventActions.store());
 		};
-	}, [dispatch]);
+	}, [dispatch, token]);
 
 	const eventDropHandler = (data) => {
-		// ! To be placed within the event action creator
-		const serialized = serializeEvent(data);
-		dispatch(eventActions.updateEvent(serialized));
+		if (
+			durationIsSame(
+				{ start: data.event.start, end: data.event.end },
+				{ start: data.start, end: data.end }
+			)
+		) {
+			return;
+		}
+
+		const newEvent = {
+			...data.event,
+			start: data.start.toISOString(),
+			end: data.end.toISOString(),
+		};
+		dispatch(updateEvent(token, newEvent));
 	};
 
 	const addEventHandler = (data) => {
@@ -68,11 +78,27 @@ function Calendar() {
 		modalContext.showModal(<EventModal modalType="Read" event={event} />);
 	};
 
+	const dateChangeHandler = (date) => {
+		setCalendar({ ...calendar, date });
+
+		if (calendar.view === 'month') {
+			const start = moment(date).startOf('month').toDate();
+			const end = moment(date).endOf('month').toDate();
+			console.log(start, end);
+			dispatch(fetchEvents(token, start, end));
+		}
+	};
+
+	const viewChangeHandler = (view) => {
+		setCalendar({ ...calendar, view });
+	};
+
 	return (
 		<React.Fragment>
 			<DnDCalendar
-				defaultDate={moment().toDate()}
-				defaultView={'day'}
+				{...calendar}
+				onNavigate={dateChangeHandler}
+				onView={viewChangeHandler}
 				events={events}
 				localizer={localizer}
 				style={{ height: '55vh' }}
@@ -80,7 +106,7 @@ function Calendar() {
 				onEventResize={eventDropHandler}
 				onSelectSlot={addEventHandler}
 				onSelectEvent={viewEventHandler}
-				views={{ month: true, day: true }}
+				views={['month', 'day']}
 				resizable
 				selectable
 				popup

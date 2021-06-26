@@ -1,17 +1,20 @@
 import React, { useContext } from 'react';
+import { useCookies } from 'react-cookie';
 import { Button, ModalBody, ModalFooter } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import EventModal from './EventModal';
-import { eventActions } from '../../store/event';
 import ModalContext from '../../store/ModalContext';
+import { deleteEvent } from '../../store/event-actions';
 
 function DeleteEvent(props) {
+	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const { event } = props;
 	const modalContext = useContext(ModalContext);
-	const dispatch = useDispatch();
 
 	const deleteHandler = () => {
-		dispatch(eventActions.deleteEvent(event.id));
+		dispatch(deleteEvent(token, event._id));
 		modalContext.hideModal();
 	};
 
