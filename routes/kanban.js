@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const { createBoard, getBoards, delBoard, updateBoard, getBoard, boardById } = require('../controllers/board')
-const { columnById, createColumn, getColumn, updateColumn, delColumn} = require('../controllers/column')
-const { createTask, getTask, updateTask, taskById, delTask} = require('../controllers/task');
+const { columnById, createColumn, getColumn, updateColumn, delColumn, setColOrder } = require('../controllers/column')
+const { createTask, getTask, updateTask, taskById, delTask, setTaskOrder } = require('../controllers/task');
 
 const { requireSignin, isAuth} = require("../controllers/auth");
 const { userById, setUser } = require("../controllers/user");
@@ -25,7 +25,7 @@ router.route("/:boardId/")
 
 // ----- Column ----- //
 
-router.post("/column/:boardId/", createColumn); // Create Column
+router.post("/column/:boardId/", setColOrder, createColumn); // Create Column
 
 router.route("/column/:columnId/")
     .get(getColumn) // Get single Column by Id
@@ -34,7 +34,7 @@ router.route("/column/:columnId/")
 
 // ----- Task ----- //
 
-router.post("/task/:columnId", createTask); // Create Task in Column
+router.post("/task/:columnId", setTaskOrder, createTask); // Create Task in Column
 
 router.route("/task/:taskId/")
     .get(getTask) // Get Task by Id
