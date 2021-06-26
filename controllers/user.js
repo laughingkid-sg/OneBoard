@@ -31,5 +31,5 @@ exports.setUser = (req, res, next) => {
 }
 
 exports.getUser = (req, res) => {
-    res.json(req.profile)
+    res.json({user: req.profile})
 }

@@ -50,7 +50,12 @@ const userSchema = new mongoose.Schema({
         type: ObjectId, 
         ref: 'Events',
         required: false
-    }]
+    }],
+    featured: {
+        type: ObjectId, 
+        ref: 'Events',
+        required: false
+    }
 }, {timestamps : true}
 );
 

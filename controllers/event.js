@@ -64,7 +64,7 @@ exports.getEvents = (req, res) => {
             },
             {   
                 $project: {
-                    id: "$events.id",
+                    _id: "$events._id",
                     name: "$events.name",
                     allDay: "$events.allDay",
                     start : "$events.start",
