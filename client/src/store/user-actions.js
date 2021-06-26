@@ -103,7 +103,7 @@ export const updateName = (token, userData) => {
 				body: JSON.stringify(userData),
 			});
 			if (!response.ok) {
-				throw new Error('Could not fetch user data!');
+				throw new Error('Could not change user name!');
 			}
 
 			const data = await response.json();
@@ -113,8 +113,33 @@ export const updateName = (token, userData) => {
 
 		try {
 			const updateResponse = await updateData();
-			console.log('Update success!');
 			dispatch(userActions.update(userData));
+		} catch (error) {}
+	};
+};
+
+export const updatePassword = (token, userPW) => {
+	return async (dispatch) => {
+		const updateData = async () => {
+			const response = await fetch('/api/user/pass', {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(userPW),
+			});
+			if (!response.ok) {
+				throw new Error('Could not change user password!');
+			}
+
+			const data = await response.json();
+
+			return data;
+		};
+
+		try {
+			const response = await updateData();
 		} catch (error) {}
 	};
 };

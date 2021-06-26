@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
-import { AiOutlinePlus, AiOutlineClose, AiOutlineSearch } from 'react-icons/ai';
+import { AiOutlinePlus, AiOutlineSearch } from 'react-icons/ai';
 import { FaCaretLeft, FaCaretRight, FaTrash } from 'react-icons/fa';
 import AddNote from './AddNote';
 import DeleteNote from './DeleteNote';
