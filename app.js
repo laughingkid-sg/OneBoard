@@ -11,7 +11,7 @@ const authRoutes = require('./routes/auth')
 const userRoutes = require('./routes/user')
 const kanbanRoutes = require('./routes/kanban')
 const noteRoutes = require('./routes/note')
-const eventRoutes = require('./routes/event')
+const eventRoutes = require('./routes/event');
 
 // app
 const app = express()
@@ -25,7 +25,7 @@ mongoose
     })
     .then(() => console.log('DB Connected'));
 
-
+   
 
 // middlewares
 app.use(morgan('dev'));
@@ -40,6 +40,11 @@ app.use("/api/user", userRoutes);
 app.use("/api/kanban", kanbanRoutes);
 app.use("/api/note", noteRoutes);
 app.use("/api/event", eventRoutes);
+
+app.get('/', (req, res) => {
+    res.json({message: "ok"})
+});
+
 
 const port = process.env.PORT || 8000
 
