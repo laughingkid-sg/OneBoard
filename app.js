@@ -35,7 +35,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(expressValidator());
 app.use(passport.initialize());
-app.use(cors.corsWithOptions);
+app.use(cors);
 
 // routes middleware
 app.use("/api", authRoutes);
