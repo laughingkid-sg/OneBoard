@@ -19,10 +19,8 @@ function Board(props) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
-	const selectedBoard = useSelector(
-		(state) => state.user.boards.selectedBoard
-	);
-	const { _id: currentId } = selectedBoard;
+	const { boards, selectedBoard } = useSelector((state) => state.user.boards);
+	const { _id: currentId } = selectedBoard || '';
 	const kanban = useSelector((state) => state.kanban);
 	const { columns, id: boardId } = kanban;
 	const dispatch = useDispatch();
@@ -143,27 +141,30 @@ function Board(props) {
 			{/* Improve refactoring at Milestone 3 */}
 			<AddBoard />
 			{/* The kanban board itself */}
-			<div className="d-flex flex-row">
-				<DragDropContext onDragEnd={dragEndHandler}>
-					<Droppable
-						droppableId="all-cols"
-						direction="horizontal"
-						type="column"
-					>
-						{(provided) => (
-							<div
-								className={styles.board}
-								{...provided.droppableProps}
-								ref={provided.innerRef}
-							>
-								{renderCols}
-								{provided.placeholder}
-							</div>
-						)}
-					</Droppable>
-				</DragDropContext>
-				{renderAddCol}
-			</div>
+			{boards.length > 0 && (
+				<div className="d-flex flex-row">
+					<DragDropContext onDragEnd={dragEndHandler}>
+						<Droppable
+							droppableId="all-cols"
+							direction="horizontal"
+							type="column"
+						>
+							{(provided) => (
+								<div
+									className={styles.board}
+									{...provided.droppableProps}
+									ref={provided.innerRef}
+								>
+									{renderCols}
+									{provided.placeholder}
+								</div>
+							)}
+						</Droppable>
+					</DragDropContext>
+					{renderAddCol}
+				</div>
+			)}
+			{boards.length === 0 && <p>No boards</p>}
 		</div>
 	);
 }

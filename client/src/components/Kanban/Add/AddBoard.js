@@ -15,7 +15,10 @@ function AddBoard(props) {
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
 	const boards = useSelector((state) => state.user.boards);
-	const { selectedBoard } = boards;
+	const selectedBoard = boards.selectedBoard || {
+		name: '',
+		_id: '',
+	};
 	const selectBoardRef = useRef();
 	const [boardAdd, setBoardAdd] = useState(false);
 	const modalContext = useContext(ModalContext);
@@ -61,11 +64,22 @@ function AddBoard(props) {
 		modalContext.showModal(<EditBoard />);
 	};
 
-	const renderOptions = boards.boards.map((board) => (
-		<option value={board._id} key={board._id}>
-			{board.name}
-		</option>
-	));
+	const renderOptions =
+		boards.boards.length === 0 ? (
+			<option hidden selected>
+				No Boards. Please Add Board.
+			</option>
+		) : (
+			boards.boards.map((board) => {
+				const isSelected = board._id === selectedBoard._id;
+				const optionAttr = {
+					value: board._id,
+					key: board._id,
+					selected: isSelected,
+				};
+				return <option {...optionAttr}>{board.name}</option>;
+			})
+		);
 
 	return (
 		<div className="d-flex flex-row">
@@ -87,7 +101,7 @@ function AddBoard(props) {
 					id="boardSelect"
 					innerRef={selectBoardRef}
 					// Useful for swapping boards later
-					defaultValue={selectedBoard.name}
+					// defaultValue={selectedBoard.name || ''}
 					onChange={boardSelectChangeHandler}
 					style={{ width: '75%' }}
 				>
