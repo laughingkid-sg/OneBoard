@@ -32,7 +32,7 @@ const userSlice = createSlice({
 		},
 		// * Kanban related information
 		addBoard(state, action) {
-			state.boards.boards.push(action.payload);
+			state.boards.boards = [...state.boards.boards, action.payload];
 		},
 		setBoards(state, action) {
 			state.boards = action.payload;
