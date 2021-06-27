@@ -6,12 +6,14 @@ const expressValidator = require('express-validator')
 require('dotenv').config()
 const passport = require('passport')
 
+
 // import routes
 const authRoutes = require('./routes/auth')
 const userRoutes = require('./routes/user')
 const kanbanRoutes = require('./routes/kanban')
 const noteRoutes = require('./routes/note')
 const eventRoutes = require('./routes/event');
+const cors = require('./routes/cors');
 
 // app
 const app = express()
@@ -33,6 +35,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(expressValidator());
 app.use(passport.initialize());
+app.use(cors.corsWithOptions);
 
 // routes middleware
 app.use("/api", authRoutes);

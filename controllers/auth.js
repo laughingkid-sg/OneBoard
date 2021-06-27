@@ -60,7 +60,7 @@ exports.signout = (req, res) => {
     requireSignin - Added to pages to ensure that users signed in
 */
 exports.requireSignin = expressJwt({
-    secret: process.env.JWT_SECRET,
+    secret: process.env.SECRETKEY,
     algorithms: ["HS256"],
     userProperty: "auth",
   });

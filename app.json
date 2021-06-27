@@ -1,0 +1,16 @@
+{
+    "name": "OneBoard (Backend)",
+    "description": "Student Management Dashboard",
+    "repository": "https://github.com/laughingkid-sg/OneBoard-backend",
+    "keywords": ["node", "express", "static"],
+    "env": {
+        "SECRETKEY": {
+          "description": "A secret key for verifying the integrity of signed cookies.",
+          "generator": "secret"
+        },
+        "DATABASE": {
+          "description": "Connection url to mongodb.",
+          "value": "mongodb+srv://username:password@mongodb0.example.com:27017/OneBoard?retryWrites=true&w=majority"
+        }
+      }
+  }
