@@ -200,7 +200,7 @@ export const addData = (token, type, data, id = '') => {
 					break;
 				default:
 					// ! Special things need to be done for add Board
-					const { _id, name } = response.board;
+					const { _id, name } = response;
 					dispatch(userActions.addBoard({ _id, name }));
 					break;
 			}
@@ -238,7 +238,7 @@ export const deleteData = (token, type, id) => {
 					dispatch(kanbanActions.deleteColumn(id));
 					break;
 				default:
-					// ! Special things need to be done for add Board
+					// ! Special things need to be done for delete Board
 					break;
 			}
 		} catch (error) {}
