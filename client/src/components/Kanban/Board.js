@@ -142,7 +142,7 @@ function Board(props) {
 			<AddBoard />
 			{/* The kanban board itself */}
 			{boards.length > 0 && (
-				<div className="d-flex flex-row">
+				<div className={`d-flex flex-row ${styles.kanban}`}>
 					<DragDropContext onDragEnd={dragEndHandler}>
 						<Droppable
 							droppableId="all-cols"
@@ -151,7 +151,7 @@ function Board(props) {
 						>
 							{(provided) => (
 								<div
-									className={styles.board}
+									className={styles.cols}
 									{...provided.droppableProps}
 									ref={provided.innerRef}
 								>
