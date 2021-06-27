@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser')
 const expressValidator = require('express-validator')
 require('dotenv').config()
 const passport = require('passport')
+const cors = require('cors')
 
 
 // import routes
@@ -13,7 +14,7 @@ const userRoutes = require('./routes/user')
 const kanbanRoutes = require('./routes/kanban')
 const noteRoutes = require('./routes/note')
 const eventRoutes = require('./routes/event');
-const cors = require('./routes/cors');
+//const cors = require('./routes/cors');
 
 // app
 const app = express()
@@ -35,7 +36,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(expressValidator());
 app.use(passport.initialize());
-app.use(cors);
+app.use(cors())
 
 // routes middleware
 app.use("/api", authRoutes);
