@@ -1,4 +1,8 @@
-.board {
+.kanban {
+	overflow-x: scroll;
+}
+
+.cols {
 	display: inline-flex;
 	align-items: flex-start;
 	flex-wrap: nowrap;
@@ -29,10 +33,10 @@
 }
 
 /* Hide scrollbar */
-.board::-webkit-scrollbar {
+.cols::-webkit-scrollbar {
 	display: none;
 }
 
-.board {
+.cols {
 	scrollbar-width: none;
 }

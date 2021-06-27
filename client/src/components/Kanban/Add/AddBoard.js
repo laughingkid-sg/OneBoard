@@ -100,8 +100,6 @@ function AddBoard(props) {
 					name="boardSelect"
 					id="boardSelect"
 					innerRef={selectBoardRef}
-					// Useful for swapping boards later
-					// defaultValue={selectedBoard.name || ''}
 					onChange={boardSelectChangeHandler}
 					style={{ width: '75%' }}
 				>
