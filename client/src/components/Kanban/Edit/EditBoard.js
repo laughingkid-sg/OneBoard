@@ -120,7 +120,7 @@ function EditBoard() {
 				<Button color="success" onClick={confirmChangeHandler}>
 					Confirm Changes
 				</Button>
-				<Button color="danger">Delete Board</Button>
+				{/* <Button color="danger">Delete Board</Button> */}
 				<Button outline onClick={modalContext.hideModal}>
 					Close
 				</Button>
