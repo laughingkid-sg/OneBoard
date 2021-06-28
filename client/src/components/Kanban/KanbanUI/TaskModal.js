@@ -227,7 +227,7 @@ function TaskModal(props) {
 					color={error ? 'success' : 'danger'}
 					isOpen={!!errorMsg}
 					toggle={() => {
-						changeError(!error);
+						changeMessage('');
 					}}
 				>
 					{errorMsg}

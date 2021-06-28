@@ -30,7 +30,9 @@ function Notes() {
 
 	// Just fetch new notes
 	useEffect(() => {
-		dispatch(fetchAllNotes(token));
+		if (token) {
+			dispatch(fetchAllNotes(token));
+		}
 	}, [dispatch, token]);
 
 	// Handles note changes when note is deleted
