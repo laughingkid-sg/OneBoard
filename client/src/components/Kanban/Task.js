@@ -5,11 +5,12 @@ import { Badge } from 'reactstrap';
 import { BiTime } from 'react-icons/bi';
 import { Draggable } from 'react-beautiful-dnd';
 import EditDelete from './KanbanUI/EditDelete';
-import DeleteModal from './KanbanUI/DeleteModal';
-import TaskModal from './KanbanUI/TaskModal';
 import styles from './Task.module.css';
 import ModalContext from '../../store/ModalContext';
 import { TYPES } from '../../store/kanban-actions';
+
+const DeleteModal = React.lazy(() => import('./KanbanUI/DeleteModal'));
+const TaskModal = React.lazy(() => import('./KanbanUI/TaskModal'));
 
 function Task(props) {
 	const { task, index: taskIndex, columnTitle } = props;
@@ -64,7 +65,12 @@ function Task(props) {
 						<p>{task.name}</p>
 						<LabelBar labels={task.label} />
 						{task.expireAt && (
-							<p style={{ fontSize: '16px', marginTop: '4px' }}>
+							<p
+								style={{
+									fontSize: '16px',
+									marginTop: '4px',
+								}}
+							>
 								<Badge className="bg-warning align-self-start">
 									<BiTime />{' '}
 									{moment(task.expireAt).format('DD/MM/YY')}
@@ -84,6 +90,7 @@ function Task(props) {
 
 const LabelBar = (props) => {
 	const { labels } = props;
+	console.log(labels);
 	const boardLabels = useSelector((state) => state.kanban.labels).filter(
 		(label) => label._id
 	);
