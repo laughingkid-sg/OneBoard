@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { Badge, Progress } from 'reactstrap';
+import { Badge } from 'reactstrap';
 import { BiTime } from 'react-icons/bi';
 import { Draggable } from 'react-beautiful-dnd';
 import EditDelete from './KanbanUI/EditDelete';
@@ -62,7 +62,7 @@ function Task(props) {
 						onClick={showTaskHandler}
 					>
 						<p>{task.name}</p>
-						<ProgressBar labels={task.label} />
+						<LabelBar labels={task.label} />
 						{task.expireAt && (
 							<p style={{ fontSize: '16px', marginTop: '4px' }}>
 								<Badge className="bg-warning align-self-start">
@@ -82,7 +82,7 @@ function Task(props) {
 	);
 }
 
-const ProgressBar = (props) => {
+const LabelBar = (props) => {
 	const { labels } = props;
 	const boardLabels = useSelector((state) => state.kanban.labels).filter(
 		(label) => label._id

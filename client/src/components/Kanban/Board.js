@@ -52,7 +52,8 @@ function Board(props) {
 	}, [dispatch, token, currentId]);
 
 	const dragEndHandler = (result) => {
-		const { source, destination, draggableId, type } = result;
+		// draggalbeId not used
+		const { source, destination, type } = result;
 
 		// Draggable dropped outside of DnD
 		// Draggable has no change in position

@@ -28,7 +28,7 @@ function Notes() {
 	// Just fetch new notes
 	useEffect(() => {
 		dispatch(fetchAllNotes(token));
-	}, [dispatch]);
+	}, [dispatch, token]);
 
 	// Handles note changes when note is deleted
 	useEffect(() => {
@@ -41,7 +41,7 @@ function Notes() {
 		// Checks if accessing out of bounds (undefined)
 		if (!notes[index] && notes.length > 0) {
 			// setCurrentNote(notes[index - 1]);
-			setIndex(index - 1);
+			setIndex(index);
 		}
 
 		return () => {};
