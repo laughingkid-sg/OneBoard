@@ -17,7 +17,7 @@ import {
 import styles from './TaskModal.module.css';
 import { TYPES, updateData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
-import { AddSubtask, SubtaskList } from './Subtask';
+import { AddSubtask, SubtaskList } from '../Subtask';
 import useError from '../../hooks/use-error';
 
 const { Option } = Select;
