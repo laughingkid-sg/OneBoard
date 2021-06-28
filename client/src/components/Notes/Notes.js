@@ -79,7 +79,8 @@ function Notes() {
 		modalContext.showModal(<SearchNote goTo={goToHandler} />);
 	};
 
-	const goToHandler = (index) => {
+	const goToHandler = (id) => {
+		const index = notes.findIndex((note) => note._id === id);
 		setIndex(index);
 		modalContext.hideModal();
 	};
