@@ -92,7 +92,7 @@ function AddBoard(props) {
 					onChange={boardNameOnChange}
 					onBlur={boardNameOnBlur}
 					placeholder="Enter board name"
-					style={{ width: '75%' }}
+					style={{ width: '35%' }}
 					invalid={boardNameHasError}
 				/>
 			) : (
@@ -102,7 +102,7 @@ function AddBoard(props) {
 					id="boardSelect"
 					innerRef={selectBoardRef}
 					onChange={boardSelectChangeHandler}
-					style={{ width: '75%' }}
+					style={{ width: '35%' }}
 				>
 					{renderOptions}
 				</Input>

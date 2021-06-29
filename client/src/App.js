@@ -18,7 +18,7 @@ import { kanbanActions } from './store/kanban';
 import { fetchUserData } from './store/user-actions';
 import { noteActions } from './store/note';
 import { eventActions } from './store/event';
-// import Expense from './components/Expense/Expense'; <- blanked out for now
+import Expense from './components/Expense/Expense';
 
 function App() {
 	const dispatch = useDispatch();
@@ -60,7 +60,10 @@ function App() {
 			<Route path="/editprofile">
 				{isLoggedIn ? <EditUser /> : <Redirect to="/" />}
 			</Route>
-			{/* <Route path="/expenses"><Expense /></Route> */}
+			<Route path="/expenses">
+				{/* <AddData /> */}
+				<Expense />
+			</Route>
 		</React.Fragment>
 	);
 

@@ -3,12 +3,13 @@ import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { Card, CardHeader, CardFooter } from 'reactstrap';
 import Task from './Task';
-import AddTask from './Add/AddTask';
+import AddData from './Add/AddData';
 import EditColumn from './Edit/EditColumn';
 import styles from './Column.module.css';
+import { TYPES } from '../../store/kanban-actions';
 
 function Column(props) {
-	const { boardId, column, index: colIndex } = props;
+	const { column, index: colIndex } = props;
 	const { name, tasks, _id: columnId } = column;
 	const [isEditingTask, setIsEditingTask] = useState(false);
 	const [editTitle, setIsEditTitle] = useState(false);
@@ -29,25 +30,13 @@ function Column(props) {
 		setIsEditTitle(false);
 	};
 
-	const renderTasks = tasks.map((task, index) => (
-		<Task
-			key={task._id}
-			task={task}
-			index={index}
-			// id={task._id}
-			boardId={boardId}
-			colId={columnId}
-			columnTitle={name}
-		/>
-	));
-
 	const renderAddTask = isEditingTask ? (
 		<CardFooter>
-			<AddTask
-				boardId={boardId}
-				columnId={columnId}
+			<AddData
+				id={columnId}
 				onCancel={cancelTaskHandler}
-				next={tasks.length}
+				order={tasks.length}
+				type={TYPES.TASK}
 			/>
 		</CardFooter>
 	) : (
@@ -89,8 +78,9 @@ function Column(props) {
 								<TaskList
 									{...provided.droppableProps}
 									innerRef={provided.innerRef}
+									tasks={tasks}
+									columnTitle={name}
 								>
-									{renderTasks}
 									{provided.placeholder}
 								</TaskList>
 								{renderAddTask}
@@ -104,12 +94,22 @@ function Column(props) {
 }
 
 const TaskList = (props) => {
+	const renderTasks = props.tasks.map((task, index) => (
+		<Task
+			key={task._id}
+			task={task}
+			index={index}
+			columnTitle={props.columnTitle}
+		/>
+	));
+
 	return (
 		<div
 			ref={props.innerRef}
 			className={styles.taskList}
 			{...props.dragHandle}
 		>
+			{renderTasks}
 			{props.children}
 		</div>
 	);

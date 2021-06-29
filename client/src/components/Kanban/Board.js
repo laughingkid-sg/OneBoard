@@ -6,7 +6,6 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Column';
 import styles from './Board.module.css';
 import AddBoard from './Add/AddBoard';
-import AddColumn from './Add/AddColumn';
 import { kanbanActions } from '../../store/kanban';
 import {
 	TYPES,
@@ -14,6 +13,7 @@ import {
 	updateData,
 	getBoard,
 } from '../../store/kanban-actions';
+import AddData from './Add/AddData';
 
 function Board(props) {
 	const [isEditing, setIsEditing] = useState(false);
@@ -124,10 +124,12 @@ function Board(props) {
 	));
 
 	const renderAddCol = isEditing ? (
-		<AddColumn
+		<AddData
+			id={boardId}
 			onCancel={toggleAddColumn}
-			boardId={boardId}
-			next={columns.length}
+			order={columns.length}
+			type={TYPES.COLUMN}
+			className={styles.addCol}
 		/>
 	) : (
 		<div className={styles.addColBtn} onClick={toggleAddColumn}>
