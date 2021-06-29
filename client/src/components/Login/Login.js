@@ -64,7 +64,7 @@ export default function Login(props) {
 			const { data } = response;
 			const token = data.token;
 			const id = data.user._id;
-			const userData = await dispatch(fetchUserData(id, token));
+			const userData = await dispatch(fetchUserData(token));
 			if (userData.isSuccess) {
 				localStorage.setItem('id', id);
 				authContext.login(token);

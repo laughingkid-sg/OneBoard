@@ -34,7 +34,7 @@ function App() {
 	useEffect(() => {
 		if (token) {
 			authContext.login(token);
-			dispatch(fetchUserData(id, token));
+			dispatch(fetchUserData(token));
 		}
 	}, []);
 

@@ -95,7 +95,7 @@ export default function Register() {
 				const { data } = loginResponse;
 				const id = data.user._id;
 				const token = data.token;
-				const userData = await dispatch(fetchUserData(id, token));
+				const userData = await dispatch(fetchUserData(token));
 				if (userData.isSuccess) {
 					localStorage.setItem('id', id);
 					authContext.login(token);
