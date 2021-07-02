@@ -1,12 +1,30 @@
 const mongoose = require('mongoose')
-const crypto = require('crypto')
-const uuidv1 = require('uuidv1')
-
 const passportLocalMongoose = require('passport-local-mongoose');
-
 const {ObjectId} = mongoose.Schema
+const Schema = mongoose.Schema;
 
-const userSchema = new mongoose.Schema({
+const labelSchema = new Schema({
+    name:  {
+        type: String,
+        required: true
+    },
+    type:  {
+        type: String,
+        enum: [
+            'danger', 
+            'warning', 
+            'primary', 
+            'info', 
+            'dark', 
+            'success'
+        ],
+        required: true
+    }
+}, {
+    timestamps: true
+});
+
+const userSchema = new Schema({
     firstName: {
         type: String,
         trim: true,
@@ -54,7 +72,12 @@ const userSchema = new mongoose.Schema({
         type: ObjectId, 
         ref: 'Events',
         required: false
-    }
+    }, expenses: [{
+        type: ObjectId, 
+        ref: 'Expenses',
+        required: false
+    }],
+    expenseLabels: [labelSchema],
 }, {timestamps : true}
 );
 

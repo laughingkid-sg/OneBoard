@@ -14,11 +14,6 @@ exports.createEvent = (req, res) => {
 }
 
 exports.getEvents = (req, res) => {   
-    /*
-    User.findById(req.auth._id).populate('events')
-     .then(user => res.json(user.events), 
-         err => res.status(400).json({ message: err }))
-     .catch(err => res.status(400).json({ message: err }));*/
      Event.aggregate(
         [
             { 
@@ -124,7 +119,7 @@ exports.updateEvent = (req, res) => {
     Event.findByIdAndUpdate(req.event.id, {
         $set: req.body
     }, { new: true })
-    .then((event) => res.json({ status: true, message: 'Note successfully updated.', event: event }), 
+    .then((event) => res.json({ status: true, message: 'Event successfully updated.', event: event }), 
         err => res.status(400).json({ message: err.message } )
     .catch(err => res.status(400).json({ message: err.message } )));
 }
@@ -134,7 +129,7 @@ exports.delEvent = (req, res) => {
     User.findByIdAndUpdate(req.profile._id, { $set: req.profile }, { new: true })
         .then(user => { 
             Event.findByIdAndRemove(req.event._id)
-            .then(event => res.json({ status: true, message: 'Note successfully deleted.', event: event }), 
+            .then(event => res.json({ status: true, message: 'Event successfully deleted.', event: event }), 
                  err => res.status(400).json({ message: err.message } )      
             .catch(err => res.status(400).json({ message: err.message })))},
             err => res.status(400).json({ message: err.message }))
