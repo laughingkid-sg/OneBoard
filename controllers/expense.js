@@ -121,9 +121,9 @@ exports.getExpenses = (req, res) => {
     }); 
 }
 
-exports.createLabel = (req, res) => {
+exports.expensesLabel = (req, res) => {
     req.profile.expenseLabels = req.body
-    req.profile.save().then((user) => res.status(200).json(user), 
+    req.profile.save().then((user) => res.status(200).json(user.expenseLabels), 
         err => res.status(500).json({ message: err.message} ))
     .catch(err => res.status(500).json({ message: err.message} ))  
 }

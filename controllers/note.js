@@ -8,7 +8,7 @@ exports.createNote = async (req, res) => {
         await note.validate(req.body); 
         note = await note.save(req.body);     
         await User.findByIdAndUpdate(req.auth._id, { "$push": { "notes": note._id } }, { "new": true, "upsert": true });
-        res.status(200).json({ status: true, message: 'Note successfully created.', note: note });        
+        res.status(200).json( note );        
     } catch (err) {
         return res.status(400).json({
             errorCode: 0,
@@ -59,7 +59,7 @@ exports.updateNote = (req, res) => {
     Note.findByIdAndUpdate(req.note.id, {
         $set: req.body
     }, { new: true })
-    .then((note) => res.json({ status: true, message: 'Note successfully updated.', note: note }), 
+    .then((note) => res.json(note), 
         err => res.status(400).json({ message: err.message } )
     .catch(err => res.status(400).json({ message: err.message } )));
 }
@@ -77,7 +77,7 @@ exports.delNote = (req, res) => {
     User.findByIdAndUpdate(req.profile._id, { $set: req.profile }, { new: true })
         .then(user => { 
             Note.findByIdAndRemove(req.note._id)
-            .then(note => res.json({ status: true, message: 'Note successfully deleted.', note: note }), 
+            .then(note => res.json( note), 
                  err => res.status(400).json({ message: err.message } )      
             .catch(err => res.status(400).json({ message: err.message })))},
             err => res.status(400).json({ message: err.message }))

@@ -204,7 +204,7 @@ exports.createBoard = async (req, res) => {
             let board = new Board(req.body);
             await board.validate(req.body); 
             board = await Board.findByIdAndUpdate(req.board._id, { $set: req.body }, { new: true });
-            res.status(200).json({ status: true, message: 'Board successfully updated.', board: board });
+            res.status(200).json(board);
 
         } else {
             return res.status(400).json({
@@ -237,7 +237,7 @@ exports.delBoard = async (req, res) => {
             let deletedProject = await Board.deleteOne({ _id: req.board._id });
             if (deletedProject.deletedCount && deletedProject.deletedCount > 0) {
             await User.findByIdAndUpdate(req.profile._id, { "$pull": { "projects": req.board._id} }, { "new": true, "upsert": true });
-            res.status(200).json({ status: true, message: 'Board successfully deleted.', board: deletedProject });
+            res.status(200).json(deletedProject);
             }           
         } else {
             return res.status(400).json({

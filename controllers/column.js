@@ -64,9 +64,7 @@ exports.createColumn = async (req, res) => {
 
             column = await column.save(req.body);
             await Board.findByIdAndUpdate(req.board._id, { "$push": { "columns": column._id } }, { "upsert": true });
-            res.status(200).json({ status: true, message: 'Column successfully created.', data: column
-            }); 
-                                   
+            res.status(200).json(column);                                   
         } else {
             return res.status(400).json({
                 error: 'Access Denied'
@@ -174,7 +172,7 @@ exports.updateColumn = async (req, res) => {
             await column.validate(req.body); 
 
             column = await Column.findByIdAndUpdate(req.column._id, { $set: req.body }, { new: true });
-            res.status(200).json({ status: true, message: 'Column successfully updated.', column: column });
+            res.status(200).json(column);
                      
         } else {
             return res.status(400).json({
@@ -202,7 +200,7 @@ exports.delColumn = async (req, res) => {
                 let deletedColumn = await Column.deleteOne({ _id: req.column._id });
                 if (deletedColumn.deletedCount && deletedColumn.deletedCount > 0) {
                      await Board.findByIdAndUpdate(req.board._id, { "$pull": { "columns": req.column._id } }, { "new": true, "upsert": true });
-                     res.status(200).json({ status: true, message: 'Column successfully deleted.', column: deletedColumn });
+                     res.status(200).json( deletedColumn );
                 }                    
         } else {
             return res.status(400).json({

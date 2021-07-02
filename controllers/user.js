@@ -33,7 +33,7 @@ exports.getUser = (req, res) => {
 }
 
 exports.setPass = async (req, res) => {
-    await req.profile.changePassword(req.body.oldPassword, req.body.newPassword, (err, user) => err ? res.status(401).json({message: err.message}) : res.status(204))
+    await req.profile.changePassword(req.body.oldPassword, req.body.newPassword, (err, user) => err ? res.status(401).json({message: err.message}) : res.status(204).json(user))
 }
 
 exports.updateUser = (req, res) => {

@@ -66,7 +66,7 @@ exports.createTask = async (req, res) => {
 
             task = await task.save(req.body);
             await Column.findByIdAndUpdate(req.column._id, { "$push": { "tasks": task._id } }, { "new": true, "upsert": true });
-            res.status(200).json({ status: true, message: 'Task successfully created.', task: task });
+            res.status(200).json(  task );
         } else {
             return res.status(400).json({
                 error: 'Access Denied'
@@ -178,7 +178,7 @@ exports.updateTask = async (req, res) => {
             await task.validate(req.body); 
 
             task = await Task.findByIdAndUpdate(req.task._id, { $set: req.body }, { new: true });
-            res.status(200).json({ status: true, message: 'Tasks successfully updated.', task: task });
+            res.status(200).json( task );
                      
         } else {
             return res.status(400).json({
@@ -202,7 +202,7 @@ exports.delTask = async (req, res) => {
                 let deletedTask = await Task.deleteOne({ _id: req.task._id });
                 if (deletedTask.deletedCount && deletedTask.deletedCount > 0) {
                     await Column.findByIdAndUpdate(req.column._id, { "$pull": { "tasks": req.task._id } }, { "new": true, "upsert": true });
-                    res.status(200).json({ status: true, message: 'Tasks successfully deleted.', task: deletedTask });
+                    res.status(200).json( deletedTask );
                 }
                      
         } else {
