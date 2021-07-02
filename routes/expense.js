@@ -1,15 +1,17 @@
 const express = require("express");
 const router = express.Router();
 
-const { createExpense, createExpenses, getExpense, updateExpense, delExpense, expenseById } = require('../controllers/expense');
+const { createExpense, getExpenses, getExpense, updateExpense, delExpense, expenseById, createLabel } = require('../controllers/expense');
 const { requireSignin, isAuth } = require("../controllers/auth");
 const { setUser } = require("../controllers/user");
 
 router.use(requireSignin, isAuth, setUser);
 
 router.route("/")
-    .get(createExpenses)
+    .get(getExpenses)
     .post(createExpense)
+    .put(createLabel)
+
 
 router.route("/:expenseId/")
     .get(getExpense)

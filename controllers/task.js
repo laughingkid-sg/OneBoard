@@ -100,16 +100,6 @@ exports.getTask = async (req, res) => {
 }
 
 exports.taskById = (req, res, next, id) => {
-    /*
-    Task.findById(id).exec((err, task) => {
-        if (err || !task) {
-            return res.status(400).json({
-                error: 'Task not found'
-            })
-        }
-        req.task = task;
-        next();
-    });*/
 
     if (!ObjectId.isValid(id)) {
         return res.status(400).json({

@@ -65,7 +65,7 @@ exports.delExpense = (req, res) => {
         .catch((err) => res.status(400).json({ message: err.message } ))
 }
 
-exports.createExpenses = (req, res) => {
+exports.getExpenses = (req, res) => {
     Expense.aggregate(
         [
             { 
@@ -119,4 +119,11 @@ exports.createExpenses = (req, res) => {
         }
         res.json(expenses);
     }); 
+}
+
+exports.createLabel = (req, res) => {
+    req.profile.expenseLabels = req.body
+    req.profile.save().then((user) => res.status(200).json(user), 
+        err => res.status(500).json({ message: err.message} ))
+    .catch(err => res.status(500).json({ message: err.message} ))  
 }
