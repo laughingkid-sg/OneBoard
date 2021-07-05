@@ -24,7 +24,7 @@ import { ModalHeader } from 'reactstrap';
 
 export default function Login(props) {
 	// Used for announcement only
-	const [open, setOpen] = useState(true);
+	// const [open, setOpen] = useState(true);
 	const dispatch = useDispatch();
 	const authContext = useContext(AuthContext);
 
@@ -76,13 +76,13 @@ export default function Login(props) {
 
 	return (
 		<LoginPage title="Log In">
-			{open && (
+			{/* {open && (
 				<Announcement
 					toggle={() => {
 						setOpen(false);
 					}}
 				/>
-			)}
+			)} */}
 			<Alert
 				color="danger"
 				className="w-25"
@@ -105,8 +105,9 @@ export default function Login(props) {
 						onBlur={emailOnBlur}
 						value={email}
 						invalid={emailHasError}
+						data-testid="email"
 					/>
-					<FormFeedback invalid>
+					<FormFeedback invalid="true">
 						Please enter a valid E-mail
 					</FormFeedback>
 				</FormGroup>
@@ -121,8 +122,9 @@ export default function Login(props) {
 						onBlur={pwOnBlur}
 						value={password}
 						invalid={pwHasError}
+						data-testid="password"
 					/>
-					<FormFeedback invalid>
+					<FormFeedback invalid="true">
 						Please enter your password
 					</FormFeedback>
 				</FormGroup>

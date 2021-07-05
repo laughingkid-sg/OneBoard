@@ -60,10 +60,9 @@ function App() {
 			<Route path="/editprofile">
 				{isLoggedIn ? <EditUser /> : <Redirect to="/" />}
 			</Route>
-			<Route path="/expenses">
-				{/* <AddData /> */}
+			{/* <Route path="/expenses">
 				<Expense />
-			</Route>
+			</Route> */}
 		</React.Fragment>
 	);
 

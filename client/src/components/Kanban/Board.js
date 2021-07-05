@@ -120,7 +120,13 @@ function Board(props) {
 	};
 
 	const renderCols = columns.map((col, index) => (
-		<Column key={col._id} index={index} boardId={boardId} column={col} />
+		<Column
+			key={col._id}
+			index={index}
+			boardId={boardId}
+			column={col}
+			data-testid="column"
+		/>
 	));
 
 	const renderAddCol = isEditing ? (
