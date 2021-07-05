@@ -8,14 +8,14 @@ import {
 	putRequest,
 } from '../lib/fetch';
 
-const URL_HEADERS = '/api/event';
+const URL_HEADER = '/api/event';
 
 function formatId(id) {
-	return `${URL_HEADERS}/${id}`;
+	return `${URL_HEADER}/${id}`;
 }
 
 function formatQueryString(start, end) {
-	return `${URL_HEADERS}?start=${start}&end=${end}`;
+	return `${URL_HEADER}?start=${start}&end=${end}`;
 }
 
 export const fetchEvents = (token, start, end) => {
@@ -46,7 +46,7 @@ export const fetchEvent = (token, eventId) => {
 export const addEvent = (token, eventReq) => {
 	return async (dispatch) => {
 		try {
-			const addEvent = await postRequest(token, URL_HEADERS, eventReq);
+			const addEvent = await postRequest(token, URL_HEADER, eventReq);
 			const event = createEvent(addEvent);
 			dispatch(eventActions.addEvent(event));
 		} catch (error) {
@@ -89,7 +89,7 @@ export const changeFeatured = (token, id) => {
 			},
 		};
 
-		const url = `${URL_HEADERS}/${id}`;
+		const url = `${URL_HEADER}/${id}`;
 
 		const postData = async () => {
 			const response = await fetch(url, options);

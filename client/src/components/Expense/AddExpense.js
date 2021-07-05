@@ -1,8 +1,11 @@
 import moment from 'moment';
 import React, { useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
 import {
 	Form,
+	FormGroup,
+	FormFeedback,
 	Label,
 	Input,
 	Button,
@@ -14,28 +17,27 @@ import {
 import { Select } from 'antd';
 import 'antd/dist/antd.css';
 import useInput from '../hooks/use-input';
-import { expenseActions } from '../../store/expense';
+import { addExpense } from '../../store/expense-action';
 import styles from './AddExpense.module.css';
+import { textNotEmpty, isNumeric } from '../../lib/validators';
 
 const { Option } = Select;
 
-function isNumeric(value) {
-	if (typeof value !== 'string') return false;
-	return !(isNaN(value) || isNaN(parseFloat(value)));
-}
-
 function AddExpense(props) {
-	const expenses = useSelector((state) => state.expense);
 	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
+
 	const {
 		value: name,
 		isValid: nameIsValid,
 		hasError: nameHasError,
-		onChange: valueOnChange,
-		onBlur: valueOnBlur,
-		reset: valueReset,
-	} = useInput((value) => value.trim() !== '', '');
-	const dateRef = useRef('');
+		onChange: nameOnChange,
+		onBlur: nameOnBlur,
+		reset: nameReset,
+	} = useInput(textNotEmpty, '');
+	const dateRef = useRef(''); // Probably use antd
+	const descRef = useRef();
 	const {
 		value: amount,
 		isValid: amountIsValid,
@@ -43,7 +45,7 @@ function AddExpense(props) {
 		onChange: amountOnChange,
 		onBlur: amountOnBlur,
 		reset: amountReset,
-	} = useInput((value) => isNumeric(value), 0.0);
+	} = useInput(isNumeric, 0.0);
 	const [labels, setLabels] = useState([]);
 
 	const changeSelectHandler = (value, option) => {
@@ -53,59 +55,82 @@ function AddExpense(props) {
 
 	const addExpenseHandler = () => {
 		const date = dateRef.current.value;
+		const description = descRef.current.value.trim();
 
 		if (!(nameIsValid && amountIsValid && date)) return;
 
 		const amountNumber = parseFloat(amount);
-		// TODO manage labels for expenses
-		const expense = { name, date, amount: amountNumber };
 
-		// ! POST Request to add expense
-		dispatch(expenseActions.addExpense(expense));
+		// TODO Add Labels
+		const expense = { name, date, amount: amountNumber, description };
+		console.log(expense);
+
+		dispatch(addExpense(token, expense));
 	};
 
 	return (
 		<div className={` ${styles.addExpense}`}>
 			<Form>
 				{/* Name */}
-				<Label for="name">Name</Label>
-				<Input
-					id="name"
-					type="text"
-					name="name"
-					placeholder="Enter expense name"
-					value={name}
-					onChange={valueOnChange}
-					onBlur={valueOnBlur}
-				/>
+				<FormGroup>
+					<Label for="name">Name</Label>
+					<Input
+						id="name"
+						type="text"
+						name="name"
+						placeholder="Enter expense name"
+						value={name}
+						onChange={nameOnChange}
+						onBlur={nameOnBlur}
+						invalid={nameHasError}
+					/>
+					<FormFeedback>Please ensure name is not empty</FormFeedback>
+				</FormGroup>
 
 				{/* Amount */}
-				<Label for="amount">Amount</Label>
-				<InputGroup>
-					<InputGroupAddon addonType="prepend">
-						<InputGroupText>$</InputGroupText>
-					</InputGroupAddon>
-					<Input
-						id="amount"
-						type="number"
-						min="0.00"
-						// Conversion to number
-						value={amount}
-						onChange={amountOnChange}
-						onBlur={amountOnBlur}
-					/>
-				</InputGroup>
+				<FormGroup>
+					<Label for="amount">Amount</Label>
+					<InputGroup>
+						<InputGroupAddon addonType="prepend">
+							<InputGroupText>$</InputGroupText>
+						</InputGroupAddon>
+						<Input
+							id="amount"
+							type="number"
+							min="0.00"
+							// Conversion to number
+							value={amount}
+							onChange={amountOnChange}
+							onBlur={amountOnBlur}
+							placeholder="Enter amount"
+							invalid={amountHasError}
+						/>
+					</InputGroup>
+					<FormFeedback>Please ensure amount is valid</FormFeedback>
+				</FormGroup>
 
 				{/* Date of transaction */}
-				<Label for="date">Date</Label>
+				<FormGroup>
+					<Label for="date">Date</Label>
+					{/* Probably replace with antd */}
+					<Input
+						id="date"
+						type="date"
+						innerRef={dateRef}
+						defaultValue={moment().format('YYYY-MM-DD')}
+					/>
+				</FormGroup>
+
+				{/* Description */}
+				<Label for="description">Description</Label>
 				<Input
-					id="date"
-					type="date"
-					innerRef={dateRef}
-					defaultValue={moment().format('YYYY-MM-DD')}
+					id="description"
+					type="textarea"
+					innerRef={descRef}
+					placeholder="Enter description"
 				/>
 
-				{/* Label (or categories) */}
+				{/* Labels */}
 				<Label for="label">Label</Label>
 				<Select
 					mode="multiple"
@@ -116,7 +141,7 @@ function AddExpense(props) {
 					onChange={changeSelectHandler}
 					allowClear
 				>
-					<Option value="test" label="test">
+					{/* <Option value="test" label="test">
 						<Badge className={`bg-primary`}>Test</Badge>
 					</Option>
 					<Option value="abcdef" label="abcdef">
@@ -124,8 +149,9 @@ function AddExpense(props) {
 					</Option>
 					<Option value="ORD" label="ORD">
 						<p>ORD</p>
-					</Option>
+					</Option> */}
 				</Select>
+
 				<div className="mt-3">
 					<Button color="success" onClick={addExpenseHandler}>
 						Add Expense

@@ -4,3 +4,8 @@ const EMAIL_FORMAT =
 export const isEmail = (value) => EMAIL_FORMAT.test(value);
 
 export const textNotEmpty = (value) => value.trim() !== '';
+
+export const isNumeric = (value) => {
+	if (typeof value !== 'string') return false;
+	return !(isNaN(value) || isNaN(parseFloat(value)));
+};

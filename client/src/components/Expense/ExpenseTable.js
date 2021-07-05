@@ -6,17 +6,18 @@ const ExpenseTable = (props) => {
 	const { expenses } = props;
 
 	const renderExpenses = expenses.map((expense) => (
-		<ExpenseItem expense={expense} />
+		<ExpenseItem expense={expense} kye={expense._id} />
 	));
 
 	return (
-		// TODO Make scrollable after 13 (TBC) transactions
+		// TODO Pagination after 13 transactions
 		<React.Fragment>
 			<Table striped>
 				<thead>
 					<tr key="header">
 						<th>Date</th>
 						<th>Name</th>
+						<th>Description</th>
 						<th>Amount ($)</th>
 						<th>Edit/Delete</th>
 					</tr>

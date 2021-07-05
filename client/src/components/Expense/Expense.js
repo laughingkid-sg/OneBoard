@@ -1,44 +1,31 @@
+import moment from 'moment';
 import React, { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { Card, CardTitle } from 'reactstrap';
 import AddExpense from './AddExpense';
 import ExpenseList from './ExpenseList';
-import { expenseActions } from '../../store/expense';
+import { fetchExpenses } from '../../store/expense-action';
 
-function isStateEmpty(jsonObj) {
-	let isEmpty = true;
-	for (const key in jsonObj) {
-		if (jsonObj[key].length !== 0) isEmpty = false;
-	}
-	return isEmpty;
-}
 function Expense(props) {
 	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 
 	// ! Needs more testing
 	useEffect(() => {
-		function expensesFromStorage() {
-			const strExpenses = localStorage.getItem('expenses');
-			const jsonExpenses = JSON.parse(strExpenses);
-			if (!isStateEmpty(jsonExpenses)) {
-				dispatch(expenseActions.replace(jsonExpenses));
-			} else {
-				// Fetch notes from server
-				console.log('Fetch from server');
-			}
+		function fetchData() {
+			const start = moment().startOf('month').toDate();
+			const end = moment().endOf('month').toDate();
+			dispatch(fetchExpenses(token, start, end));
 		}
 
-		expensesFromStorage();
-
-		return () => {
-			console.log('Unmount Expenses');
-			dispatch(expenseActions.store());
-		};
+		fetchData();
 	}, []);
 
 	return (
 		<div className="row m-4">
-			{console.log(props)}
+			{/* {console.log(props)} */}
 			<div className="col-5">
 				<Card className="row p-4">
 					<CardTitle tag="h3">Add Expense </CardTitle>

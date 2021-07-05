@@ -1,39 +1,84 @@
-import React from 'react';
-import { Button, Input } from 'reactstrap';
+import React, { useEffect, useState, useRef } from 'react';
+import { Button, Input, Label } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import ExpenseTable from './ExpenseTable';
 import useInput from '../hooks/use-input';
+import { textNotEmpty } from '../../lib/validators';
+
+function queryInString(value, query) {
+	return value.toLowerCase().includes(query.toLowerCase());
+}
 
 function ExpenseList(props) {
-	// TODO Integration with redux
 	const expenses = useSelector((state) => state.expense);
+	const [checked, setChecked] = useState({ name: true, description: true });
+	const [filteredExpenses, setFilteredExpenses] = useState(expenses.expense);
 	const {
 		value: filter,
 		isValid: filterIsValid,
 		onChange: filterOnChange,
 		reset: filterReset,
-	} = useInput((value) => value.trim() !== '', '');
+	} = useInput(textNotEmpty, '');
+	const nameRef = useRef();
+	const descriptionRef = useRef();
 
-	// ? Convert to React Hooks?
-	const filteredExpenses = filterIsValid
-		? expenses.expense.filter((expense) =>
-				expense.name.toLowerCase().includes(filter.toLowerCase())
-		  )
-		: expenses.expense;
+	useEffect(() => {
+		const filtered = filterIsValid
+			? expenses.expense.filter(
+					(expense) =>
+						(nameRef.current.checked &&
+							queryInString(expense.name, filter)) ||
+						(descriptionRef.current.checked &&
+							queryInString(expense.description, filter))
+			  )
+			: expenses.expense;
+		console.log(filtered);
+		setFilteredExpenses(filtered);
+	}, [filter, checked]);
 
 	return (
-		<div className={props.className}>
+		<div>
 			{/* <h3>Transaction History</h3> */}
 			{/* TODO - Filter expenses */}
-			<div className="d-flex">
+			{/* TODO - Include Date Range */}
+			<div className="d-flex align-items-center">
+				<div className="d-flex w-75">
+					<Input
+						id="filter"
+						name="filter"
+						placeholder="Enter Transaction Name"
+						value={filter}
+						onChange={filterOnChange}
+					/>
+					<Button onClick={filterReset}>Clear</Button>
+				</div>
+
 				<Input
-					id="filter"
-					name="filter"
-					placeholder="Enter Transaction Name"
-					value={filter}
-					onChange={filterOnChange}
+					id="name"
+					name="name"
+					type="checkbox"
+					innerRef={nameRef}
+					checked={checked.name}
+					onChange={() => {
+						setChecked({ ...checked, name: !checked.name });
+					}}
 				/>
-				<Button onClick={filterReset}>Clear</Button>
+				<Label for="name">Name</Label>
+
+				<Input
+					id="description"
+					name="description"
+					type="checkbox"
+					innerRef={descriptionRef}
+					checked={checked.description}
+					onChange={() => {
+						setChecked({
+							...checked,
+							description: !checked.description,
+						});
+					}}
+				/>
+				<Label for="description">Description</Label>
 			</div>
 			<ExpenseTable expenses={filteredExpenses} />
 		</div>
