@@ -1,18 +1,15 @@
 import moment from 'moment';
 import React, { useContext } from 'react';
-import { useSelector } from 'react-redux';
 import { Badge } from 'reactstrap';
 import { BiTime } from 'react-icons/bi';
 import { Draggable } from 'react-beautiful-dnd';
 import DeleteModal from './Delete/DeleteModal';
 import EditDelete from './KanbanUI/EditDelete';
+import LabelBar from './KanbanUI/LabelBar';
 import TaskModal from './KanbanUI/TaskModal';
 import styles from './Task.module.css';
 import ModalContext from '../../store/ModalContext';
 import { TYPES } from '../../store/kanban-actions';
-
-// const DeleteModal = React.lazy(() => import('./KanbanUI/DeleteModal'));
-// const TaskModal = React.lazy(() => import('./KanbanUI/TaskModal'));
 
 function Task(props) {
 	const { task, index: taskIndex, columnTitle } = props;
@@ -89,30 +86,5 @@ function Task(props) {
 		</Draggable>
 	);
 }
-
-const LabelBar = (props) => {
-	const { labels } = props;
-	const boardLabels = useSelector((state) => state.kanban.labels).filter(
-		(label) => label._id
-	);
-
-	if (!labels) return null;
-
-	return (
-		<div className="my-1">
-			{labels.map((label) => {
-				const foundLabel = boardLabels.find(
-					(bLabel) => bLabel._id === label
-				);
-				if (!foundLabel) return null;
-				return (
-					<Badge className={`bg-${foundLabel.type}`} key={label}>
-						{foundLabel.name}
-					</Badge>
-				);
-			})}
-		</div>
-	);
-};
 
 export default Task;

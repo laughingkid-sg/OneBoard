@@ -12,7 +12,7 @@ function isStateEmpty(jsonObj) {
 	}
 	return isEmpty;
 }
-function Expense() {
+function Expense(props) {
 	const dispatch = useDispatch();
 
 	// ! Needs more testing
@@ -38,6 +38,7 @@ function Expense() {
 
 	return (
 		<div className="row m-4">
+			{console.log(props)}
 			<div className="col-5">
 				<Card className="row p-4">
 					<CardTitle tag="h3">Add Expense </CardTitle>

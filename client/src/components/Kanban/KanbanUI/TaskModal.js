@@ -19,6 +19,7 @@ import { TYPES, updateData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import { AddSubtask, SubtaskList } from '../Subtask';
 import useError from '../../hooks/use-error';
+import LabelBar from '../KanbanUI/LabelBar';
 
 const { Option } = Select;
 
@@ -27,11 +28,13 @@ function TaskModal(props) {
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
-	const boardLabels = useSelector((state) => state.kanban.labels);
+	const boardLabels = useSelector((state) => state.kanban.labels).filter(
+		(label) => !!label._id
+	);
 	const modalContext = useContext(ModalContext);
 	const nameRef = useRef();
 	const descriptionRef = useRef();
-	const [isWrite, setIsWrite] = useState(write || false);
+	const [isWrite, setIsWrite] = useState(write);
 	const [beforeChange, setBeforeChange] = useState({ ...task });
 	const [subTasks, setSubTasks] = useState(task.subTask);
 	const [deadline, setDeadline] = useState(
@@ -42,7 +45,7 @@ function TaskModal(props) {
 			boardLabels.find((bLabel) => bLabel._id === label)
 		)
 	);
-	const { error, errorMsg, changeError, changeMessage } = useError();
+	const { error, errorMsg, changeMessage } = useError();
 
 	const confirmEditHandler = () => {
 		if (nameRef.current.value.trim() === '') {
@@ -134,14 +137,8 @@ function TaskModal(props) {
 		setIsWrite((prevWrite) => !prevWrite);
 	};
 
-	const dateChangeHandler = (date, dateString) => {
-		setDeadline(date);
-	};
-
 	const addSubTaskHandler = (subtask) => {
-		const newSubtasks = [...subTasks];
-		newSubtasks.push(subtask);
-		setSubTasks(newSubtasks);
+		setSubTasks([...subTasks, subtask]);
 	};
 
 	const updateSubtaskHandler = (index, subtask = null) => {
@@ -155,11 +152,6 @@ function TaskModal(props) {
 			);
 		}
 		setSubTasks(newSubtasks);
-	};
-
-	const updateLabelHandler = (value, option) => {
-		console.log(value);
-		setLabelSelect(value);
 	};
 
 	const renderButtons = isWrite ? (
@@ -183,19 +175,11 @@ function TaskModal(props) {
 	);
 
 	const renderLabel =
-		beforeChange.label.length === 0
-			? 'No label'
-			: beforeChange.label.map((bLabel) => {
-					const label = boardLabels.find(
-						(label) => label._id === bLabel
-					);
-					if (!label) return null;
-					return (
-						<Badge className={`bg-${label.type} mx-1`}>
-							{label.name}
-						</Badge>
-					);
-			  });
+		beforeChange.label.length === 0 ? (
+			<p>No label</p>
+		) : (
+			<LabelBar labels={beforeChange.label} />
+		);
 
 	return (
 		<Modal
@@ -234,32 +218,31 @@ function TaskModal(props) {
 				>
 					{errorMsg}
 				</Alert>
+				{/* Description */}
 				<h3 className={`styles.header mt-2`}>Description</h3>
-				{!isWrite && (
-					<p className={styles.description}>
-						{beforeChange.description || ' '}
-					</p>
-				)}
-				{isWrite && (
+				{isWrite ? (
 					<Input
 						type="textarea"
 						innerRef={descriptionRef}
 						defaultValue={beforeChange.description}
 						className={styles.input}
 					/>
+				) : (
+					<p className={styles.description}>
+						{beforeChange.description || ' '}
+					</p>
 				)}
 
 				{/* Deadline */}
 				<h3 className="mt-2">Deadline</h3>
-				{isWrite && (
+				{isWrite ? (
 					<DatePicker
 						allowClear
 						defaultValue={deadline}
-						onChange={dateChangeHandler}
+						onChange={(date) => setDeadline(date)}
 						format={'DD/MM/YYYY'}
 					/>
-				)}
-				{!isWrite && (
+				) : (
 					<p>
 						{deadline
 							? deadline.format('DD/MM/YYYY')
@@ -274,25 +257,23 @@ function TaskModal(props) {
 						showSearch
 						allowClear
 						placeholder="Select label"
-						style={{ minWidth: '200px', width: 'auto' }}
+						className="w-75"
 						value={labelSelect}
-						onChange={updateLabelHandler}
+						onChange={(value) => {
+							setLabelSelect(value);
+						}}
 						mode="multiple"
 					>
-						{boardLabels
-							.filter((label) => !!label._id)
-							.map((label) => (
-								<Option value={label._id} key={label._id}>
-									<Badge className={`bg-${label.type}`}>
-										{label.name}
-									</Badge>
-								</Option>
-							))}
+						{boardLabels.map((label) => (
+							<Option value={label._id} key={label._id}>
+								<Badge className={`bg-${label.type}`}>
+									{label.name}
+								</Badge>
+							</Option>
+						))}
 					</Select>
 				) : (
-					<div className="d-flex align-items-center">
-						{renderLabel}
-					</div>
+					<div>{renderLabel}</div>
 				)}
 
 				{/* Subtasks */}

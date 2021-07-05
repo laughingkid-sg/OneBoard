@@ -1,6 +1,12 @@
 import { kanbanActions } from './kanban';
 import { userActions } from './user';
 import { createColumn, createLabels } from '../lib/kanban';
+import {
+	deleteRequest,
+	getRequest,
+	postRequest,
+	putRequest,
+} from '../lib/fetch';
 
 export const TYPES = {
 	TASK: 'TASK',
@@ -33,25 +39,8 @@ function determineURL(type, id) {
 // * BOARD
 export const fetchAllBoards = (token) => {
 	return async (dispatch) => {
-		const fetchData = async () => {
-			const response = await fetch(`${URL_HEADER}/boards`, {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-
-			if (!response.ok) {
-				throw new Error('Could not retrieve boards!');
-			}
-
-			const data = await response.json();
-
-			return data;
-		};
-
 		try {
-			const boardsData = await fetchData();
+			const boardsData = await getRequest(token, `${URL_HEADER}/boards`);
 			let boards = {};
 			boardsData.forEach((board) => {
 				const { name, labels, columns, _id: id } = board;
@@ -90,34 +79,19 @@ export const fetchAllBoards = (token) => {
 	};
 };
 
-export const getBoard = (token, id) => {
+export const getBoard = (token, boardId) => {
 	return async (dispatch) => {
-		const getData = async () => {
-			const response = await fetch(determineURL(TYPES.BOARD, id), {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-
-			if (!response.ok) {
-				throw new Error('Could not retrieve board!');
-			}
-
-			const data = await response.json();
-
-			return data;
-		};
-
 		try {
-			const board = await getData();
+			const board = await getRequest(
+				token,
+				determineURL(TYPES.BOARD, boardId)
+			);
 			const { name, labels, columns, _id: id } = board;
 			const newColumns = columns
 				.sort(sortData)
 				.map((col) => createColumn(col));
 
 			const formatLabels = createLabels(labels);
-			// console.log(formatLabels);
 			const newBoard = {
 				id,
 				name,
@@ -127,7 +101,7 @@ export const getBoard = (token, id) => {
 			dispatch(kanbanActions.replace(newBoard));
 			localStorage.setItem('currentBoard', JSON.stringify(newBoard));
 		} catch (error) {
-			alert(error.message);
+			console.warn(error.message);
 		}
 	};
 };
@@ -135,26 +109,12 @@ export const getBoard = (token, id) => {
 // Used for updating column information
 export const updateLabels = (token, dataReq, id) => {
 	return async (dispatch) => {
-		const postData = async () => {
-			const response = await fetch(determineURL(TYPES.BOARD, id), {
-				method: 'PUT',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(dataReq),
-			});
-
-			if (!response.ok) {
-				throw new Error(`Could not change board`);
-			}
-
-			const data = await response.json();
-
-			return data;
-		};
 		try {
-			const res = await postData();
+			const res = await putRequest(
+				token,
+				determineURL(TYPES.BOARD, id),
+				dataReq
+			);
 			const { labels, name } = res.board;
 			const formatLabels = createLabels(labels);
 			dispatch(
@@ -165,30 +125,14 @@ export const updateLabels = (token, dataReq, id) => {
 };
 
 // * See try blocks for all
-export const addData = (token, type, data, id = '') => {
+export const addData = (token, type, dataReq, id = '') => {
 	return async (dispatch) => {
-		const url = determineURL(type, id);
-		const options = {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(data),
-		};
-
-		const postData = async () => {
-			const response = await fetch(url, options);
-			const data = await response.json();
-
-			if (!response.ok) {
-				throw new Error(data.message);
-			}
-			return data;
-		};
-
 		try {
-			const response = await postData();
+			const response = await postRequest(
+				token,
+				determineURL(type, id),
+				dataReq
+			);
 			switch (type) {
 				case TYPES.TASK:
 					dispatch(
@@ -199,7 +143,6 @@ export const addData = (token, type, data, id = '') => {
 					dispatch(kanbanActions.addColumn(response.data));
 					break;
 				default:
-					// ! Special things need to be done for add Board
 					const { _id, name } = response;
 					dispatch(userActions.addBoard({ _id, name }));
 					break;
@@ -210,26 +153,26 @@ export const addData = (token, type, data, id = '') => {
 
 export const deleteData = (token, type, id) => {
 	return async (dispatch) => {
-		const url = determineURL(type, id);
-		const postData = async () => {
-			const response = await fetch(url, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
+		// const url = determineURL(type, id);
+		// const postData = async () => {
+		// 	const response = await fetch(url, {
+		// 		method: 'DELETE',
+		// 		headers: {
+		// 			Authorization: `Bearer ${token}`,
+		// 		},
+		// 	});
 
-			if (!response.ok) {
-				throw new Error(`Could not delete ${type}`);
-			}
+		// 	if (!response.ok) {
+		// 		throw new Error(`Could not delete ${type}`);
+		// 	}
 
-			const data = await response.json();
+		// 	const data = await response.json();
 
-			return data;
-		};
+		// 	return data;
+		// };
 
 		try {
-			await postData();
+			deleteRequest(token, determineURL(type, id));
 			switch (type) {
 				case TYPES.TASK:
 					dispatch(kanbanActions.deleteTask(id));
@@ -238,7 +181,7 @@ export const deleteData = (token, type, id) => {
 					dispatch(kanbanActions.deleteColumn(id));
 					break;
 				default:
-					// ! Special things need to be done for delete Board
+					dispatch(userActions.deleteBoard(id));
 					break;
 			}
 		} catch (error) {}
@@ -247,27 +190,12 @@ export const deleteData = (token, type, id) => {
 
 export const updateData = (token, type, dataReq, id) => {
 	return async (dispatch) => {
-		const postData = async () => {
-			const response = await fetch(determineURL(type, id), {
-				method: 'PUT',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(dataReq),
-			});
-
-			if (!response.ok) {
-				throw new Error(`Could not change ${type.toLowerCase()}`);
-			}
-
-			const data = await response.json();
-
-			return data;
-		};
-
 		try {
-			const data = await postData();
+			const data = await putRequest(
+				token,
+				determineURL(type, id),
+				dataReq
+			);
 			switch (type) {
 				case TYPES.TASK:
 					dispatch(kanbanActions.updateTask(data.task));
