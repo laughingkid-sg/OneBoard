@@ -10,7 +10,12 @@ import LabelBar from '../../UI/LabelBar';
 import ModalContext from '../../store/ModalContext';
 import useInput from '../hooks/use-input';
 import { updateExpense } from '../../store/expense-action';
-import { hasId, isNumeric } from '../../lib/validators';
+import {
+	DATE_FORMAT,
+	hasId,
+	isNumeric,
+	textNotEmpty,
+} from '../../lib/validators';
 import Dropdown from '../../UI/Dropdown/Dropdown';
 
 function ExpenseItem(props) {
@@ -23,27 +28,28 @@ function ExpenseItem(props) {
 	);
 	const modalContext = useContext(ModalContext);
 	const [isEdit, setIsEdit] = useState(false);
-	const [labelSelect, setLabelSelect] = useState(
-		expense.label.filter((label) =>
-			expenseLabels.find((eLabel) => eLabel._id === label)
-		)
-	);
 	const [beforeChange, setBeforeChange] = useState(expense);
 	const [date, setDate] = useState(moment(beforeChange.date));
+	const [showMore, setShowMore] = useState(false);
 
 	const {
 		value: name,
 		isValid: nameIsValid,
 		onChange: nameOnChange,
-	} = useInput((value) => value.trim() !== '', beforeChange.name);
+	} = useInput(textNotEmpty, beforeChange.name);
 
 	const descriptionRef = useRef();
+	const [labelSelect, setLabelSelect] = useState(
+		expense.label.filter((label) =>
+			expenseLabels.find((eLabel) => eLabel._id === label)
+		)
+	);
 
 	const {
 		value: amount,
 		isValid: amountIsValid,
 		onChange: amountOnChange,
-	} = useInput((value) => isNumeric(value), beforeChange.amount.toString());
+	} = useInput(isNumeric, beforeChange.amount.toString());
 
 	const deleteHandler = () => {
 		modalContext.showModal(<DeleteExpense expense={beforeChange} />);
@@ -60,7 +66,6 @@ function ExpenseItem(props) {
 
 		const amountFloat = parseFloat(amount);
 
-		// TODO Label checking (array of Ids comparison)
 		let isChanged = false;
 		if (labelSelect.length !== beforeChange.label.length) isChanged = true;
 		if (!isChanged) {
@@ -99,19 +104,22 @@ function ExpenseItem(props) {
 		setIsEdit(false);
 	};
 
+	const toggleShowMore = () => {
+		setShowMore(!showMore);
+	};
+
 	const renderContent = isEdit ? (
 		<React.Fragment>
 			<td>
 				<DatePicker
 					allowClear
 					value={date}
-					format={'DD/MM/YYYY'}
+					format={DATE_FORMAT}
 					onChange={(date) => setDate(date)}
 					className="w-100"
 				/>
 			</td>
 			<td>
-				{/* TODO Add Label selector */}
 				<Input type="text" value={name} onChange={nameOnChange} />
 				<Dropdown
 					className="w-100"
@@ -144,7 +152,7 @@ function ExpenseItem(props) {
 		</React.Fragment>
 	) : (
 		<React.Fragment>
-			<td> {moment(beforeChange.date).format('D/M/YYYY')}</td>{' '}
+			<td> {moment(beforeChange.date).format(DATE_FORMAT)}</td>{' '}
 			<td>
 				<React.Fragment>
 					{beforeChange.name}
@@ -155,14 +163,16 @@ function ExpenseItem(props) {
 				</React.Fragment>
 			</td>
 			<td>
-				{/* TODO String formatting code */}
 				{beforeChange.description.length < 25 ? (
 					beforeChange.description
 				) : (
 					<React.Fragment>
-						{/* Probably needs some work on this */}
-						{beforeChange.description.substring(0, 30)}{' '}
-						<a>Read more</a>
+						{readMore
+							? beforeChange.description
+							: beforeChange.description.substring(0, 30)}{' '}
+						<a onClick={toggleShowMore}>
+							{readMore ? 'Less' : 'Read more'}
+						</a>
 					</React.Fragment>
 				)}
 			</td>

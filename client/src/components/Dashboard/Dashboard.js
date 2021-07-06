@@ -24,7 +24,7 @@ function Dashboard(props) {
 
 					<Card style={{ height: '45%' }} className="shadow p-4">
 						{/* Expense Summary goes here */}
-						Expense Summary Component
+						<h3>Expense Summary</h3>
 					</Card>
 				</div>
 				<Card className="col-5 shadow p-4">

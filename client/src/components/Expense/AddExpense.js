@@ -18,7 +18,12 @@ import 'antd/dist/antd.css';
 import styles from './AddExpense.module.css';
 import ManageLabel from './ManageLabel';
 import useInput from '../hooks/use-input';
-import { textNotEmpty, isNumeric, hasId } from '../../lib/validators';
+import {
+	textNotEmpty,
+	isNumeric,
+	hasId,
+	DATE_FORMAT,
+} from '../../lib/validators';
 import { addExpense } from '../../store/expense-action';
 import ModalContext from '../../store/ModalContext';
 import Dropdown from '../../UI/Dropdown/Dropdown';
@@ -69,7 +74,12 @@ function AddExpense(props) {
 		};
 
 		dispatch(addExpense(token, expense));
-		// TODO Reset
+		// TODO Reset - Testing required
+		nameReset();
+		amountReset();
+		setDate(moment());
+		descRef.current.value = '';
+		setLabels([]);
 	};
 
 	return (
@@ -118,7 +128,7 @@ function AddExpense(props) {
 					<DatePicker
 						allowClear
 						value={date}
-						format={'DD/MM/YYYY'}
+						format={DATE_FORMAT}
 						onChange={(date) => setDate(date)}
 						className="w-100"
 					/>
@@ -152,6 +162,7 @@ function AddExpense(props) {
 					>
 						Import from csv
 					</Button>
+					{/* TODO To be placed somewhere else */}
 					<Button
 						onClick={() => {
 							modalContext.showModal(<ManageLabel />);
