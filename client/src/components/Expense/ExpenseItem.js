@@ -1,27 +1,37 @@
+import { Select } from 'antd';
 import moment from 'moment';
 import React, { useContext, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
-import { useDispatch } from 'react-redux';
-import { Badge, Button, Input } from 'reactstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button, Input } from 'reactstrap';
 import DeleteExpense from './DeleteExpense';
 import EditDelete from '../Kanban/KanbanUI/EditDelete';
-// import { expenseActions } from '../../store/expense';
+import LabelBar from '../../UI/LabelBar';
 import ModalContext from '../../store/ModalContext';
 import useInput from '../hooks/use-input';
 import { updateExpense } from '../../store/expense-action';
+import { hasId, isNumeric } from '../../lib/validators';
+import { Badge } from 'reactstrap';
+import Dropdown from '../../UI/Dropdown/Dropdown';
 
-function isNumeric(value) {
-	if (typeof value !== 'string') return false;
-	return !(isNaN(value) || isNaN(parseFloat(value)));
-}
+const { Option } = Select;
 
 function ExpenseItem(props) {
-	const modalContext = useContext(ModalContext);
-	const [isEdit, setIsEdit] = useState(false);
-	const [beforeChange, setBeforeChange] = useState(props.expense);
+	const { expense } = props;
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
+	const expenseLabels = useSelector((state) => state.expense.labels).filter(
+		hasId
+	);
+	const modalContext = useContext(ModalContext);
+	const [isEdit, setIsEdit] = useState(false);
+	const [labelSelect, setLabelSelect] = useState(
+		expense.label.filter((label) =>
+			expenseLabels.find((eLabel) => eLabel._id === label)
+		)
+	);
+	const [beforeChange, setBeforeChange] = useState(expense);
 
 	const {
 		value: name,
@@ -54,42 +64,41 @@ function ExpenseItem(props) {
 
 		const amountFloat = parseFloat(amount);
 
-		// TODO Label checking (array of Objects comparison)
-		// const cmpInfo = [
-		// 	[name, expense.name, name === expense.name],
-		// 	[amountFloat, expense.amount, amountFloat === expense.amount],
-		// 	[
-		// 		description,
-		// 		expense.description,
-		// 		description === expense.description,
-		// 	],
-		// 	[
-		// 		date,
-		// 		expense.date,
-		// 		moment(date, 'YYYY-MM-DD').isSame(expense.date, 'day'),
-		// 	],
-		// ];
-		// console.table(cmpInfo);
+		// TODO Label checking (array of Ids comparison)
+		let isChanged = false;
+		if (labelSelect.length !== beforeChange.label.length) isChanged = true;
+		if (!isChanged) {
+			for (let i = 0; i < labelSelect.length; i++) {
+				if (
+					!beforeChange.label.some((label) => label === labelSelect)
+				) {
+					isChanged = true;
+				}
+			}
+		}
+
 		if (
 			name === beforeChange.name &&
 			amountFloat === beforeChange.amount &&
 			description === beforeChange.description &&
-			moment(date, 'YYYY-MM-DD').isSame(beforeChange.date, 'day')
+			moment(date, 'YYYY-MM-DD').isSame(beforeChange.date, 'day') &&
+			!isChanged
 		) {
 			console.log('The same');
 			setIsEdit(false);
 			return;
 		}
 
-		// TODO Add Labels
 		const updatedExpense = {
 			...beforeChange,
 			name,
 			date: new Date(date).toISOString(),
 			description,
+			label: labelSelect,
 			amount: parseFloat(amount),
 		};
 
+		// console.log(updatedExpense);
 		dispatch(updateExpense(token, updatedExpense));
 		setBeforeChange(updatedExpense);
 		setIsEdit(false);
@@ -109,14 +118,18 @@ function ExpenseItem(props) {
 			<td>
 				{/* TODO Add Label selector */}
 				<Input type="text" value={name} onChange={nameOnChange} />
+				<Dropdown
+					className="w-100"
+					value={labelSelect}
+					onChange={(value) => setLabelSelect(value)}
+					labelSrc={expenseLabels}
+				/>
 			</td>
 			<td>
 				<Input
 					type="textarea"
 					innerRef={descriptionRef}
 					defaultValue={beforeChange.description}
-					// value={description}
-					// onChange={nameOnChange}
 				/>
 			</td>
 			<td>
@@ -140,12 +153,14 @@ function ExpenseItem(props) {
 			<td>
 				<React.Fragment>
 					{beforeChange.name}
-					{/* Replace with label bar */}
-					{/* {beforeChange.label && <ExpenseBadges labels={beforeChange.label} />} */}
+					<LabelBar
+						labels={beforeChange.label}
+						labelSrc={expenseLabels}
+					/>
 				</React.Fragment>
 			</td>
 			<td>
-				{/* String formatting code */}
+				{/* TODO String formatting code */}
 				{beforeChange.description.length < 25 ? (
 					beforeChange.description
 				) : (
@@ -171,13 +186,5 @@ function ExpenseItem(props) {
 
 	return <tr key={beforeChange._id}>{renderContent}</tr>;
 }
-
-// const ExpenseBadges = (props) => {
-// 	const { labels } = props;
-
-// 	return labels.map((label) => (
-// 		<Badge className={`bg-${label.type}`}>{label.name}</Badge>
-// 	));
-// };
 
 export default ExpenseItem;

@@ -32,9 +32,8 @@ function ExpenseList(props) {
 							queryInString(expense.description, filter))
 			  )
 			: expenses.expense;
-		console.log(filtered);
 		setFilteredExpenses(filtered);
-	}, [filter, checked]);
+	}, [filter, checked, expenses.expense]);
 
 	return (
 		<div>

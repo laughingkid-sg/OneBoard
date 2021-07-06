@@ -5,7 +5,8 @@ import {
 	postRequest,
 	putRequest,
 } from '../lib/fetch';
-import { createExpense, sortByDate } from '../lib/expense';
+import { createExpense } from '../lib/expense';
+import { createLabels } from '../lib/kanban';
 
 const URL_HEADER = 'api/expense';
 
@@ -27,9 +28,8 @@ export const fetchExpenses = (token, start, end) => {
 				formatQueryString(formatStart, formatEnd)
 			);
 
-			const expenses = expenseRes
-				.map((event) => createExpense(event))
-				.sort(sortByDate);
+			const expenses = expenseRes.map((event) => createExpense(event));
+
 			dispatch(expenseActions.replace({ type: 'expenses', expenses }));
 		} catch (error) {}
 	};
@@ -69,6 +69,14 @@ export const deleteExpense = (token, id) => {
 	};
 };
 
-// export const fetchExpense = (token) => {
-
-// }
+export const updateLabels = (token, dataReq) => {
+	return async (dispatch) => {
+		try {
+			const labels = await putRequest(token, URL_HEADER, dataReq);
+			const formatLabels = createLabels(labels);
+			dispatch(
+				expenseActions.replace({ type: 'labels', labels: formatLabels })
+			);
+		} catch (error) {}
+	};
+};

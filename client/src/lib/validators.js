@@ -9,3 +9,5 @@ export const isNumeric = (value) => {
 	if (typeof value !== 'string') return false;
 	return !(isNaN(value) || isNaN(parseFloat(value)));
 };
+
+export const hasId = (value) => value._id;

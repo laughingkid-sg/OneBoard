@@ -1,5 +1,7 @@
 import { userActions } from './user';
 import { getRequest, postRequest } from '../lib/fetch';
+import { expenseActions } from './expense';
+import { createLabels } from '../lib/kanban';
 
 export const login = (userData) => {
 	return async () => {
@@ -60,12 +62,19 @@ export const fetchUserData = (token) => {
 			dispatch(
 				userActions.login({
 					id: userData.user._id,
-					token,
 					firstName: userData.user.firstName,
 					lastName: userData.user.lastName,
 					email: userData.user.username,
 					boards: userData.user.boards,
 					featured: userData.user.featured,
+				})
+			);
+			const formatLabels = createLabels(userData.user.expenseLabels);
+			// console.log(formatLabels);
+			dispatch(
+				expenseActions.replace({
+					type: 'labels',
+					labels: formatLabels,
 				})
 			);
 

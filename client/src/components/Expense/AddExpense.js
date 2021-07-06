@@ -1,7 +1,7 @@
 import moment from 'moment';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import { useCookies } from 'react-cookie';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
 	Form,
 	FormGroup,
@@ -9,24 +9,29 @@ import {
 	Label,
 	Input,
 	Button,
-	Badge,
 	InputGroup,
 	InputGroupAddon,
 	InputGroupText,
 } from 'reactstrap';
-import { Select } from 'antd';
 import 'antd/dist/antd.css';
 import useInput from '../hooks/use-input';
 import { addExpense } from '../../store/expense-action';
 import styles from './AddExpense.module.css';
-import { textNotEmpty, isNumeric } from '../../lib/validators';
+import { textNotEmpty, isNumeric, hasId } from '../../lib/validators';
+import ModalContext from '../../store/ModalContext';
+import ManageLabel from './ManageLabel';
+import Dropdown from '../../UI/Dropdown/Dropdown';
 
-const { Option } = Select;
+// const { Option } = Select;
 
 function AddExpense(props) {
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
+	const modalContext = useContext(ModalContext);
+	const expenseLabels = useSelector((state) => state.expense.labels).filter(
+		hasId
+	);
 
 	const {
 		value: name,
@@ -46,12 +51,7 @@ function AddExpense(props) {
 		onBlur: amountOnBlur,
 		reset: amountReset,
 	} = useInput(isNumeric, 0.0);
-	const [labels, setLabels] = useState([]);
-
-	const changeSelectHandler = (value, option) => {
-		// TODO Probably be replaced
-		setLabels(option);
-	};
+	const [label, setLabels] = useState([]);
 
 	const addExpenseHandler = () => {
 		const date = dateRef.current.value;
@@ -61,11 +61,18 @@ function AddExpense(props) {
 
 		const amountNumber = parseFloat(amount);
 
-		// TODO Add Labels
-		const expense = { name, date, amount: amountNumber, description };
-		console.log(expense);
+		const expense = {
+			name,
+			date,
+			amount: amountNumber,
+			description,
+			label,
+		};
 
+		// ! Labels not tested
 		dispatch(addExpense(token, expense));
+
+		// Reset
 	};
 
 	return (
@@ -132,25 +139,11 @@ function AddExpense(props) {
 
 				{/* Labels */}
 				<Label for="label">Label</Label>
-				<Select
-					mode="multiple"
-					// ? Maybe To change style - currently for testing purposes
-					style={{ width: '100%' }}
-					placeholder="Select labels"
-					optionLabelProp="label"
-					onChange={changeSelectHandler}
-					allowClear
-				>
-					{/* <Option value="test" label="test">
-						<Badge className={`bg-primary`}>Test</Badge>
-					</Option>
-					<Option value="abcdef" label="abcdef">
-						<p>ABCDEF</p>
-					</Option>
-					<Option value="ORD" label="ORD">
-						<p>ORD</p>
-					</Option> */}
-				</Select>
+				<Dropdown
+					className="w-100"
+					onChange={(value) => setLabels(value)}
+					labelSrc={expenseLabels}
+				/>
 
 				<div className="mt-3">
 					<Button color="success" onClick={addExpenseHandler}>
@@ -162,6 +155,13 @@ function AddExpense(props) {
 						}}
 					>
 						Import from csv
+					</Button>
+					<Button
+						onClick={() => {
+							modalContext.showModal(<ManageLabel />);
+						}}
+					>
+						Manage Labels
 					</Button>
 				</div>
 			</Form>
