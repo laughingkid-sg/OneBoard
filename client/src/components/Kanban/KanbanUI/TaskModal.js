@@ -3,10 +3,9 @@ import React, { useContext, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
-import { DatePicker, Select } from 'antd';
+import { DatePicker } from 'antd';
 import {
 	Alert,
-	Badge,
 	Button,
 	Input,
 	Modal,
@@ -22,8 +21,6 @@ import useError from '../../hooks/use-error';
 import LabelBar from '../../../UI/LabelBar';
 import { hasId } from '../../../lib/validators';
 import Dropdown from '../../../UI/Dropdown/Dropdown';
-
-const { Option } = Select;
 
 function TaskModal(props) {
 	const { task, columnTitle, write, onDelete } = props;

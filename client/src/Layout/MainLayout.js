@@ -53,10 +53,10 @@ function MainLayout(props) {
 					</NavbarBrand>
 					<Nav className="mx-4">
 						<NavItem>
-							<NavLink href="#">Kanban Board</NavLink>
+							<NavLink href="#kanban">Kanban Board</NavLink>
 						</NavItem>
 						<NavItem>
-							<NavLink href="#">Expense Tracker</NavLink>
+							<NavLink href="#expenses">Expense Tracker</NavLink>
 						</NavItem>
 					</Nav>
 				</div>

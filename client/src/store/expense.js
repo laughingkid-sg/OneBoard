@@ -21,9 +21,11 @@ const expenseSlice = createSlice({
 		},
 		updateExpense(state, action) {
 			const newExpense = action.payload;
-			state.expense = state.expense.map((expense) =>
-				expense._id === newExpense._id ? newExpense : expense
-			);
+			state.expense = state.expense
+				.map((expense) =>
+					expense._id === newExpense._id ? newExpense : expense
+				)
+				.sort(sortByDate);
 		},
 		replace(state, action) {
 			const { type, expenses, labels } = action.payload;

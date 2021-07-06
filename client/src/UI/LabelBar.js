@@ -1,4 +1,3 @@
-// import { useSelector } from 'react-redux';
 import { Badge } from 'reactstrap';
 
 const LabelBar = (props) => {

@@ -23,16 +23,18 @@ function ExpenseList(props) {
 	const descriptionRef = useRef();
 
 	useEffect(() => {
+		// console.log(checked);
 		const filtered = filterIsValid
 			? expenses.expense.filter(
 					(expense) =>
-						(nameRef.current.checked &&
-							queryInString(expense.name, filter)) ||
-						(descriptionRef.current.checked &&
+						(checked.name && queryInString(expense.name, filter)) ||
+						(checked.description &&
 							queryInString(expense.description, filter))
 			  )
 			: expenses.expense;
+		// if (filtered.length < expenses.expense.length) console.log(filtered);
 		setFilteredExpenses(filtered);
+		return () => {};
 	}, [filter, checked, expenses.expense]);
 
 	return (

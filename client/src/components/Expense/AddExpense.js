@@ -1,3 +1,4 @@
+import { DatePicker } from 'antd';
 import moment from 'moment';
 import React, { useRef, useState, useContext } from 'react';
 import { useCookies } from 'react-cookie';
@@ -14,15 +15,13 @@ import {
 	InputGroupText,
 } from 'reactstrap';
 import 'antd/dist/antd.css';
-import useInput from '../hooks/use-input';
-import { addExpense } from '../../store/expense-action';
 import styles from './AddExpense.module.css';
-import { textNotEmpty, isNumeric, hasId } from '../../lib/validators';
-import ModalContext from '../../store/ModalContext';
 import ManageLabel from './ManageLabel';
+import useInput from '../hooks/use-input';
+import { textNotEmpty, isNumeric, hasId } from '../../lib/validators';
+import { addExpense } from '../../store/expense-action';
+import ModalContext from '../../store/ModalContext';
 import Dropdown from '../../UI/Dropdown/Dropdown';
-
-// const { Option } = Select;
 
 function AddExpense(props) {
 	const dispatch = useDispatch();
@@ -41,7 +40,7 @@ function AddExpense(props) {
 		onBlur: nameOnBlur,
 		reset: nameReset,
 	} = useInput(textNotEmpty, '');
-	const dateRef = useRef(''); // Probably use antd
+	const [date, setDate] = useState(moment());
 	const descRef = useRef();
 	const {
 		value: amount,
@@ -54,7 +53,7 @@ function AddExpense(props) {
 	const [label, setLabels] = useState([]);
 
 	const addExpenseHandler = () => {
-		const date = dateRef.current.value;
+		const dateToString = date.toDate().toISOString();
 		const description = descRef.current.value.trim();
 
 		if (!(nameIsValid && amountIsValid && date)) return;
@@ -63,16 +62,14 @@ function AddExpense(props) {
 
 		const expense = {
 			name,
-			date,
+			date: dateToString,
 			amount: amountNumber,
 			description,
 			label,
 		};
 
-		// ! Labels not tested
 		dispatch(addExpense(token, expense));
-
-		// Reset
+		// TODO Reset
 	};
 
 	return (
@@ -105,7 +102,6 @@ function AddExpense(props) {
 							id="amount"
 							type="number"
 							min="0.00"
-							// Conversion to number
 							value={amount}
 							onChange={amountOnChange}
 							onBlur={amountOnBlur}
@@ -119,12 +115,12 @@ function AddExpense(props) {
 				{/* Date of transaction */}
 				<FormGroup>
 					<Label for="date">Date</Label>
-					{/* Probably replace with antd */}
-					<Input
-						id="date"
-						type="date"
-						innerRef={dateRef}
-						defaultValue={moment().format('YYYY-MM-DD')}
+					<DatePicker
+						allowClear
+						value={date}
+						format={'DD/MM/YYYY'}
+						onChange={(date) => setDate(date)}
+						className="w-100"
 					/>
 				</FormGroup>
 

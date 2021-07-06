@@ -32,12 +32,12 @@ function Dashboard(props) {
 					<Calendar />
 				</Card>
 			</div>
-			<Card className="row mb-5 shadow p-4">
+			<Card className="row mb-5 shadow p-4" id="kanban">
 				<h3>Kanban Board</h3>
 				<Board />
 			</Card>
 
-			<Card>
+			<Card className="mb-5 shadow p-4" id="expenses">
 				<h3>Expenses</h3>
 				<Expense />
 			</Card>

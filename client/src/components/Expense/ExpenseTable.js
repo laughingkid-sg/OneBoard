@@ -5,10 +5,6 @@ import ExpenseItem from './ExpenseItem';
 const ExpenseTable = (props) => {
 	const { expenses } = props;
 
-	const renderExpenses = expenses.map((expense) => (
-		<ExpenseItem expense={expense} kye={expense._id} />
-	));
-
 	return (
 		// TODO Pagination after 13 transactions
 		<React.Fragment>
@@ -22,9 +18,15 @@ const ExpenseTable = (props) => {
 						<th>Edit/Delete</th>
 					</tr>
 				</thead>
-				{renderExpenses.length > 0 && <tbody>{renderExpenses}</tbody>}
+				{expenses.length > 0 && (
+					<tbody>
+						{expenses.map((expense) => (
+							<ExpenseItem expense={expense} key={expense._id} />
+						))}
+					</tbody>
+				)}
 			</Table>
-			{renderExpenses.length === 0 && (
+			{expenses.length === 0 && (
 				<h4 className="text-center">No Expenses Found</h4>
 			)}
 		</React.Fragment>

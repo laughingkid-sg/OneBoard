@@ -1,4 +1,4 @@
-import { Select } from 'antd';
+import { DatePicker } from 'antd';
 import moment from 'moment';
 import React, { useContext, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
@@ -11,10 +11,7 @@ import ModalContext from '../../store/ModalContext';
 import useInput from '../hooks/use-input';
 import { updateExpense } from '../../store/expense-action';
 import { hasId, isNumeric } from '../../lib/validators';
-import { Badge } from 'reactstrap';
 import Dropdown from '../../UI/Dropdown/Dropdown';
-
-const { Option } = Select;
 
 function ExpenseItem(props) {
 	const { expense } = props;
@@ -32,6 +29,7 @@ function ExpenseItem(props) {
 		)
 	);
 	const [beforeChange, setBeforeChange] = useState(expense);
+	const [date, setDate] = useState(moment(beforeChange.date));
 
 	const {
 		value: name,
@@ -47,14 +45,12 @@ function ExpenseItem(props) {
 		onChange: amountOnChange,
 	} = useInput((value) => isNumeric(value), beforeChange.amount.toString());
 
-	const dateRef = useRef();
-
 	const deleteHandler = () => {
 		modalContext.showModal(<DeleteExpense expense={beforeChange} />);
 	};
 
 	const editHandler = () => {
-		const date = dateRef.current.value;
+		const dateToString = date.toDate().toString();
 		const description = descriptionRef.current.value;
 
 		if (!(nameIsValid && amountIsValid && date)) {
@@ -92,13 +88,12 @@ function ExpenseItem(props) {
 		const updatedExpense = {
 			...beforeChange,
 			name,
-			date: new Date(date).toISOString(),
+			date: dateToString,
 			description,
 			label: labelSelect,
 			amount: parseFloat(amount),
 		};
 
-		// console.log(updatedExpense);
 		dispatch(updateExpense(token, updatedExpense));
 		setBeforeChange(updatedExpense);
 		setIsEdit(false);
@@ -107,12 +102,12 @@ function ExpenseItem(props) {
 	const renderContent = isEdit ? (
 		<React.Fragment>
 			<td>
-				<Input
-					type="date"
-					defaultValue={moment(beforeChange.date).format(
-						'YYYY-MM-DD'
-					)}
-					innerRef={dateRef}
+				<DatePicker
+					allowClear
+					value={date}
+					format={'DD/MM/YYYY'}
+					onChange={(date) => setDate(date)}
+					className="w-100"
 				/>
 			</td>
 			<td>
