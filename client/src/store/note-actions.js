@@ -5,13 +5,14 @@ import {
 	getRequest,
 	postRequest,
 	putRequest,
+	determineURL,
 } from '../lib/fetch';
 
 const URL_HEADER = 'api/note';
 
-function formatId(id) {
-	return `${URL_HEADER}/${id}`;
-}
+// function determineURL(id) {
+// 	return `${URL_HEADER}/${id}`;
+// }
 
 // May need to inspect further
 export const fetchAllNotes = (token) => {
@@ -36,28 +37,8 @@ export const addNote = (token, dataReq) => {
 
 export const deleteNote = (token, id) => {
 	return async (dispatch) => {
-		// const postData = async () => {
-		// 	const response = await fetch(`${URL_HEADER}/${id}`, {
-		// 		method: 'DELETE',
-		// 		headers: {
-		// 			Authorization: `Bearer ${token}`,
-		// 			'Content-Type': 'application/json',
-		// 		},
-		// 	});
-
-		// 	if (!response.ok) {
-		// 		throw new Error('Cannot delete note!');
-		// 	}
-
-		// 	const data = await response.json();
-
-		// 	return data;
-		// };
-
 		try {
-			// const responseData = await postData();
-			// if (responseData.status) dispatch(noteActions.deleteNote(id));
-			deleteRequest(token, formatId(id));
+			deleteRequest(token, determineURL(URL_HEADER, id));
 			dispatch(noteActions.deleteNote(id));
 		} catch (error) {}
 	};
@@ -66,7 +47,7 @@ export const deleteNote = (token, id) => {
 export const updateNote = (token, id, dataReq) => {
 	return async (dispatch) => {
 		try {
-			putRequest(token, formatId(id), dataReq);
+			putRequest(token, determineURL(URL_HEADER, id), dataReq);
 			dispatch(noteActions.updateNote(dataReq));
 		} catch (error) {}
 	};

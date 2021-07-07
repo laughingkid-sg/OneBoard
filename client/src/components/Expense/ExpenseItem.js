@@ -167,12 +167,21 @@ function ExpenseItem(props) {
 					beforeChange.description
 				) : (
 					<React.Fragment>
-						{readMore
-							? beforeChange.description
-							: beforeChange.description.substring(0, 30)}{' '}
-						<a onClick={toggleShowMore}>
-							{readMore ? 'Less' : 'Read more'}
-						</a>
+						<p>
+							{showMore
+								? beforeChange.description
+								: beforeChange.description.substring(
+										0,
+										30
+								  )}{' '}
+							{/* Style link */}
+							<u
+								onClick={toggleShowMore}
+								style={{ cursor: 'pointer' }}
+							>
+								{showMore ? 'Less' : 'Read more'}
+							</u>
+						</p>
 					</React.Fragment>
 				)}
 			</td>
@@ -184,6 +193,7 @@ function ExpenseItem(props) {
 						setIsEdit(true);
 					}}
 					onDelete={deleteHandler}
+					className="my-0 text-center"
 				/>
 			</td>
 		</React.Fragment>

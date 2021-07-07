@@ -3,7 +3,7 @@ import { IconContext } from 'react-icons';
 import { AiOutlineClose } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa';
-import { SidebarData } from './SidebarData';
+// import { SidebarData } from './SidebarData';
 import styles from './Sidebar.module.css';
 import { RiLogoutBoxFill } from 'react-icons/ri';
 import AuthContext from '../../store/AuthContext';
@@ -73,7 +73,7 @@ const Sidebar = (props) => {
 	);
 };
 
-export default Sidebar;
+// export default Sidebar;
 
 const SidebarToggle = () => {
 	return (

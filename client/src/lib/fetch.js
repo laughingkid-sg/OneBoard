@@ -58,3 +58,11 @@ export const deleteRequest = async (token, url) => {
 
 	return data;
 };
+
+export const determineURL = (header, id) => {
+	return `${header}/${id}`;
+};
+
+export const formatQueryString = (header, start, end) => {
+	return `${header}?start=${start}&end=${end}`;
+};

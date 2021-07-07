@@ -44,6 +44,7 @@ function ManageLabel() {
 		}
 
 		dispatch(updateLabels(token, labelChanged));
+		modalContext.hideModal();
 	};
 
 	return (

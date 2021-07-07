@@ -19,6 +19,7 @@ function determineCountdown(start, end) {
 	return { daysDiff, isStart };
 }
 
+// Bug in determining countdown
 function Countdown() {
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);

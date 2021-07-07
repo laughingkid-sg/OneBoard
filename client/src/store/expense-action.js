@@ -4,19 +4,21 @@ import {
 	getRequest,
 	postRequest,
 	putRequest,
+	determineURL,
+	formatQueryString,
 } from '../lib/fetch';
 import { createExpense } from '../lib/expense';
 import { createLabels } from '../lib/kanban';
 
 const URL_HEADER = 'api/expense';
 
-function determineURL(id) {
-	return `${URL_HEADER}/${id}`;
-}
+// function determineURL(id) {
+// 	return `${URL_HEADER}/${id}`;
+// }
 
-function formatQueryString(start, end) {
-	return `${URL_HEADER}?start=${start}&end=${end}`;
-}
+// function formatQueryString(start, end) {
+// 	return `${URL_HEADER}?start=${start}&end=${end}`;
+// }
 
 export const fetchExpenses = (token, start, end) => {
 	const formatStart = start.toISOString();
@@ -25,12 +27,13 @@ export const fetchExpenses = (token, start, end) => {
 		try {
 			const expenseRes = await getRequest(
 				token,
-				formatQueryString(formatStart, formatEnd)
+				formatQueryString(URL_HEADER, formatStart, formatEnd)
 			);
 
 			const expenses = expenseRes.map((event) => createExpense(event));
 
 			dispatch(expenseActions.replace({ type: 'expenses', expenses }));
+			return expenses;
 		} catch (error) {}
 	};
 };
@@ -51,7 +54,7 @@ export const updateExpense = (token, expense) => {
 		try {
 			const response = await putRequest(
 				token,
-				determineURL(expense._id),
+				determineURL(URL_HEADER, expense._id),
 				expense
 			);
 			const formatEvent = createExpense(response);
@@ -63,7 +66,7 @@ export const updateExpense = (token, expense) => {
 export const deleteExpense = (token, id) => {
 	return async (dispatch) => {
 		try {
-			await deleteRequest(token, determineURL(id));
+			await deleteRequest(token, determineURL(URL_HEADER, id));
 			dispatch(expenseActions.deleteExpense(id));
 		} catch (error) {}
 	};

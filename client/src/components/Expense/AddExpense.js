@@ -74,7 +74,6 @@ function AddExpense(props) {
 		};
 
 		dispatch(addExpense(token, expense));
-		// TODO Reset - Testing required
 		nameReset();
 		amountReset();
 		setDate(moment());
@@ -141,6 +140,7 @@ function AddExpense(props) {
 					type="textarea"
 					innerRef={descRef}
 					placeholder="Enter description"
+					style={{ resize: 'none' }}
 				/>
 
 				{/* Labels */}
@@ -176,4 +176,4 @@ function AddExpense(props) {
 	);
 }
 
-export default AddExpense;
+export default React.memo(AddExpense);
