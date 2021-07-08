@@ -1,19 +1,22 @@
 import { useContext } from 'react';
+import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { AiOutlineClose } from 'react-icons/ai';
 import ModalContext from '../../store/ModalContext';
 import styles from './DeleteExpense.module.css';
-import { expenseActions } from '../../store/expense';
+import { deleteExpense } from '../../store/expense-action';
 
 const DeleteExpense = (props) => {
+	const dispatch = useDispatch();
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const { expense } = props;
 	const modalContext = useContext(ModalContext);
-	const dispatch = useDispatch();
 
 	const deleteHandler = () => {
-		const { id } = expense;
-		dispatch(expenseActions.deleteExpense(id));
+		const { _id } = expense;
+		dispatch(deleteExpense(token, _id));
 		modalContext.hideModal();
 	};
 

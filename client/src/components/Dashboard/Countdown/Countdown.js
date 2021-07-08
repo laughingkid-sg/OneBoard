@@ -19,6 +19,7 @@ function determineCountdown(start, end) {
 	return { daysDiff, isStart };
 }
 
+// Bug in determining countdown
 function Countdown() {
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);
@@ -41,12 +42,7 @@ function Countdown() {
 	}, [featured]);
 
 	if (!featuredEvent) {
-		return (
-			<React.Fragment>
-				<h3> Countdown</h3>
-				<p>No events for countdown.</p>
-			</React.Fragment>
-		);
+		return <p>No events for countdown.</p>;
 	}
 
 	const countdown = determineCountdown(
@@ -60,7 +56,6 @@ function Countdown() {
 
 	return (
 		<React.Fragment>
-			<h3> Countdown</h3>
 			<p>
 				{countdown.daysDiff >= 0
 					? `${countdown.daysDiff} days to ${formatMessage} ${featuredEvent.title}`

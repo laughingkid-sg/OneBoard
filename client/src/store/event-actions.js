@@ -6,17 +6,19 @@ import {
 	getRequest,
 	postRequest,
 	putRequest,
+	determineURL,
+	formatQueryString,
 } from '../lib/fetch';
 
-const URL_HEADERS = '/api/event';
+const URL_HEADER = '/api/event';
 
-function formatId(id) {
-	return `${URL_HEADERS}/${id}`;
-}
+// function determineURL(id) {
+// 	return `${URL_HEADER}/${id}`;
+// }
 
-function formatQueryString(start, end) {
-	return `${URL_HEADERS}?start=${start}&end=${end}`;
-}
+// function formatQueryString(start, end) {
+// 	return `${URL_HEADER}?start=${start}&end=${end}`;
+// }
 
 export const fetchEvents = (token, start, end) => {
 	const formatStart = start.toISOString();
@@ -25,7 +27,7 @@ export const fetchEvents = (token, start, end) => {
 		try {
 			const eventRes = await getRequest(
 				token,
-				formatQueryString(formatStart, formatEnd)
+				formatQueryString(URL_HEADER, formatStart, formatEnd)
 			);
 			const events = eventRes.map((event) => createEvent(event));
 			dispatch(eventActions.replace(events));
@@ -36,7 +38,10 @@ export const fetchEvents = (token, start, end) => {
 export const fetchEvent = (token, eventId) => {
 	return async () => {
 		try {
-			const event = await getRequest(token, formatId(eventId));
+			const event = await getRequest(
+				token,
+				determineURL(URL_HEADER, eventId)
+			);
 			const formatEvent = createEvent(event);
 			return formatEvent;
 		} catch (error) {}
@@ -46,7 +51,7 @@ export const fetchEvent = (token, eventId) => {
 export const addEvent = (token, eventReq) => {
 	return async (dispatch) => {
 		try {
-			const addEvent = await postRequest(token, URL_HEADERS, eventReq);
+			const addEvent = await postRequest(token, URL_HEADER, eventReq);
 			const event = createEvent(addEvent);
 			dispatch(eventActions.addEvent(event));
 		} catch (error) {
@@ -60,7 +65,7 @@ export const updateEvent = (token, eventUpd) => {
 		try {
 			const { event } = await putRequest(
 				token,
-				formatId(eventUpd._id),
+				determineURL(URL_HEADER, eventUpd._id),
 				eventUpd
 			);
 			const formatEvent = createEvent(event);
@@ -72,7 +77,7 @@ export const updateEvent = (token, eventUpd) => {
 export const deleteEvent = (token, id) => {
 	return async (dispatch) => {
 		try {
-			deleteRequest(token, formatId(id));
+			deleteRequest(token, determineURL(URL_HEADER, id));
 			dispatch(eventActions.deleteEvent(id));
 		} catch (error) {}
 	};
@@ -89,7 +94,7 @@ export const changeFeatured = (token, id) => {
 			},
 		};
 
-		const url = `${URL_HEADERS}/${id}`;
+		const url = `${URL_HEADER}/${id}`;
 
 		const postData = async () => {
 			const response = await fetch(url, options);

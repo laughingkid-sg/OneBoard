@@ -1,6 +1,6 @@
 import { kanbanActions } from './kanban';
 import { userActions } from './user';
-import { createColumn, createLabels } from '../lib/kanban';
+import { createColumn, createLabels, createTask } from '../lib/kanban';
 import {
 	deleteRequest,
 	getRequest,
@@ -115,7 +115,8 @@ export const updateLabels = (token, dataReq, id) => {
 				determineURL(TYPES.BOARD, id),
 				dataReq
 			);
-			const { labels, name } = res.board;
+			const { labels, name } = res;
+
 			const formatLabels = createLabels(labels);
 			dispatch(
 				kanbanActions.updateLabels({ name, labels: formatLabels })
@@ -198,7 +199,8 @@ export const updateData = (token, type, dataReq, id) => {
 			);
 			switch (type) {
 				case TYPES.TASK:
-					dispatch(kanbanActions.updateTask(data.task));
+					const updTask = createTask(data);
+					dispatch(kanbanActions.updateTask(updTask));
 					break;
 				case TYPES.COLUMN:
 					dispatch(

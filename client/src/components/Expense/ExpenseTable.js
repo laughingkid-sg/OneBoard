@@ -1,29 +1,65 @@
-import React from 'react';
-import { Table } from 'reactstrap';
+import React, { useState, useMemo } from 'react';
+import { Table, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import ExpenseItem from './ExpenseItem';
 
 const ExpenseTable = (props) => {
 	const { expenses } = props;
+	const [currentPage, setCurrentPage] = useState(0);
+	const pageSize = 10;
+	const pageCount = Math.ceil(expenses.length / pageSize);
 
-	const renderExpenses = expenses.map((expense) => (
-		<ExpenseItem expense={expense} />
+	if (expenses.length === 0) {
+		return <h4 className="text-center">No Expenses Found</h4>;
+	}
+
+	const renderPages = [...Array(pageCount)].map((page, index) => (
+		<PaginationItem active={index === currentPage} key={index}>
+			<PaginationLink onClick={() => setCurrentPage(index)}>
+				{index + 1}
+			</PaginationLink>
+		</PaginationItem>
 	));
 
+	const expensesToRender = expenses
+		.slice(currentPage * pageSize, (currentPage + 1) * pageSize - 1)
+		.map((expense) => <ExpenseItem expense={expense} key={expense._id} />);
+
 	return (
-		// TODO Make scrollable after 13 (TBC) transactions
 		<React.Fragment>
-			<Table striped>
+			<Table striped className="mt-3">
 				<thead>
 					<tr key="header">
-						<th>Date</th>
-						<th>Name</th>
-						<th>Amount ($)</th>
-						<th>Edit/Delete</th>
+						<th style={{ width: '15%' }}>Date</th>
+						<th style={{ width: '22%' }}>Name</th>
+						<th style={{ width: '35%' }}>Description</th>
+						<th style={{ width: '13%' }}>Amount ($)</th>
+						<th style={{ width: '10%' }}>Edit/Delete</th>
 					</tr>
 				</thead>
-				{renderExpenses.length > 0 && <tbody>{renderExpenses}</tbody>}
+				{expenses.length > 0 && <tbody>{expensesToRender}</tbody>}
 			</Table>
-			{renderExpenses.length === 0 && (
+			{expenses.length > 10 && (
+				<Pagination>
+					<PaginationItem disabled={currentPage === 0}>
+						<PaginationLink
+							onClick={() => {
+								setCurrentPage(currentPage - 1);
+							}}
+							previous
+						/>
+					</PaginationItem>
+					{renderPages}
+					<PaginationItem disabled={currentPage === pageCount - 1}>
+						<PaginationLink
+							onClick={() => {
+								setCurrentPage(currentPage + 1);
+							}}
+							next
+						/>
+					</PaginationItem>
+				</Pagination>
+			)}
+			{expenses.length === 0 && (
 				<h4 className="text-center">No Expenses Found</h4>
 			)}
 		</React.Fragment>

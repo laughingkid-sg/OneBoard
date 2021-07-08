@@ -3,10 +3,9 @@ import React, { useContext, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineClose } from 'react-icons/ai';
-import { DatePicker, Select } from 'antd';
+import { DatePicker } from 'antd';
 import {
 	Alert,
-	Badge,
 	Button,
 	Input,
 	Modal,
@@ -19,9 +18,9 @@ import { TYPES, updateData } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import { AddSubtask, SubtaskList } from '../Subtask';
 import useError from '../../hooks/use-error';
-import LabelBar from '../KanbanUI/LabelBar';
-
-const { Option } = Select;
+import LabelBar from '../../../UI/LabelBar';
+import { hasId } from '../../../lib/validators';
+import Dropdown from '../../../UI/Dropdown/Dropdown';
 
 function TaskModal(props) {
 	const { task, columnTitle, write, onDelete } = props;
@@ -29,7 +28,7 @@ function TaskModal(props) {
 	const [cookies] = useCookies(['t']);
 	const token = cookies.t;
 	const boardLabels = useSelector((state) => state.kanban.labels).filter(
-		(label) => !!label._id
+		hasId
 	);
 	const modalContext = useContext(ModalContext);
 	const nameRef = useRef();
@@ -178,7 +177,7 @@ function TaskModal(props) {
 		beforeChange.label.length === 0 ? (
 			<p>No label</p>
 		) : (
-			<LabelBar labels={beforeChange.label} />
+			<LabelBar labels={beforeChange.label} labelSrc={boardLabels} />
 		);
 
 	return (
@@ -253,25 +252,14 @@ function TaskModal(props) {
 				{/* Labels */}
 				<h3 className="mt-2">Labels</h3>
 				{isWrite ? (
-					<Select
-						showSearch
-						allowClear
-						placeholder="Select label"
+					<Dropdown
 						className="w-75"
 						value={labelSelect}
 						onChange={(value) => {
 							setLabelSelect(value);
 						}}
-						mode="multiple"
-					>
-						{boardLabels.map((label) => (
-							<Option value={label._id} key={label._id}>
-								<Badge className={`bg-${label.type}`}>
-									{label.name}
-								</Badge>
-							</Option>
-						))}
-					</Select>
+						labelSrc={boardLabels}
+					/>
 				) : (
 					<div>{renderLabel}</div>
 				)}

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, CardTitle as h3 } from 'reactstrap';
+import { Card } from 'reactstrap';
+import Expense from '../Expense/Expense';
 import Board from '../Kanban/Board';
 import Notes from '../Notes/Notes';
 import Calendar from '../Calendar/Calendar';
@@ -17,7 +18,13 @@ function Dashboard(props) {
 				<div className="col-3 d-flex flex-column justify-content-around">
 					<Card style={{ height: '45%' }} className="shadow p-4">
 						{/* Countdown goes here */}
+						<h3> Countdown</h3>
 						<Countdown />
+					</Card>
+
+					<Card style={{ height: '45%' }} className="shadow p-4">
+						{/* Expense Summary goes here */}
+						<h3>Expense Summary</h3>
 					</Card>
 				</div>
 				<Card className="col-5 shadow p-4">
@@ -25,9 +32,14 @@ function Dashboard(props) {
 					<Calendar />
 				</Card>
 			</div>
-			<Card className="row mb-5 shadow p-4">
+			<Card className="row mb-5 shadow p-4" id="kanban">
 				<h3>Kanban Board</h3>
 				<Board />
+			</Card>
+
+			<Card className="mb-5 shadow p-4" id="expenses">
+				<h3>Expenses</h3>
+				<Expense />
 			</Card>
 		</div>
 	);

@@ -1,3 +1,22 @@
+const generateUpdate = async (token, url, dataReq, method) => {
+	const response = await fetch(url, {
+		method,
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(dataReq),
+	});
+
+	if (!response.ok) {
+		throw new Error(`Could not process ${method} Request!`);
+	}
+
+	const data = await response.json();
+
+	return data;
+};
+
 export const getRequest = async (token, url) => {
 	const response = await fetch(url, {
 		method: 'GET',
@@ -40,21 +59,10 @@ export const deleteRequest = async (token, url) => {
 	return data;
 };
 
-const generateUpdate = async (token, url, dataReq, method) => {
-	const response = await fetch(url, {
-		method,
-		headers: {
-			Authorization: `Bearer ${token}`,
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(dataReq),
-	});
+export const determineURL = (header, id) => {
+	return `${header}/${id}`;
+};
 
-	if (!response.ok) {
-		throw new Error(`Could not process ${method} Request!`);
-	}
-
-	const data = await response.json();
-
-	return data;
+export const formatQueryString = (header, start, end) => {
+	return `${header}?start=${start}&end=${end}`;
 };
