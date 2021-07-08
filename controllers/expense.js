@@ -2,6 +2,9 @@ const Expense = require("../models/expense");
 const User = require("../models/user");
 const ObjectId = require('mongodb').ObjectID;
 
+const fs = require("fs");
+const fastcsv  = require("fast-csv");
+
 exports.expenseById = (req, res, next, id)  => {
     if (!ObjectId.isValid(id)) {
         return res.status(400).json({
@@ -127,3 +130,37 @@ exports.expensesLabel = (req, res) => {
         err => res.status(500).json({ message: err.message} ))
     .catch(err => res.status(500).json({ message: err.message} ))  
 }
+
+exports.expenseUpload = async (req, res) => {
+
+    if (req.file == undefined) {
+        return res.status(400).send("Please upload a CSV file!");
+    }
+
+    let expenses = [];
+    const path = __dirname + "/.." + "/resources/static/assets/uploads/" + req.file.filename;
+
+    let stream = fs.createReadStream(path);
+    
+    let csvStream = fastcsv
+        .parse()
+        .on("data", data => {
+            expenses.push({
+                name: data[0],
+                description: data[1],
+                date: new Date(data[2]),
+                //label: data[3],
+                amount: data[3]
+            });
+        })
+        .on("end", () => {
+            expenses.shift();
+            Expense.insertMany(expenses)
+            .then(result => { 
+                fs.unlink(path, err => err ? console.log(err) : undefined); 
+                res.status(200).json(result)
+            })
+            .catch(err => res.status(500).json(err.message));
+        })
+    stream.pipe(csvStream);
+};
