@@ -19,6 +19,7 @@ import useLabel from '../../hooks/use-label';
 import { updateLabels } from '../../../store/kanban-actions';
 import { userActions } from '../../../store/user';
 import EditLabel from '../../../UI/Label/EditLabel';
+import { textNotEmpty } from '../../../lib/validators';
 
 function EditBoard() {
 	const [cookies] = useCookies(['t']);
@@ -32,7 +33,7 @@ function EditBoard() {
 		isValid: boardNameIsValid,
 		onChange: boardNameOnChange,
 		onBlur: boardNameOnBlur,
-	} = useInput((value) => value.trim() !== '', board.name);
+	} = useInput(textNotEmpty, board.name);
 
 	const { labels, editLabels } = useLabel(board.labels);
 

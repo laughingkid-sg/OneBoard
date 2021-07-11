@@ -1,19 +1,23 @@
 import React, { useContext, useRef, useState } from 'react';
-import { Button, Input } from 'reactstrap';
+import { Button, Input, UncontrolledCollapse } from 'reactstrap';
+import { FaFilter } from 'react-icons/fa';
 import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
-import EditDelete from '../KanbanUI/EditDelete';
+import EditDelete from './EditDelete';
 import useInput from '../../hooks/use-input';
 import { userActions } from '../../../store/user';
 import { addData, TYPES } from '../../../store/kanban-actions';
 import ModalContext from '../../../store/ModalContext';
 import DeleteModal from '../Delete/DeleteModal';
 import EditBoard from '../Edit/EditBoard';
-import styles from './AddBoard.module.css';
+import styles from './ManageBoard.module.css';
+import { textNotEmpty } from '../../../lib/validators';
+import FilterKanban from './FilterKanban';
 
-function AddBoard(props) {
+function ManageBoard(props) {
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
+	const { columns: boardInfo, labels } = useSelector((state) => state.kanban);
 	const boards = useSelector((state) => state.user.boards);
 	const selectedBoard = boards.selectedBoard || {
 		name: '',
@@ -31,7 +35,7 @@ function AddBoard(props) {
 		onChange: boardNameOnChange,
 		onBlur: boardNameOnBlur,
 		reset: boardNameReset,
-	} = useInput((value) => value.trim() !== '', '');
+	} = useInput(textNotEmpty, '');
 
 	const toggleBoardAdd = () => {
 		setBoardAdd((prevAdd) => !prevAdd);
@@ -82,7 +86,7 @@ function AddBoard(props) {
 		);
 
 	return (
-		<div className="d-flex flex-row">
+		<div className="d-flex">
 			{boardAdd ? (
 				<Input
 					type="text"
@@ -92,7 +96,7 @@ function AddBoard(props) {
 					onChange={boardNameOnChange}
 					onBlur={boardNameOnBlur}
 					placeholder="Enter board name"
-					style={{ width: '35%' }}
+					className="w-25"
 					invalid={boardNameHasError}
 				/>
 			) : (
@@ -102,7 +106,8 @@ function AddBoard(props) {
 					id="boardSelect"
 					innerRef={selectBoardRef}
 					onChange={boardSelectChangeHandler}
-					style={{ width: '35%' }}
+					className="w-25"
+					// style={{ width: '75%' }}
 				>
 					{renderOptions}
 				</Input>
@@ -123,8 +128,17 @@ function AddBoard(props) {
 				onDelete={deleteBoardHandler}
 				className={styles.icons}
 			/>
+			{/* Style this */}
+			<FaFilter id="kanbanFilter" />
+			<UncontrolledCollapse toggler="kanbanFilter" className="w-50">
+				<FilterKanban
+					labels={labels}
+					boardInfo={boardInfo}
+					onFilter={props.onFilter}
+				/>
+			</UncontrolledCollapse>
 		</div>
 	);
 }
 
-export default AddBoard;
+export default ManageBoard;

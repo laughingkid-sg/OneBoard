@@ -5,7 +5,6 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Column';
 import styles from './Board.module.css';
-import AddBoard from './Add/AddBoard';
 import { kanbanActions } from '../../store/kanban';
 import {
 	TYPES,
@@ -14,6 +13,7 @@ import {
 	getBoard,
 } from '../../store/kanban-actions';
 import AddData from './Add/AddData';
+import ManageBoard from './KanbanUI/ManageBoard';
 
 function Board(props) {
 	const [isEditing, setIsEditing] = useState(false);
@@ -23,6 +23,7 @@ function Board(props) {
 	const { _id: currentId } = selectedBoard || '';
 	const kanban = useSelector((state) => state.kanban);
 	const { columns, id: boardId } = kanban;
+	const [filteredCols, setFilteredCols] = useState(columns);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -119,7 +120,7 @@ function Board(props) {
 		setIsEditing((prev) => !prev);
 	};
 
-	const renderCols = columns.map((col, index) => (
+	const renderCols = filteredCols.map((col, index) => (
 		<Column
 			key={col._id}
 			index={index}
@@ -147,8 +148,8 @@ function Board(props) {
 	return (
 		<div className="d-flex flex-column p-4">
 			{/* Handle Board Manipulation */}
-			{/* Improve refactoring at Milestone 3 */}
-			<AddBoard />
+			<ManageBoard onFilter={setFilteredCols} />
+			{/* <AddBoard /> */}
 			{/* The kanban board itself */}
 			{boards.length > 0 && (
 				<div className={`d-flex flex-row ${styles.kanban}`}>
