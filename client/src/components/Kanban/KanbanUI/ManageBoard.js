@@ -1,5 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
 import { Button, Input, UncontrolledCollapse } from 'reactstrap';
+import { IconContext } from 'react-icons';
 import { FaFilter } from 'react-icons/fa';
 import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
@@ -123,13 +124,14 @@ function ManageBoard(props) {
 					Cancel
 				</Button>
 			)}
+			{/* Edit/Delete Icons */}
 			<EditDelete
 				onEdit={editBoardHandler}
 				onDelete={deleteBoardHandler}
 				className={styles.icons}
 			/>
-			{/* Style this */}
-			<FaFilter id="kanbanFilter" />
+			{/* Filter */}
+			<FaFilter id="kanbanFilter" className={styles.filter} />
 			<UncontrolledCollapse toggler="kanbanFilter" className="w-50">
 				<FilterKanban
 					labels={labels}

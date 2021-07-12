@@ -8,7 +8,6 @@ import useInput from '../../hooks/use-input';
 function FilterKanban(props) {
 	const { boardInfo, onFilter } = props;
 	const labels = props.labels.filter(hasId);
-	// const isAfterRef = useRef();
 	const [labelSelect, setLabelSelect] = useState([]);
 	const [dateSelect, setDateSelect] = useState(null);
 	const [isOverdue, setIsOverdue] = useState(false);
@@ -52,7 +51,6 @@ function FilterKanban(props) {
 				}
 
 				// If all entries are empty
-				console.log(matched);
 				if (matched.every((match) => match === null)) return true;
 				return matched
 					.filter((match) => match !== null) // Keep params which was evaluated
@@ -62,7 +60,6 @@ function FilterKanban(props) {
 			return { ...col, tasks };
 		});
 
-		console.log(filteredKanban);
 		onFilter(filteredKanban.filter((col) => col));
 		return () => {};
 	}, [boardInfo, query, labelSelect.length, dateSelect, isOverdue]);
@@ -86,14 +83,16 @@ function FilterKanban(props) {
 				value={query}
 				onChange={queryOnChange}
 			/>
-			<Input
-				type="checkbox"
-				name="isOverdue"
-				id="isOverdue"
-				checked={isOverdue}
-				onChange={(e) => setIsOverdue(e.target.checked)}
-			/>
-			<Label for="isOverdue">Find Overdue</Label>
+			<div className="mx-2">
+				<Input
+					type="checkbox"
+					name="isOverdue"
+					id="isOverdue"
+					checked={isOverdue}
+					onChange={(e) => setIsOverdue(e.target.checked)}
+				/>
+				<Label for="isOverdue">Find Overdue</Label>
+			</div>
 			<DatePicker
 				allowClear
 				onChange={setDateSelect}
