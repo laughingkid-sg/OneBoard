@@ -17,6 +17,7 @@ function FilterKanban(props) {
 		value: query,
 		isValid: queryIsValid,
 		onChange: queryOnChange,
+		reset: queryReset,
 	} = useInput(textNotEmpty, '');
 
 	useEffect(() => {
@@ -43,7 +44,7 @@ function FilterKanban(props) {
 						.includes(query.toLowerCase());
 				}
 
-				if (dateSelect.date !== null) {
+				if (dateSelect !== null) {
 					if (!task.expireAt) matched[2] = false;
 					matched[2] = isOverdue
 						? dateSelect.isAfter(task.expireAt)
@@ -65,6 +66,13 @@ function FilterKanban(props) {
 		onFilter(filteredKanban.filter((col) => col));
 		return () => {};
 	}, [boardInfo, query, labelSelect.length, dateSelect, isOverdue]);
+
+	const resetHandler = () => {
+		queryReset();
+		setLabelSelect([]);
+		setDateSelect(null);
+		setIsOverdue(false);
+	};
 
 	return (
 		<div className="d-flex align-items-center">
@@ -97,13 +105,7 @@ function FilterKanban(props) {
 				labelSrc={labels}
 				className="w-25"
 			/>
-			<Button
-				onClick={() => {
-					alert('Reset');
-				}}
-			>
-				Reset
-			</Button>
+			<Button onClick={resetHandler}>Reset</Button>
 		</div>
 	);
 }
