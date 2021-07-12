@@ -10,16 +10,16 @@ function determineCountdown(start, end) {
 	let daysDiff;
 	let isStart = true;
 	if (moment().isBefore(start)) {
-		daysDiff = moment().diff(start, 'days') * -1;
+		daysDiff = moment().diff(start, 'days') * -1 + 1;
+		console.log(daysDiff);
 	} else {
-		daysDiff = moment().diff(end, 'days');
+		daysDiff = moment().diff(end, 'days') * -1;
 		isStart = false;
 	}
 
 	return { daysDiff, isStart };
 }
 
-// Bug in determining countdown
 function Countdown() {
 	const dispatch = useDispatch();
 	const [cookies] = useCookies(['t']);
@@ -28,6 +28,7 @@ function Countdown() {
 	const [featuredEvent, setFeaturedEvent] = useState(null);
 
 	useEffect(() => {
+		// Cant update when there is a change
 		async function fetchData() {
 			const getEvent = await dispatch(fetchEvent(token, featured));
 			setFeaturedEvent(getEvent);
@@ -55,13 +56,14 @@ function Countdown() {
 		: '';
 
 	return (
-		<React.Fragment>
+		<div>
+			<h2>{countdown.daysDiff}</h2>
 			<p>
 				{countdown.daysDiff >= 0
-					? `${countdown.daysDiff} days to ${formatMessage} ${featuredEvent.title}`
+					? `days to ${formatMessage} ${featuredEvent.title}`
 					: 'Event selected has passed.'}
 			</p>
-		</React.Fragment>
+		</div>
 	);
 }
 

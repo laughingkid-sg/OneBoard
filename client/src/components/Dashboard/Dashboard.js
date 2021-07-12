@@ -31,7 +31,11 @@ function Dashboard(props) {
 				</Card>
 			</div>
 			{/* Need to change the min height here */}
-			<Card className="min-h-100 p-4 shadow row mb-5" id="notes">
+			<Card
+				className="p-4 shadow row mb-5"
+				id="notes"
+				style={{ minHeight: '50vh' }}
+			>
 				<h3>Notes</h3>
 				<Notes />
 			</Card>
