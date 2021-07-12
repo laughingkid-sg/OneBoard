@@ -136,9 +136,7 @@ export const addData = (token, type, dataReq, id = '') => {
 			);
 			switch (type) {
 				case TYPES.TASK:
-					dispatch(
-						kanbanActions.addTask({ task: response.task, id })
-					);
+					dispatch(kanbanActions.addTask({ task: response, id }));
 					break;
 				case TYPES.COLUMN:
 					dispatch(kanbanActions.addColumn(response.data));

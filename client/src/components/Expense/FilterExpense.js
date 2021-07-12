@@ -9,8 +9,8 @@ function queryInString(value, query) {
 }
 
 function FilterExpense(props) {
-	const { allExpenses, filterResults } = props;
-	const labels = props.labelSrc.filter(hasId);
+	const { allExpenses, filterResults, labelSrc } = props;
+	const labels = labelSrc.filter(hasId);
 	const {
 		value: filter,
 		isValid: filterIsValid,
@@ -48,6 +48,12 @@ function FilterExpense(props) {
 		filterResults(filterExpenses());
 		return () => {};
 	}, [filter, checked, allExpenses, labelSelect.length]);
+
+	const resetHandler = () => {
+		filterReset();
+		setChecked({ name: true, description: true });
+		setLabelSelect([]);
+	};
 
 	return (
 		<div className="d-flex w-100 align-items-center">
@@ -97,7 +103,7 @@ function FilterExpense(props) {
 				className="w-25"
 				labelSrc={labels}
 			/>
-			<Button onClick={filterReset} className="mx-2">
+			<Button onClick={resetHandler} className="mx-2">
 				Reset
 			</Button>
 		</div>
