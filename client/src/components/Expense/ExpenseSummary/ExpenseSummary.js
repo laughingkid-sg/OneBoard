@@ -44,7 +44,7 @@ function ExpenseSummary() {
 	const [duration, setDuration] = useState(6);
 
 	useEffect(() => {
-		async function getMonthExpenses() {
+		async function fetchExpenses() {
 			const start = moment()
 				.subtract(duration - 1, timePeriod)
 				.startOf(timePeriod)
@@ -54,7 +54,7 @@ function ExpenseSummary() {
 			setExpensesToShow(expenses);
 		}
 
-		getMonthExpenses();
+		fetchExpenses();
 		return () => {};
 	}, [timePeriod, duration]);
 

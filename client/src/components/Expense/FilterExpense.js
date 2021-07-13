@@ -1,15 +1,24 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useCookies } from 'react-cookie';
+import { DatePicker } from 'antd';
 import { Button, Input, Label } from 'reactstrap';
 import useInput from '../hooks/use-input';
-import { hasId, textNotEmpty } from '../../lib/validators';
+import { DATE_FORMAT, hasId, textNotEmpty } from '../../lib/validators';
 import Dropdown from '../../UI/Dropdown/Dropdown';
+import { getExpenses } from '../../store/expense-action';
+import moment from 'moment';
+import { sortByDate } from '../../lib/expense';
 
 function queryInString(value, query) {
 	return value.toLowerCase().includes(query.toLowerCase());
 }
 
+const { RangePicker } = DatePicker;
+
 function FilterExpense(props) {
 	const { allExpenses, filterResults, labelSrc } = props;
+	const [cookies] = useCookies(['t']);
+	const { t: token } = cookies;
 	const labels = labelSrc.filter(hasId);
 	const {
 		value: filter,
@@ -17,23 +26,40 @@ function FilterExpense(props) {
 		onChange: filterOnChange,
 		reset: filterReset,
 	} = useInput(textNotEmpty, '');
+	const [expensesToFilter, setExpensesToFilter] = useState([]);
 	const [checked, setChecked] = useState({ name: true, description: true });
 	const [labelSelect, setLabelSelect] = useState([]);
+	const [dateSelect, setDateSelect] = useState(null);
 	const nameRef = useRef();
 	const descriptionRef = useRef();
 
-	{
-		/* TODO - Include Date Range */
-	}
 	useEffect(() => {
-		function filterExpenses() {
+		async function fetchExpenses() {
+			if (dateSelect === null) {
+				setExpensesToFilter(allExpenses);
+				return;
+			}
+			const [start, end] = [
+				dateSelect[0].clone().subtract(1, 'day').toDate(),
+				dateSelect[1].clone().add(1, 'day').toDate(),
+			];
+			const expenses = await getExpenses(token, start, end);
+			setExpensesToFilter(expenses);
+		}
+
+		fetchExpenses();
+	}, [dateSelect]);
+
+	useEffect(() => {
+		function filterExpenses(expToFilter) {
 			let filteredExp =
 				labelSelect.length === 0
-					? allExpenses
-					: allExpenses.filter((expense) =>
+					? expToFilter
+					: expToFilter.filter((expense) =>
 							expense.label.some((id) => labelSelect.includes(id))
 					  );
 
+			//   Change implementation similar to kanban
 			if (filterIsValid) {
 				filteredExp = filteredExp.filter(
 					(expense) =>
@@ -42,12 +68,22 @@ function FilterExpense(props) {
 							queryInString(expense.description, filter))
 				);
 			}
-			return filteredExp;
+
+			const sortedExp = [...filteredExp].sort(sortByDate);
+			return sortedExp;
 		}
 
-		filterResults(filterExpenses());
+		const expenseSrc = dateSelect !== null ? expensesToFilter : allExpenses;
+		filterResults(filterExpenses(expenseSrc));
 		return () => {};
-	}, [filter, checked, allExpenses, labelSelect.length]);
+	}, [
+		allExpenses,
+		filter,
+		checked,
+		expensesToFilter,
+		dateSelect,
+		labelSelect.length,
+	]);
 
 	const resetHandler = () => {
 		filterReset();
@@ -56,7 +92,7 @@ function FilterExpense(props) {
 	};
 
 	return (
-		<div className="d-flex w-100 align-items-center">
+		<div className="d-flex w-100 align-items-center flex-wrap">
 			<Input
 				id="filter"
 				name="filter"
@@ -100,8 +136,17 @@ function FilterExpense(props) {
 				onChange={(value) => {
 					setLabelSelect(value);
 				}}
-				className="w-25"
+				className="w-50"
 				labelSrc={labels}
+			/>
+			<RangePicker
+				className="w-50"
+				onChange={(date) => {
+					// console.log(date);
+					setDateSelect(date);
+				}}
+				format={DATE_FORMAT}
+				allowClear
 			/>
 			<Button onClick={resetHandler} className="mx-2">
 				Reset
