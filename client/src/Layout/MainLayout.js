@@ -81,6 +81,7 @@ function MainLayout(props) {
 							<DropdownItem>
 								<a
 									href="https://bit.ly/oneboard-feedback"
+									rel="noreferrer"
 									target="_blank"
 									style={{
 										textDecoration: 'none',

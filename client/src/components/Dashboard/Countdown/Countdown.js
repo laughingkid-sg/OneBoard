@@ -40,7 +40,7 @@ function Countdown() {
 			setFeaturedEvent(null);
 		}
 		return () => {};
-	}, [featured]);
+	}, [dispatch, token, featured]);
 
 	if (!featuredEvent) {
 		return <p>No events for countdown.</p>;

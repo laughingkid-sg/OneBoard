@@ -56,7 +56,7 @@ function ExpenseSummary() {
 
 		fetchExpenses();
 		return () => {};
-	}, [timePeriod, duration]);
+	}, [token, timePeriod, duration]);
 
 	const convertToDataset = () => {
 		const data = {

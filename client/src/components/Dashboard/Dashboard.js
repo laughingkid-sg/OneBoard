@@ -5,7 +5,6 @@ import Board from '../Kanban/Board';
 import Notes from '../Notes/Notes';
 import Calendar from '../Calendar/Calendar';
 import Countdown from './Countdown/Countdown';
-import styles from './Dashboard.module.css';
 import ExpenseSummary from './ExpenseSummary/ExpenseSummary';
 
 function Dashboard(props) {

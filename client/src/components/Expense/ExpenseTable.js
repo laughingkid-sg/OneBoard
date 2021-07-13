@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Table, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import ExpenseItem from './ExpenseItem';
 

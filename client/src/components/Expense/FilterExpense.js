@@ -6,7 +6,6 @@ import useInput from '../hooks/use-input';
 import { DATE_FORMAT, hasId, textNotEmpty } from '../../lib/validators';
 import Dropdown from '../../UI/Dropdown/Dropdown';
 import { getExpenses } from '../../store/expense-action';
-import moment from 'moment';
 import { sortByDate } from '../../lib/expense';
 
 function queryInString(value, query) {

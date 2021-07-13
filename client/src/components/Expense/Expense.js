@@ -13,7 +13,6 @@ function Expense(props) {
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
 
-	// ! Needs more testing
 	useEffect(() => {
 		function fetchData() {
 			const start = moment().startOf('month').toDate();
@@ -22,7 +21,7 @@ function Expense(props) {
 		}
 
 		fetchData();
-	}, []);
+	}, [dispatch, token]);
 
 	return (
 		<div className="row m-2">
