@@ -8,13 +8,14 @@ import {
 	Navbar,
 	UncontrolledDropdown,
 	DropdownToggle,
+	DropdownMenu,
+	DropdownItem,
 } from 'reactstrap';
+import { IconContext } from 'react-icons';
 import { FaUserCog } from 'react-icons/fa';
 import { FiLogOut } from 'react-icons/fi';
+import { MdFeedback } from 'react-icons/md';
 import AuthContext from '../store/AuthContext';
-import { IconContext } from 'react-icons';
-import { DropdownMenu } from 'reactstrap';
-import { DropdownItem } from 'reactstrap';
 import { useSelector } from 'react-redux';
 
 function MainLayout(props) {
@@ -44,7 +45,6 @@ function MainLayout(props) {
 							to="/"
 							style={{
 								textDecoration: 'none',
-								// color: '#fff'
 							}}
 							className="fs-2"
 						>
@@ -52,6 +52,9 @@ function MainLayout(props) {
 						</Link>
 					</NavbarBrand>
 					<Nav className="mx-4">
+						<NavItem>
+							<NavLink href="#calendar">Calendar</NavLink>
+						</NavItem>
 						<NavItem>
 							<NavLink href="#notes">Notes</NavLink>
 						</NavItem>
@@ -75,6 +78,19 @@ function MainLayout(props) {
 								style: { margin: '4px 8px 8px 0' },
 							}}
 						>
+							<DropdownItem>
+								<a
+									href="https://bit.ly/oneboard-feedback"
+									target="_blank"
+									style={{
+										textDecoration: 'none',
+										color: 'inherit',
+									}}
+								>
+									<MdFeedback />
+									Feedback
+								</a>
+							</DropdownItem>
 							<DropdownItem>
 								<Link
 									to="/editprofile"

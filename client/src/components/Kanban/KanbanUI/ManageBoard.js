@@ -14,6 +14,7 @@ import EditBoard from '../Edit/EditBoard';
 import styles from './ManageBoard.module.css';
 import { textNotEmpty } from '../../../lib/validators';
 import FilterKanban from './FilterKanban';
+import { AiOutlinePlus } from 'react-icons/ai';
 
 function ManageBoard(props) {
 	const [cookies] = useCookies(['t']);
@@ -116,6 +117,7 @@ function ManageBoard(props) {
 				onClick={boardAdd ? addBoardHandler : toggleBoardAdd}
 				color={boardAdd ? 'success' : 'secondary'}
 			>
+				<AiOutlinePlus />
 				Add Board
 			</Button>
 			{boardAdd && (

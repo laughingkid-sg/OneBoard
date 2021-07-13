@@ -39,7 +39,7 @@ const ExpenseTable = (props) => {
 				{expenses.length > 0 && <tbody>{expensesToRender}</tbody>}
 			</Table>
 			{expenses.length > 10 && (
-				<Pagination>
+				<Pagination className="d-flex justify-content-center">
 					<PaginationItem disabled={currentPage === 0}>
 						<PaginationLink
 							onClick={() => {
