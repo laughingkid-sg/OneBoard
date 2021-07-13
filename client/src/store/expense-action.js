@@ -12,14 +12,6 @@ import { createLabels } from '../lib/kanban';
 
 const URL_HEADER = 'api/expense';
 
-// function determineURL(id) {
-// 	return `${URL_HEADER}/${id}`;
-// }
-
-// function formatQueryString(start, end) {
-// 	return `${URL_HEADER}?start=${start}&end=${end}`;
-// }
-
 export const fetchExpenses = (token, start, end) => {
 	const formatStart = start.toISOString();
 	const formatEnd = end.toISOString();
@@ -33,7 +25,51 @@ export const fetchExpenses = (token, start, end) => {
 			const expenses = expenseRes.map((event) => createExpense(event));
 
 			dispatch(expenseActions.replace({ type: 'expenses', expenses }));
-			return expenses;
+		} catch (error) {}
+	};
+};
+
+export const getExpenses = async (token, start, end) => {
+	const formatStart = start.toISOString();
+	const formatEnd = end.toISOString();
+	try {
+		const expenseRes = await getRequest(
+			token,
+			formatQueryString(URL_HEADER, formatStart, formatEnd)
+		);
+
+		const expenses = expenseRes.map((event) => createExpense(event));
+		return expenses;
+	} catch (error) {
+		return [];
+	}
+};
+
+export const bulkAddExpense = (token, file) => {
+	return async (dispatch) => {
+		const url = `${URL_HEADER}/upload`;
+		const formdata = new FormData();
+		console.log(file.name);
+		formdata.append('file', file, file.name);
+		const bulkReq = async () => {
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: { Authorization: `Bearer ${token}` },
+				body: formdata,
+			});
+
+			if (!response.ok) {
+				throw new Error('Bulk Add failed');
+			}
+
+			const data = await response.json();
+
+			return data;
+		};
+		try {
+			console.log('Uploading');
+			const response = await bulkReq();
+			console.log(response);
 		} catch (error) {}
 	};
 };

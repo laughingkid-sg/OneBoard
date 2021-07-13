@@ -21,7 +21,7 @@ const ExpenseTable = (props) => {
 	));
 
 	const expensesToRender = expenses
-		.slice(currentPage * pageSize, (currentPage + 1) * pageSize - 1)
+		.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
 		.map((expense) => <ExpenseItem expense={expense} key={expense._id} />);
 
 	return (

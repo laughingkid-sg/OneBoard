@@ -10,10 +10,6 @@ import {
 
 const URL_HEADER = 'api/note';
 
-// function determineURL(id) {
-// 	return `${URL_HEADER}/${id}`;
-// }
-
 // May need to inspect further
 export const fetchAllNotes = (token) => {
 	return async (dispatch) => {
@@ -29,7 +25,7 @@ export const addNote = (token, dataReq) => {
 	return async (dispatch) => {
 		try {
 			const responseData = await postRequest(token, URL_HEADER, dataReq);
-			const note = createNote(responseData.note);
+			const note = createNote(responseData);
 			dispatch(noteActions.addNote(note));
 		} catch (error) {}
 	};

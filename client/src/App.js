@@ -19,6 +19,7 @@ import { fetchUserData } from './store/user-actions';
 import { noteActions } from './store/note';
 import { eventActions } from './store/event';
 import Expense from './components/Expense/Expense';
+import { expenseActions } from './store/expense';
 
 function App() {
 	const dispatch = useDispatch();
@@ -44,6 +45,7 @@ function App() {
 			dispatch(kanbanActions.clear());
 			dispatch(noteActions.clear());
 			dispatch(eventActions.clear());
+			dispatch(expenseActions.clear());
 			modalContext.hideModal();
 			localStorage.clear();
 		}

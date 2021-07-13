@@ -27,6 +27,7 @@ import {
 import { addExpense } from '../../store/expense-action';
 import ModalContext from '../../store/ModalContext';
 import Dropdown from '../../UI/Dropdown/Dropdown';
+import BulkExpense from './BulkExpense/BulkExpense';
 
 function AddExpense(props) {
 	const dispatch = useDispatch();
@@ -83,9 +84,9 @@ function AddExpense(props) {
 
 	return (
 		<div className={` ${styles.addExpense}`}>
-			<Form>
+			<Form className="d-flex flex-wrap">
 				{/* Name */}
-				<FormGroup>
+				<FormGroup className="w-50">
 					<Label for="name">Name</Label>
 					<Input
 						id="name"
@@ -101,7 +102,7 @@ function AddExpense(props) {
 				</FormGroup>
 
 				{/* Amount */}
-				<FormGroup>
+				<FormGroup className="w-50">
 					<Label for="amount">Amount</Label>
 					<InputGroup>
 						<InputGroupAddon addonType="prepend">
@@ -122,7 +123,7 @@ function AddExpense(props) {
 				</FormGroup>
 
 				{/* Date of transaction */}
-				<FormGroup>
+				<FormGroup className="w-50">
 					<Label for="date">Date</Label>
 					<DatePicker
 						allowClear
@@ -132,6 +133,16 @@ function AddExpense(props) {
 						className="w-100"
 					/>
 				</FormGroup>
+
+				{/* Labels */}
+				<div className="w-50">
+					<Label for="label">Label</Label>
+					<Dropdown
+						className="w-100"
+						onChange={(value) => setLabels(value)}
+						labelSrc={expenseLabels}
+					/>
+				</div>
 
 				{/* Description */}
 				<Label for="description">Description</Label>
@@ -143,21 +154,13 @@ function AddExpense(props) {
 					style={{ resize: 'none' }}
 				/>
 
-				{/* Labels */}
-				<Label for="label">Label</Label>
-				<Dropdown
-					className="w-100"
-					onChange={(value) => setLabels(value)}
-					labelSrc={expenseLabels}
-				/>
-
 				<div className="mt-3">
 					<Button color="success" onClick={addExpenseHandler}>
 						Add Expense
 					</Button>
 					<Button
 						onClick={() => {
-							alert('Feature coming soon!');
+							modalContext.showModal(<BulkExpense />);
 						}}
 					>
 						Import from csv

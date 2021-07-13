@@ -108,7 +108,6 @@ function ManageBoard(props) {
 					innerRef={selectBoardRef}
 					onChange={boardSelectChangeHandler}
 					className="w-25"
-					// style={{ width: '75%' }}
 				>
 					{renderOptions}
 				</Input>

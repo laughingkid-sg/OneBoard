@@ -12,14 +12,6 @@ import {
 
 const URL_HEADER = '/api/event';
 
-// function determineURL(id) {
-// 	return `${URL_HEADER}/${id}`;
-// }
-
-// function formatQueryString(start, end) {
-// 	return `${URL_HEADER}?start=${start}&end=${end}`;
-// }
-
 export const fetchEvents = (token, start, end) => {
 	const formatStart = start.toISOString();
 	const formatEnd = end.toISOString();
@@ -63,7 +55,7 @@ export const addEvent = (token, eventReq) => {
 export const updateEvent = (token, eventUpd) => {
 	return async (dispatch) => {
 		try {
-			const { event } = await putRequest(
+			const event = await putRequest(
 				token,
 				determineURL(URL_HEADER, eventUpd._id),
 				eventUpd

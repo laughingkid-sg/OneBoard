@@ -53,6 +53,9 @@ function MainLayout(props) {
 					</NavbarBrand>
 					<Nav className="mx-4">
 						<NavItem>
+							<NavLink href="#notes">Notes</NavLink>
+						</NavItem>
+						<NavItem>
 							<NavLink href="#kanban">Kanban Board</NavLink>
 						</NavItem>
 						<NavItem>
