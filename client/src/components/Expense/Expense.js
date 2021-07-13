@@ -25,7 +25,7 @@ function Expense(props) {
 	}, []);
 
 	return (
-		<div className="row m-4">
+		<div className="row m-2">
 			<div className="col-5">
 				<Card className="row p-4">
 					<CardTitle tag="h3">Add Expense </CardTitle>

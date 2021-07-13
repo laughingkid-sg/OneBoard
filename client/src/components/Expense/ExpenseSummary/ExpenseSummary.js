@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { Bar } from 'react-chartjs-2';
 import { Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getExpenses } from '../../../store/expense-action';
 import { hasId } from '../../../lib/validators';
 
@@ -150,7 +150,7 @@ function ExpenseSummary() {
 			{expensesToShow.length > 0 ? (
 				<Bar {...convertToDataset()} className="mt-2" />
 			) : (
-				<h3>No expenses</h3>
+				<h3 className="text-center mt-2">No expenses</h3>
 			)}
 		</div>
 	);
