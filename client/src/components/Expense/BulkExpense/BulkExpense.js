@@ -1,12 +1,15 @@
 import React, { useContext, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
-import { Button, Input } from 'reactstrap';
+import { Alert, Button, UncontrolledTooltip } from 'reactstrap';
 import { AiOutlineClose } from 'react-icons/ai';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ModalContext from '../../../store/ModalContext';
 import styles from '../DeleteExpense.module.css';
 import { bulkAddExpense } from '../../../store/expense-action';
+import { useDropzone } from 'react-dropzone';
+import dropStyle from './BulkExpense.module.css';
+import useError from '../../hooks/use-error';
 
 function BulkExpense() {
 	const dispatch = useDispatch();
@@ -14,47 +17,63 @@ function BulkExpense() {
 	const { t: token } = cookies;
 	const modalContext = useContext(ModalContext);
 	const [fileToUpload, setFileToUpload] = useState(null);
+	const { error, errorMsg, changeError, changeMessage } = useError();
+
+	const { getRootProps, getInputProps } = useDropzone({
+		accept: '.csv',
+		onDropRejected: (file) => {
+			const errorMsg = file[0].errors[0].message;
+			changeMessage(errorMsg);
+		},
+		onDropAccepted: (file) => setFileToUpload(file[0]),
+	});
 
 	const importExpensesHandler = () => {
 		if (!fileToUpload) return; // Set error message
 		dispatch(bulkAddExpense(token, fileToUpload));
 	};
 
-	const fileChangeHandler = (e) => {
-		const file = e.target.files[0];
-		console.log(file);
-		setFileToUpload(file);
-		// const fileReader = new FileReader();
-		// fileReader.onloadend = (fr) => {
-		// 	const content = fileReader.result;
-		// 	const lines = content.split('\r\n');
-		// 	console.log(content);
-		// 	for (let i = 1; i < lines.length; i++) {
-		// 		const lineContent = lines[i].trim();
-		// 		const lineSplit = lineContent.split(',');
-		// 		// Date conversion goes here
-		// 		lineSplit[2] = new Date().toISOString();
-		// 		lines[i] = lineSplit.join(',');
-		// 	}
-		// 	console.log(lines);
-		// };
-		// fileReader.readAsText(file);
-	};
-
 	return (
 		<Modal isOpen={modalContext.isVisible} toggle={modalContext.hideModal}>
-			{console.log(fileToUpload)}
 			<AiOutlineClose
 				onClick={modalContext.hideModal}
 				className={`${styles.close} me-3 mt-3`}
 			/>
 			<ModalHeader>Import from csv</ModalHeader>
 			<ModalBody>
+				<Alert
+					color="danger"
+					className="w-100"
+					isOpen={error}
+					toggle={() => {
+						changeError(!error);
+					}}
+				>
+					{errorMsg}
+				</Alert>
 				<p>
-					Please ensure that the columns are in the following order:
-					Name,Description,Date,Amount
+					Please ensure that the columns are in the following order
+					(hover to see supported date formats): Name,Description,
+					<span id="date-tooltip">Date</span>
+					,Amount
 				</p>
-				<Input type="file" accept="csv" onChange={fileChangeHandler} />
+				<UncontrolledTooltip placement="bottom" target="date-tooltip">
+					YYYY-MM-DD or YYYY/MM/DD
+				</UncontrolledTooltip>
+				{/* <Input type="file" accept="csv" onChange={fileChangeHandler} /> */}
+				{fileToUpload && (
+					<p className="my-3">
+						{fileToUpload.name} ({fileToUpload.size} bytes)
+					</p>
+				)}
+				<div
+					{...getRootProps({
+						className: `${dropStyle.dropzone} mt-3`,
+					})}
+				>
+					<input {...getInputProps()} />
+					<p>Drag and drop or click here to upload CSV.</p>
+				</div>
 			</ModalBody>
 			<ModalFooter>
 				<Button color="success" onClick={importExpensesHandler}>

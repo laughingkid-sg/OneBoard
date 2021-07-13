@@ -40,7 +40,9 @@ export const getExpenses = async (token, start, end) => {
 
 		const expenses = expenseRes.map((event) => createExpense(event));
 		return expenses;
-	} catch (error) {}
+	} catch (error) {
+		return [];
+	}
 };
 
 export const bulkAddExpense = (token, file) => {

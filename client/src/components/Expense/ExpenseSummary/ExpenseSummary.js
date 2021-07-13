@@ -35,7 +35,7 @@ const options = {
 	},
 };
 
-function TrackExpense() {
+function ExpenseSummary() {
 	const labels = useSelector((state) => state.expense.labels).filter(hasId);
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
@@ -156,4 +156,4 @@ function TrackExpense() {
 	);
 }
 
-export default TrackExpense;
+export default ExpenseSummary;

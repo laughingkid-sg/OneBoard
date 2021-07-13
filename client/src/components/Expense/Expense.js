@@ -6,7 +6,7 @@ import { Card, CardTitle } from 'reactstrap';
 import AddExpense from './AddExpense';
 import ExpenseList from './ExpenseList';
 import { fetchExpenses } from '../../store/expense-action';
-import TrackExpense from './TrackExpense/TrackExpense';
+import ExpenseSummary from './ExpenseSummary/ExpenseSummary';
 
 function Expense(props) {
 	const dispatch = useDispatch();
@@ -35,7 +35,7 @@ function Expense(props) {
 				<Card className="row p-4">
 					<CardTitle tag="h3">Expense Summary</CardTitle>
 					{/* May rename as expense summary */}
-					<TrackExpense />
+					<ExpenseSummary />
 				</Card>
 			</div>
 			<div className="col-7">
