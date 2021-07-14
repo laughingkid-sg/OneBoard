@@ -5,12 +5,11 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Column';
 import styles from './Board.module.css';
-import { kanbanActions } from '../../store/kanban';
 import {
 	TYPES,
 	fetchAllBoards,
 	updateData,
-	getBoard,
+	fetchBoard,
 } from '../../store/kanban-actions';
 import AddData from './Add/AddData';
 import ManageBoard from './KanbanUI/ManageBoard';
@@ -28,28 +27,15 @@ function Board(props) {
 
 	useEffect(() => {
 		function boardFromStorage() {
-			let strBoard = localStorage.getItem('currentBoard');
-			let jsonBoard = JSON.parse(strBoard);
-
-			if (jsonBoard && jsonBoard.id !== currentId && currentId) {
-				console.log('Calling getBoard');
-				dispatch(getBoard(token, currentId));
-				return;
-			}
-
-			if (strBoard === JSON.stringify(kanban)) {
-				console.log('Mount from storage', jsonBoard);
-				dispatch(kanbanActions.replace(jsonBoard));
+			if (currentId) {
+				dispatch(fetchBoard(token, currentId));
 			} else {
-				console.log('Fetch from server');
 				dispatch(fetchAllBoards(token));
 			}
 		}
 
 		boardFromStorage();
-		return () => {
-			dispatch(kanbanActions.store());
-		};
+		return () => {};
 	}, [dispatch, token, currentId]);
 
 	const dragEndHandler = (result) => {
@@ -149,7 +135,6 @@ function Board(props) {
 		<div className="d-flex flex-column p-4">
 			{/* Handle Board Manipulation */}
 			<ManageBoard onFilter={setFilteredCols} />
-			{/* <AddBoard /> */}
 			{/* The kanban board itself */}
 			{boards.length > 0 && (
 				<div className={`d-flex flex-row ${styles.kanban}`}>

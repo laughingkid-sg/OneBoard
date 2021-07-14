@@ -11,49 +11,41 @@ import { TYPES } from '../../store/kanban-actions';
 function Column(props) {
 	const { column, index: colIndex } = props;
 	const { name, tasks, _id: columnId } = column;
-	const [isEditingTask, setIsEditingTask] = useState(false);
-	const [editTitle, setIsEditTitle] = useState(false);
+	const [isEditTask, setIsEditTask] = useState(false);
+	const [isEditTitle, setIsEditTitle] = useState(false);
 
-	const addTaskHandler = () => {
-		setIsEditingTask(true);
+	const toggleTaskHandler = () => {
+		setIsEditTask(!isEditTask);
 	};
 
-	const cancelTaskHandler = () => {
-		setIsEditingTask(false);
+	const toggleTitleHandler = () => {
+		setIsEditTitle(!isEditTitle);
 	};
 
-	const editTitleHandler = () => {
-		setIsEditTitle(true);
-	};
-
-	const cancelTitleHandler = () => {
-		setIsEditTitle(false);
-	};
-
-	const renderAddTask = isEditingTask ? (
+	const renderAddTask = isEditTask ? (
 		<CardFooter>
 			<AddData
 				id={columnId}
-				onCancel={cancelTaskHandler}
+				onCancel={toggleTaskHandler}
 				order={tasks.length}
 				type={TYPES.TASK}
 			/>
 		</CardFooter>
 	) : (
-		<div className={styles.addTaskBtn} onClick={addTaskHandler}>
+		<div className={styles.addTaskBtn} onClick={toggleTaskHandler}>
 			<AiOutlinePlus className={styles.addTaskIcon} />
 			<p>Add a task</p>
 		</div>
 	);
 
-	const renderEditCol = editTitle ? (
+	const renderEditCol = isEditTitle ? (
 		<EditColumn
 			title={name}
-			onCancel={cancelTitleHandler}
+			onCancel={toggleTitleHandler}
 			column={column}
 		/>
 	) : (
-		<h4 className={styles.titleText} onClick={editTitleHandler}>
+		<h4 className={styles.titleText} onClick={toggleTitleHandler}>
 			{name}
 		</h4>
 	);

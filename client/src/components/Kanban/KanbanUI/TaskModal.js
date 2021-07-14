@@ -118,6 +118,7 @@ function TaskModal(props) {
 		}
 
 		const updatedTask = {
+			_id: task._id,
 			name: nameRef.current.value,
 			description: descriptionRef.current.value,
 			order: beforeChange.order,
@@ -126,6 +127,7 @@ function TaskModal(props) {
 			label: labelSelect,
 		};
 
+		console.log(updatedTask);
 		dispatch(updateData(token, TYPES.TASK, updatedTask, task._id));
 		setBeforeChange(updatedTask);
 		changeMessage('Update success.');

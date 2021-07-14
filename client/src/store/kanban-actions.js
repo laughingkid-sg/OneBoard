@@ -72,14 +72,14 @@ export const fetchAllBoards = (token) => {
 			);
 			const boardToLoad = boards[boardKey];
 			dispatch(kanbanActions.replace(boardToLoad));
-			localStorage.setItem('currentBoard', JSON.stringify(boardToLoad));
+			// localStorage.setItem('currentBoard', JSON.stringify(boardToLoad));
 		} catch (error) {
 			console.warn(error.message);
 		}
 	};
 };
 
-export const getBoard = (token, boardId) => {
+export const fetchBoard = (token, boardId) => {
 	return async (dispatch) => {
 		try {
 			const board = await getRequest(
@@ -99,7 +99,7 @@ export const getBoard = (token, boardId) => {
 				columns: newColumns,
 			};
 			dispatch(kanbanActions.replace(newBoard));
-			localStorage.setItem('currentBoard', JSON.stringify(newBoard));
+			// localStorage.setItem('currentBoard', JSON.stringify(newBoard));
 		} catch (error) {
 			console.warn(error.message);
 		}
@@ -139,7 +139,7 @@ export const addData = (token, type, dataReq, id = '') => {
 					dispatch(kanbanActions.addTask({ task: response, id }));
 					break;
 				case TYPES.COLUMN:
-					dispatch(kanbanActions.addColumn(response.data));
+					dispatch(kanbanActions.addColumn(response));
 					break;
 				default:
 					const { _id, name } = response;
@@ -152,24 +152,6 @@ export const addData = (token, type, dataReq, id = '') => {
 
 export const deleteData = (token, type, id) => {
 	return async (dispatch) => {
-		// const url = determineURL(type, id);
-		// const postData = async () => {
-		// 	const response = await fetch(url, {
-		// 		method: 'DELETE',
-		// 		headers: {
-		// 			Authorization: `Bearer ${token}`,
-		// 		},
-		// 	});
-
-		// 	if (!response.ok) {
-		// 		throw new Error(`Could not delete ${type}`);
-		// 	}
-
-		// 	const data = await response.json();
-
-		// 	return data;
-		// };
-
 		try {
 			deleteRequest(token, determineURL(type, id));
 			switch (type) {
@@ -190,15 +172,11 @@ export const deleteData = (token, type, id) => {
 export const updateData = (token, type, dataReq, id) => {
 	return async (dispatch) => {
 		try {
-			const data = await putRequest(
-				token,
-				determineURL(type, id),
-				dataReq
-			);
+			putRequest(token, determineURL(type, id), dataReq);
+
 			switch (type) {
 				case TYPES.TASK:
-					const updTask = createTask(data);
-					dispatch(kanbanActions.updateTask(updTask));
+					dispatch(kanbanActions.updateTask(dataReq));
 					break;
 				case TYPES.COLUMN:
 					dispatch(
@@ -206,7 +184,6 @@ export const updateData = (token, type, dataReq, id) => {
 					);
 					break;
 				default:
-					// Used for updating column order
 					dispatch(kanbanActions.updateBoard(dataReq));
 					break;
 			}
