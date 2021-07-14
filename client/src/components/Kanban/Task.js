@@ -11,12 +11,13 @@ import TaskModal from './KanbanUI/TaskModal';
 import styles from './Task.module.css';
 import ModalContext from '../../store/ModalContext';
 import { TYPES } from '../../store/kanban-actions';
+import { DATE_FORMAT, hasId } from '../../lib/validators';
 
 function Task(props) {
 	const { task, index: taskIndex, columnTitle } = props;
 	const modalContext = useContext(ModalContext);
 	const boardLabels = useSelector((state) => state.kanban.labels).filter(
-		(label) => label._id
+		hasId
 	);
 
 	const deleteTaskHandler = (e) => {
@@ -69,15 +70,10 @@ function Task(props) {
 						<p>{task.name}</p>
 						<LabelBar labels={task.label} labelSrc={boardLabels} />
 						{task.expireAt && (
-							<p
-								style={{
-									fontSize: '16px',
-									marginTop: '4px',
-								}}
-							>
+							<p className={styles.deadline}>
 								<Badge className="bg-warning align-self-start">
 									<BiTime />{' '}
-									{moment(task.expireAt).format('DD/MM/YY')}
+									{moment(task.expireAt).format(DATE_FORMAT)}
 								</Badge>
 							</p>
 						)}

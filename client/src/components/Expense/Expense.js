@@ -13,7 +13,6 @@ function Expense(props) {
 	const [cookies] = useCookies(['t']);
 	const { t: token } = cookies;
 
-	// ! Needs more testing
 	useEffect(() => {
 		function fetchData() {
 			const start = moment().startOf('month').toDate();
@@ -22,10 +21,10 @@ function Expense(props) {
 		}
 
 		fetchData();
-	}, []);
+	}, [dispatch, token]);
 
 	return (
-		<div className="row m-4">
+		<div className="row m-2">
 			<div className="col-5">
 				<Card className="row p-4">
 					<CardTitle tag="h3">Add Expense </CardTitle>

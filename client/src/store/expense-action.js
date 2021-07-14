@@ -38,7 +38,7 @@ export const getExpenses = async (token, start, end) => {
 			formatQueryString(URL_HEADER, formatStart, formatEnd)
 		);
 
-		const expenses = expenseRes.map((event) => createExpense(event));
+		const expenses = expenseRes.map((expense) => createExpense(expense));
 		return expenses;
 	} catch (error) {
 		return [];
@@ -69,7 +69,9 @@ export const bulkAddExpense = (token, file) => {
 		try {
 			console.log('Uploading');
 			const response = await bulkReq();
-			console.log(response);
+			// console.log(response);
+			const expenses = response.map((expense) => createExpense(expense));
+			dispatch(expenseActions.bulkAddExpense(expenses));
 		} catch (error) {}
 	};
 };

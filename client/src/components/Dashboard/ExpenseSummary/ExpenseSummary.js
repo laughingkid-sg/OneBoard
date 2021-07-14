@@ -12,8 +12,10 @@ function ExpenseSummary() {
 		<div>
 			<h3>${totalExpenses.toFixed(2)}</h3>
 			<p style={{ fontSize: '1.25em' }}>For July 2021</p>
-			<Button>
-				<a href="#expenses">More Details</a>
+			<Button className="mt-2">
+				<a href="#expenses" style={{ color: 'white' }}>
+					More Details
+				</a>
 			</Button>
 		</div>
 	);

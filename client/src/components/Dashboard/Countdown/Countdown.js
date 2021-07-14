@@ -28,7 +28,6 @@ function Countdown() {
 	const [featuredEvent, setFeaturedEvent] = useState(null);
 
 	useEffect(() => {
-		// Cant update when there is a change
 		async function fetchData() {
 			const getEvent = await dispatch(fetchEvent(token, featured));
 			setFeaturedEvent(getEvent);
@@ -40,7 +39,7 @@ function Countdown() {
 			setFeaturedEvent(null);
 		}
 		return () => {};
-	}, [featured]);
+	}, [dispatch, token, featured]);
 
 	if (!featuredEvent) {
 		return <p>No events for countdown.</p>;
@@ -57,8 +56,8 @@ function Countdown() {
 
 	return (
 		<div>
-			<h2>{countdown.daysDiff}</h2>
-			<p>
+			{countdown.daysDiff > 0 && <h2>{countdown.daysDiff}</h2>}
+			<p style={{ fontSize: '1.15em' }}>
 				{countdown.daysDiff >= 0
 					? `days to ${formatMessage} ${featuredEvent.title}`
 					: 'Event selected has passed.'}

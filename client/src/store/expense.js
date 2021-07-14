@@ -12,6 +12,13 @@ const expenseSlice = createSlice({
 			const newExpenses = [...state.expense, expense].sort(sortByDate);
 			state.expense = newExpenses;
 		},
+		bulkAddExpense(state, action) {
+			const expenses = action.payload;
+			const newExpenses = [...state.expense]
+				.concat(expenses)
+				.sort(sortByDate);
+			return { expense: newExpenses, labels: state.labels };
+		},
 		deleteExpense(state, action) {
 			const id = action.payload;
 			const newExpenses = state.expense.filter(

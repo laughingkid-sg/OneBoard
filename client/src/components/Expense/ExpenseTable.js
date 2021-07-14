@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Table, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import ExpenseItem from './ExpenseItem';
 
@@ -39,7 +39,7 @@ const ExpenseTable = (props) => {
 				{expenses.length > 0 && <tbody>{expensesToRender}</tbody>}
 			</Table>
 			{expenses.length > 10 && (
-				<Pagination>
+				<Pagination className="d-flex justify-content-center">
 					<PaginationItem disabled={currentPage === 0}>
 						<PaginationLink
 							onClick={() => {

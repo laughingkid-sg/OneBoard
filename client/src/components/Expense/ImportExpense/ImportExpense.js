@@ -8,7 +8,7 @@ import ModalContext from '../../../store/ModalContext';
 import styles from '../DeleteExpense.module.css';
 import { bulkAddExpense } from '../../../store/expense-action';
 import { useDropzone } from 'react-dropzone';
-import dropStyle from './BulkExpense.module.css';
+import dropStyle from './ImportExpense.module.css';
 import useError from '../../hooks/use-error';
 
 function BulkExpense() {

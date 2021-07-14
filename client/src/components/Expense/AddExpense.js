@@ -27,7 +27,9 @@ import {
 import { addExpense } from '../../store/expense-action';
 import ModalContext from '../../store/ModalContext';
 import Dropdown from '../../UI/Dropdown/Dropdown';
-import BulkExpense from './BulkExpense/BulkExpense';
+import ImportExpense from './ImportExpense/ImportExpense';
+import { AiFillTag, AiOutlinePlus } from 'react-icons/ai';
+import { FaFileCsv } from 'react-icons/fa';
 
 function AddExpense(props) {
 	const dispatch = useDispatch();
@@ -156,21 +158,24 @@ function AddExpense(props) {
 
 				<div className="mt-3">
 					<Button color="success" onClick={addExpenseHandler}>
+						<AiOutlinePlus />
 						Add Expense
 					</Button>
 					<Button
 						onClick={() => {
-							modalContext.showModal(<BulkExpense />);
+							modalContext.showModal(<ImportExpense />);
 						}}
+						className="mx-2"
 					>
+						<FaFileCsv />
 						Import from csv
 					</Button>
-					{/* TODO To be placed somewhere else */}
 					<Button
 						onClick={() => {
 							modalContext.showModal(<ManageLabel />);
 						}}
 					>
+						<AiFillTag />
 						Manage Labels
 					</Button>
 				</div>

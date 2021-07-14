@@ -1,6 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
 import { Button, Input, UncontrolledCollapse } from 'reactstrap';
-import { IconContext } from 'react-icons';
 import { FaFilter } from 'react-icons/fa';
 import { useCookies } from 'react-cookie';
 import { useSelector, useDispatch } from 'react-redux';
@@ -14,6 +13,7 @@ import EditBoard from '../Edit/EditBoard';
 import styles from './ManageBoard.module.css';
 import { textNotEmpty } from '../../../lib/validators';
 import FilterKanban from './FilterKanban';
+import { AiOutlinePlus } from 'react-icons/ai';
 
 function ManageBoard(props) {
 	const [cookies] = useCookies(['t']);
@@ -116,6 +116,7 @@ function ManageBoard(props) {
 				onClick={boardAdd ? addBoardHandler : toggleBoardAdd}
 				color={boardAdd ? 'success' : 'secondary'}
 			>
+				<AiOutlinePlus />
 				Add Board
 			</Button>
 			{boardAdd && (
