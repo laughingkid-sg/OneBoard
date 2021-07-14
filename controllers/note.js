@@ -8,11 +8,10 @@ exports.createNote = async (req, res) => {
         await note.validate(req.body); 
         note = await note.save(req.body);     
         await User.findByIdAndUpdate(req.auth._id, { "$push": { "notes": note._id } }, { "new": true, "upsert": true });
-        res.status(200).json( note );        
+        res.status(200).json(note);        
     } catch (err) {
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
+        res.status(500).json({
+            message: err.message
         })
     }
 }
@@ -20,8 +19,8 @@ exports.createNote = async (req, res) => {
 exports.getNotes = (req, res) => {   
    User.findById(req.auth._id).populate('notes')
     .then(user => res.json(user.notes), 
-        err => res.status(400).json({ message: err }))
-    .catch(err => res.status(400).json({ message: err }));
+        err => res.status(500).json({ message: err }))
+    .catch(err => res.status(500).json({ message: err }));
 }
 
 exports.noteById = (req, res, next, id) => { 
@@ -36,18 +35,18 @@ exports.noteById = (req, res, next, id) => {
                     if (!note) {
                         req.profile.notes.remove(id);
                         User.findByIdAndUpdate(req.profile.id, { $set: req.profile }, { new: true })
-                            .then( user => res.status(400).json({ message: user.notes }),
-                                err => res.status(400).json({ message: err.message } ))
-                            .catch(err => res.status(400).json({ message: err.message } ))                     
+                            .then( user => res.status(404).json({ message: user.notes }),
+                                err => res.status(500).json({ message: err.message } ))
+                            .catch(err => res.status(500).json({ message: err.message } ))                     
                     } else {
                      req.note = note; 
                      next(); 
                     }
                 },
-                err => res.status(400).json({ message: err.message } ))
-                .catch(err => res.status(400).json({ message: err.message } ))
+                err => res.status(500).json({ message: err.message } ))
+                .catch(err => res.status(500).json({ message: err.message } ))
         } else {
-            res.status(400).json({ message: "unauth" })
+            res.status(403).json({ message: 'Insufficient permission' })
         }
 }
 
@@ -60,28 +59,18 @@ exports.updateNote = (req, res) => {
         $set: req.body
     }, { new: true })
     .then((note) => res.json(note), 
-        err => res.status(400).json({ message: err.message } )
-    .catch(err => res.status(400).json({ message: err.message } )));
+        err => res.status(500).json({ message: err.message } )
+    .catch(err => res.status(500).json({ message: err.message } )));
 }
 
 exports.delNote = (req, res) => {
-    /*
-    Note.findByIdAndRemove(req.note._id)
-    .then((note) => res.json({ status: true, message: 'Note successfully deleted.', note: note }), 
-        err => res.status(400).json({ message: err.message } )
-        
-    .catch(err => res.status(400).json({ message: err.message } )));
-    */
-
     req.profile.notes.remove(req.note._id);
     User.findByIdAndUpdate(req.profile._id, { $set: req.profile }, { new: true })
         .then(user => { 
             Note.findByIdAndRemove(req.note._id)
             .then(note => res.json( note), 
-                 err => res.status(400).json({ message: err.message } )      
-            .catch(err => res.status(400).json({ message: err.message })))},
-            err => res.status(400).json({ message: err.message }))
-        .catch((err) => res.status(400).json({ message: err.message } ))
-
-    
+                 err => res.status(500).json({ message: err.message } )      
+            .catch(err => res.status(500).json({ message: err.message })))},
+            err => res.status(500).json({ message: err.message }))
+        .catch((err) => res.status(500).json({ message: err.message } ))
 }

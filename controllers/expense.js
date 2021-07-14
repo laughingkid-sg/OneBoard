@@ -11,25 +11,25 @@ exports.expenseById = (req, res, next, id)  => {
             message: "Invalid Object Id"
         });
     }
-        if (req.profile.expenses.some(expense => expense.equals(id))) {
-            Expense.findById(id)
-                .then(expense => {
-                    if (!expense) {
-                        req.profile.expenses.remove(id);
-                        User.findByIdAndUpdate(req.profile.id, { $set: req.profile }, { new: true })
-                            .then( user => res.status(400).json({ events: user.expenses }),
-                                err => res.status(400).json({ message: err.message } ))
-                            .catch(err => res.status(400).json({ message: err.message } ))                     
-                    } else {
-                        req.expense = expense; 
-                        next(); 
-                    }
-                },
-                err => res.status(400).json({ message: err.message } ))
-                .catch(err => res.status(400).json({ message: err.message } ))
-        } else {
-            res.status(400).json({ message: "unauth or doesn't exits" })
-        }
+    if (req.profile.expenses.some(expense => expense.equals(id))) {
+        Expense.findById(id)
+            .then(expense => {
+                if (!expense) {
+                    req.profile.expenses.remove(id);
+                    User.findByIdAndUpdate(req.profile.id, { $set: req.profile }, { new: true })
+                        .then( user => res.status(404).json({ message: user.expenses }),
+                            err => res.status(500).json({ message: err.message } ))
+                        .catch(err => res.status(500).json({ message: err.message } ))                     
+                } else {
+                    req.expense = expense; 
+                    next(); 
+                }
+            },
+            err => res.status(500).json({ message: err.message } ))
+            .catch(err => res.status(500).json({ message: err.message } ))
+    } else {
+        res.status(404).json({ message: "Expense does not exist" })
+    }
 }
 
 exports.createExpense = (req, res) => {
@@ -37,10 +37,10 @@ exports.createExpense = (req, res) => {
     .then(expense => {
         User.findByIdAndUpdate(req.auth._id, { "$push": { "expenses": expense._id } }, { "new": true, "upsert": true })
             .then(user => {res.json(expense)},
-                err => res.status(400).json({ message: err }))
-            .catch(err => res.status(400).json({ message: err }))
-    }, err => res.status(400).json({ message: err }))
-    .catch(err => res.status(400).json({ message: err }));
+                err => res.status(500).json({ message: err }))
+            .catch(err => res.status(500).json({ message: err }))
+    }, err => res.status(500).json({ message: err }))
+    .catch(err => res.status(500).json({ message: err }));
 }
 
 exports.getExpense = (req, res) => {
@@ -52,8 +52,8 @@ exports.updateExpense = (req, res) => {
         $set: req.body
     }, { new: true })
     .then((expense) => res.json(expense), 
-        err => res.status(400).json({ message: err.message } )
-    .catch(err => res.status(400).json({ message: err.message } )));
+        err => res.status(500).json({ message: err.message } )
+    .catch(err => res.status(500).json({ message: err.message } )));
 }
 
 exports.delExpense = (req, res) => {
@@ -62,10 +62,10 @@ exports.delExpense = (req, res) => {
         .then(user => { 
             Expense.findByIdAndRemove(req.expense._id)
             .then(expense => res.json(expense), 
-                 err => res.status(400).json({ message: err.message } )      
-            .catch(err => res.status(400).json({ message: err.message })))},
-            err => res.status(400).json({ message: err.message }))
-        .catch((err) => res.status(400).json({ message: err.message } ))
+                 err => res.status(500).json({ message: err.message } )      
+            .catch(err => res.status(500).json({ message: err.message })))},
+            err => res.status(500).json({ message: err.message }))
+        .catch((err) => res.status(500).json({ message: err.message } ))
 }
 
 exports.getExpenses = (req, res) => {
@@ -115,9 +115,14 @@ exports.getExpenses = (req, res) => {
             }
         ]
     ).exec((err, expenses) => {
-        if (err || !expenses || expenses.length == 0) {
-            return res.status(400).json({
-                error: "No expenses found"
+        if (err) {
+            res.status(500).json({
+                message: err.message
+            });
+        }
+        else if (!expenses || expenses.length == 0) {
+            res.status(404).json({
+                message: "No expenses found"
             });
         }
         res.json(expenses);
@@ -134,7 +139,7 @@ exports.expensesLabel = (req, res) => {
 exports.expenseUpload = async (req, res) => {
 
     if (req.file == undefined) {
-        return res.status(400).send("Please upload a CSV file!");
+        res.status(400).send("Please upload a CSV file");
     }
 
     let expenses = [];
@@ -148,9 +153,8 @@ exports.expenseUpload = async (req, res) => {
             expenses.push({
                 name: data[0],
                 description: data[1],
-                date: new Date(data[2]),
-                //label: data[3],
-                amount: data[3]
+                date: isNaN(Date.parse(data[2])) ? Date.now() : Date.parse(data[2]),
+                amount: isNaN(data[3]) ? 0.01 : data[3],
             });
         })
         .on("end", () => {

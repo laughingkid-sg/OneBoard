@@ -1,4 +1,4 @@
-const { errorHandler } = require('../helpers/dbErrorHander');
+
 const Board = require("../models/board");
 const Column = require("../models/column");
 const Task = require("../models/task");
@@ -51,8 +51,12 @@ exports.setTaskOrder = (req, res, next) => {
             }
         ]
     ).exec((err, task) => {
-        req.body.order = task[0] == undefined ? 0 : parseInt(task[0]['MAX(tasks᎐order)'], 10) + 1;
-        next();
+        if (err) {
+            res.status(500).json({message: err.message});
+        } else {
+            req.body.order = task[0] == undefined ? 0 : parseInt(task[0]['MAX(tasks᎐order)'], 10) + 1;
+            next();
+        }
     })    
 }
 
@@ -68,16 +72,15 @@ exports.createTask = async (req, res) => {
             await Column.findByIdAndUpdate(req.column._id, { "$push": { "tasks": task._id } }, { "new": true, "upsert": true });
             res.status(200).json(  task );
         } else {
-            return res.status(400).json({
-                error: 'Access Denied'
+            return res.status(403).json({
+                message: 'Insufficient permission'
             });
         }    
     } catch (err) {
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
+        res.status(500).json({
+            message: err.message
         })
-       }
+    }
 }
 
 exports.getTask = async (req, res) => {
@@ -88,13 +91,12 @@ exports.getTask = async (req, res) => {
                 return res.json(req.task);       
         } else {
             return res.status(400).json({
-                error: 'Access Denied'
+                message: 'Access Denied'
             });
         }    
     } catch (err) {
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
+        return res.status(500).json({
+            message: err.message
         })
     }
 }
@@ -153,17 +155,18 @@ exports.taskById = (req, res, next, id) => {
             }
         ]
     ).exec((err, task) => {
-
-        if (err || !task || task.length == 0) {
-            return res.status(400).json({
-                error: "Task not found"
+        if (err) {
+            res.json(500).json({message: err.message})
+        } else if (!task || task.length == 0) {
+            return res.status(404).json({
+                message: "Task not found"
             });
+        } else {
+            req.board = task[0]['boards'];
+            req.column = task[0]['columns'];  
+            req.task = task[0]['tasks'];  
+            next();
         }
-
-        req.board = task[0]['boards'];
-        req.column = task[0]['columns'];  
-        req.task = task[0]['tasks'];  
-        next();
     });   
 };
 
@@ -181,14 +184,13 @@ exports.updateTask = async (req, res) => {
             res.status(200).json( task );
                      
         } else {
-            return res.status(400).json({
-                error: 'Access Denied'
+            return res.status(403).json({
+                message: 'Insufficient permission'
             });
         }    
     } catch (err) {
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
+        return res.status(500).json({
+            message: err.message
         })
     }
 }
@@ -206,14 +208,13 @@ exports.delTask = async (req, res) => {
                 }
                      
         } else {
-            return res.status(400).json({
-                error: 'Access Denied'
+            return res.status(403).json({
+                message: 'Insufficient permission'
             });
         }    
     } catch (err) {
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
+        return res.status(500).json({
+            message: err.message
         })
     }
 }

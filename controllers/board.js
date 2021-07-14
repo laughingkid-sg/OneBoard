@@ -6,25 +6,22 @@ const Task = require("../models/task");
 const ObjectId = require('mongodb').ObjectID;
 
 // Board By Id 
-// Code to be improved
-
 exports.boardById = (req, res, next, id) => {
 
     if (!ObjectId.isValid(id)) {
-        return res.status(400).json({
+        res.status(400).json({
             message: "Invalid Object Id"
         });
     }
-
     Board.findById(id).populate( { "path" : "columns", "populate" : { "path" : "tasks", "model" : "Task" } } )
     .exec((err, board) => {         
         if (err) {
-            return res.status(500).json({
+            res.status(500).json({
                 message: err.message
             });
         } else if (!board) {
-            return res.status(404).json({
-                message: "Board not found."
+            res.status(404).json({
+                message: "Board not found"
             });
         } else {
             req.board = board;
@@ -32,62 +29,6 @@ exports.boardById = (req, res, next, id) => {
         }
     })
 }
-
-/*
-exports.boardById = (req, res, next, id) => {
-    Board.aggregate(
-        [
-            {
-                $match: {
-                    _id: ObjectId(id) 
-                }
-            },
-            {
-                $lookup: {
-                    from: 'columns',
-                    localField: 'columns',
-                    foreignField: '_id',
-                    as: 'columns'         
-                }                  
-            }, {
-                $unwind: '$columns' 
-            },
-            {
-                $lookup: {
-                    from: 'tasks',
-                    localField: 'columns.tasks',
-                    foreignField: '_id',
-                    as: 'columns.tasks'         
-                }
-            },
-            {
-                $group: {
-                    '_id':{
-                        '_id':'$_id',
-                        'name':'$name', 
-                        'labels': '$labels',
-                        'createdAt': '$createdAt',
-                        'updatedAt': '$updatedAt'
-                    },
-                'columns': {
-                    '$push': '$columns'
-                    }
-                }
-            }
-        ]
-    ).exec((err, board) => {
-        if (err || !board) {
-            return res.status(400).json({
-                error: 'Board not found'
-            })
-        }
-        req.board = board[0];
-        req.board.details = req.board._id;
-        req.board._id = req.board.details._id;
-        next();
-    });
-};
-*/
 
 // Get Single Board
 exports.getBoard = (req, res) => {  
@@ -100,20 +41,20 @@ exports.getBoard = (req, res) => {
         }
     }).exec((err, user) => {
         if (err) {
-            return res.status(500).json({
+            res.status(500).json({
                 message: err.message
             });
         } else if (!user) {
-            return res.status(404).json({
-                message: 'Board not found.'
+            res.status(404).json({
+                message: 'Board not found'
             });
         } else if (user._id != req.auth._id) {
-            return res.status(401).json({
-                message: 'Access Denied.'
+            res.status(403).json({
+                message: 'Insufficient permission'
             });
         }        
         else {
-            return res.json(req.board);
+            res.json(req.board);
         }     
     })
 }
@@ -207,17 +148,15 @@ exports.createBoard = async (req, res) => {
             res.status(200).json(board);
 
         } else {
-            return res.status(400).json({
-                error: 'Access Denied'
+            res.status(403).json({
+                message: 'Insufficient permission'
             });
         }    
-       } catch (err) {
-        console.log(err);
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
+    } catch (err) {
+        res.status(500).json({
+            message: err.message
         })
-       }
+    }
  }
 
 // Delete Board
@@ -240,15 +179,13 @@ exports.delBoard = async (req, res) => {
             res.status(200).json(deletedProject);
             }           
         } else {
-            return res.status(400).json({
-                error: 'Access Denied'
+            res.status(403).json({
+                message: 'Insufficient permission'
             });
         }    
     } catch (err) {
-        console.log(err);
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
+        res.status(500).json({
+            message: err.message
         })
     }   
  }
@@ -256,12 +193,15 @@ exports.delBoard = async (req, res) => {
 // Get Boards
 exports.getBoards = async (req, res) => {   
      User.findById(req.auth._id).populate({"path":"boards","populate":{"path":"columns","model":"Column","populate":{"path":"tasks","model":"Task"}}}).exec((err, user) => {         
-        if (err || !user) {
-            return res.status(400).json({
-                error: "User not found"
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
             });
-        }
-        res.json(user.boards);
+        } else if (err) {
+            res.status(500).json(err.message)
+        } else {
+            res.json(user.boards);
+        }      
     })
 }
 

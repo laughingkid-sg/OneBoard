@@ -1,31 +1,51 @@
 const User = require("../models/user")
 
 exports.userById = (req, res, next, id) => {
-    User.findById(id).exec((err, user) => {
-        if (err || !user) {
-            return res.status(400).json({
-                errorCode: 6,
+    try {
+        User.findById(id).exec((err, user) => {
+            if (!user) {
+                res.status(404).json({
                 message: "User not found"
-            })
-        }
-        user.salt = undefined
-        user.hashed_password = undefined
-        req.profile = user;
-        next();
-    })
+                })
+            } else if (err) {
+                res.status(500).json({
+                    message: err.message
+                })
+            } else {
+                user.salt = undefined
+                user.hashed_password = undefined
+                req.profile = user;
+                next();
+            }
+        })
+    } catch (err) {
+        res.status(500).json({
+            message: err.message
+        })
+    }
 }
 
 exports.setUser = (req, res, next) => {
-    User.findById(req.auth._id).exec((err, user) => {
-        if (err || !user) {
-            return res.status(400).json({
-                errorCode: 6,
-                message: "User not found"
-            })
-        }
-        req.profile = user;
-        next();
-    })
+    try {
+        User.findById(req.auth._id).exec((err, user) => {
+            if (!user) {
+                return res.status(400).json({
+                    message: "User not found"
+                })
+            } else if (err) {
+                res.status(500).json({
+                    message: err.message
+                })
+            } else {
+                req.profile = user;
+                next();
+            }    
+        })
+    } catch (err) {
+        res.status(500).json({
+            message: err.message
+        })
+    }
 }
 
 exports.getUser = (req, res) => {
@@ -33,7 +53,7 @@ exports.getUser = (req, res) => {
 }
 
 exports.setPass = async (req, res) => {
-    await req.profile.changePassword(req.body.oldPassword, req.body.newPassword, (err, user) => err ? res.status(401).json({message: err.message}) : res.status(204).json(user))
+    await req.profile.changePassword(req.body.oldPassword, req.body.newPassword, (err, user) => err ? res.status(500).json({message: err.message}) : res.status(204).json(user))
 }
 
 exports.updateUser = (req, res) => {

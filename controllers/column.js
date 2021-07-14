@@ -1,4 +1,3 @@
-const { errorHandler } = require('../helpers/dbErrorHander');
 const Board = require("../models/board");
 const Column = require("../models/column");
 const Task = require("../models/task");
@@ -50,9 +49,13 @@ exports.setColOrder = (req, res, next) => {
             }
         ]
     ).exec((err, col) => {
-        req.body.order = col[0] == undefined ? 0 : parseInt(col[0]['MAX(columns᎐order)'], 10) + 1;
-        next();
-    })    
+        if (err) {
+            res.stauts(500).json({message: err.message})
+        } else {
+            req.body.order = col[0] == undefined ? 0 : parseInt(col[0]['MAX(columns᎐order)'], 10) + 1;
+            next();
+        }
+    })
 }
 
 exports.createColumn = async (req, res) => {
@@ -66,13 +69,12 @@ exports.createColumn = async (req, res) => {
             await Board.findByIdAndUpdate(req.board._id, { "$push": { "columns": column._id } }, { "upsert": true });
             res.status(200).json(column);                                   
         } else {
-            return res.status(400).json({
-                error: 'Access Denied'
+            res.status(403).json({
+                message: 'Insufficient permission'
             });
         }    
     } catch (err) {
-        return res.status(400).json({     
-            errorCode: 0,
+        res.status(500).json({     
             message: err.message
         })
     }
@@ -81,7 +83,7 @@ exports.createColumn = async (req, res) => {
 exports.columnById = (req, res, next, id) => {
    
     if (!ObjectId.isValid(id)) {
-        return res.status(400).json({
+        res.status(400).json({
             message: "Invalid Object Id"
         });
     }
@@ -130,36 +132,36 @@ exports.columnById = (req, res, next, id) => {
         ]
       
     ).exec((err, col) => {
-        if (err || !col || col.length == 0) {
-            return res.status(400).json({
-                error: "Column not found"
+        if (!col || col.length == 0) {
+            return res.status(404).json({
+                message: "Column not found"
             });
+        } else if (err) {
+            res.status(500).json({     
+                message: err.message
+            })
+        } else {
+            req.board = col[0]['boards'];
+            req.column = col[0]['columns'];  
+            next();
         }
-        req.board = col[0]['boards'];
-        req.column = col[0]['columns'];  
-        next();
+        
     });   
     
 };
 
  exports.getColumn = async (req, res, next) => {
-    try {
-        if (req.profile.boards.some(board => board.equals(req.board._id)) && 
-            req.board.columns.some(column => column.equals(req.column._id))) {
-
-                return res.json(req.column);
-          
-        } else {
-            return res.status(400).json({
-                error: 'Access Denied'
-            });
-        }    
-    } catch (err) {
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
-        })
-    }
+    if (req.profile.boards.some(board => board.equals(req.board._id)) && 
+        req.board.columns.some(column => column.equals(req.column._id))) {
+        res.json(req.column);
+    } else {
+        res.status(403).json({
+            message: 'Insufficient permission'
+        });
+    }    
+    res.status(500).json({
+        message: err.message
+    })
  }
 
 exports.updateColumn = async (req, res) => {
@@ -175,14 +177,13 @@ exports.updateColumn = async (req, res) => {
             res.status(200).json(column);
                      
         } else {
-            return res.status(400).json({
-                error: 'Access Denied'
+            res.status(403).json({
+                message: 'Insufficient permission'
             });
         }    
     } catch (err) {
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
+         res.status(500).json({
+            message: err.message
         })
     }
 }
@@ -203,14 +204,13 @@ exports.delColumn = async (req, res) => {
                      res.status(200).json( deletedColumn );
                 }                    
         } else {
-            return res.status(400).json({
-                error: 'Access Denied'
+            res.status(403).json({
+                message: 'Insufficient permission'
             });
         }    
     } catch (err) {
-        return res.status(400).json({
-            errorCode: 0,
-            message: "Unknow error"
+        return res.status(500).json({
+            message: err.message
         })
     }
 }

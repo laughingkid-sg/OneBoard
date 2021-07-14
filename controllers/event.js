@@ -7,10 +7,10 @@ exports.createEvent = (req, res) => {
     .then(event => {
         User.findByIdAndUpdate(req.auth._id, { "$push": { "events": event._id } }, { "new": true, "upsert": true })
             .then(user => {res.json(event)},
-                err => res.status(400).json({ message: err }))
-            .catch(err => res.status(400).json({ message: err }))
-    }, err => res.status(400).json({ message: err }))
-    .catch(err => res.status(400).json({ message: err }));
+                err => res.status(500).json({ message: err }))
+            .catch(err => res.status(500).json({ message: err }))
+    }, err => res.status(500).json({ message: err }))
+    .catch(err => res.status(500).json({ message: err }));
 }
 
 exports.getEvents = (req, res) => {   
@@ -74,13 +74,17 @@ exports.getEvents = (req, res) => {
         ]
      ).exec((err, event) => {
 
-        if (err || !event || event.length == 0) {
-            return res.status(400).json({
-                error: "Event not found"
+        if (err) {
+            res.status(500).json({
+                message: err.message
             });
-        }
-
-        res.json(event);
+        } else if (!event || event.length == 0) {
+            res.status(404).json({
+                message: "Event not found"
+            });
+        } else {
+            res.status(200).json(event);
+        }      
     });   
  }
 
@@ -96,18 +100,18 @@ exports.eventById = (req, res, next, id)  => {
                     if (!event) {
                         req.profile.events.remove(id);
                         User.findByIdAndUpdate(req.profile.id, { $set: req.profile }, { new: true })
-                            .then( user => res.status(400).json({ events: user.events }),
-                                err => res.status(400).json({ message: err.message } ))
-                            .catch(err => res.status(400).json({ message: err.message } ))                     
+                            .then( user => res.status(404).json({ events: user.events }),
+                                err => res.status(500).json({ message: err.message } ))
+                            .catch(err => res.status(500).json({ message: err.message } ))                     
                     } else {
                         req.event = event; 
                         next(); 
                     }
                 },
-                err => res.status(400).json({ message: err.message } ))
-                .catch(err => res.status(400).json({ message: err.message } ))
+                err => res.status(500).json({ message: err.message } ))
+                .catch(err => res.status(500).json({ message: err.message } ))
         } else {
-            res.status(400).json({ message: "unauth" })
+            res.status(403).json({ message: 'Insufficient permission' })
         }
 }
 
@@ -120,8 +124,8 @@ exports.updateEvent = (req, res) => {
         $set: req.body
     }, { new: true })
     .then((event) => res.json(event), 
-        err => res.status(400).json({ message: err.message } )
-    .catch(err => res.status(400).json({ message: err.message } )));
+        err => res.status(500).json({ message: err.message } )
+    .catch(err => res.status(500).json({ message: err.message } )));
 }
 
 exports.delEvent = (req, res) => {
@@ -130,29 +134,29 @@ exports.delEvent = (req, res) => {
         .then(user => { 
             Event.findByIdAndRemove(req.event._id)
             .then(event => res.json( event ), 
-                 err => res.status(400).json({ message: err.message } )      
-            .catch(err => res.status(400).json({ message: err.message })))},
-            err => res.status(400).json({ message: err.message }))
-        .catch((err) => res.status(400).json({ message: err.message } ))
+                 err => res.status(500).json({ message: err.message } )      
+            .catch(err => res.status(500).json({ message: err.message })))},
+            err => res.status(500).json({ message: err.message }))
+        .catch((err) => res.status(500).json({ message: err.message } ))
 }
 
 exports.updateFeatured = (req, res) => {
     req.profile.featured = req.event._id;
     User.findByIdAndUpdate(req.profile._id, { $set: req.profile }, { new: true }).then(
         user => res.status(204).json(user),
-        err => res.status(400).json({ message: err.message })
-        .catch((err) => res.status(400).json({ message: err.message } ))
+        err => res.status(500).json({ message: err.message })
+        .catch((err) => res.status(500).json({ message: err.message } ))
     )
 }
 
 exports.removeFeatured = (req, res) => {
     if (!req.profile.featured) {
-        res.status(400).json({ message: "No featured event set." } )
+        res.status(400).json({ message: "No featured event set" } )
     } else {
         User.findByIdAndUpdate(req.profile._id, { $unset: { featured: "" }}).then(
             user => res.status(204).json(user),
-            err => res.status(400).json({ message: err.message })
-            .catch((err) => res.status(400).json({ message: err.message } ))
+            err => res.status(500).json({ message: err.message })
+            .catch((err) => res.status(500).json({ message: err.message } ))
         )
     }
 }
