@@ -136,6 +136,7 @@ export const addData = (token, type, dataReq, id = '') => {
 			);
 			switch (type) {
 				case TYPES.TASK:
+					// ! Check add data here
 					dispatch(kanbanActions.addTask({ task: response, id }));
 					break;
 				case TYPES.COLUMN:

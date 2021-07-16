@@ -25,7 +25,6 @@ export const login = (userData) => {
 			const loginResponse = await loginData();
 			return { status: true, data: loginResponse };
 		} catch (error) {
-			// console.log(error);
 			return { status: false, message: 'Incorrect e-mail or password' };
 		}
 	};
