@@ -28,14 +28,12 @@ const EditNote = (props) => {
 	};
 
 	return (
-		<InputGroup>
-			<Input
-				type={isTitle ? 'text' : 'textarea'}
-				onBlur={cancelHandler}
-				defaultValue={isTitle ? note.name : note.description}
-				autoFocus
-			/>
-		</InputGroup>
+		<Input
+			type={isTitle ? 'text' : 'textarea'}
+			onBlur={cancelHandler}
+			defaultValue={isTitle ? note.name : note.description}
+			autoFocus
+		/>
 	);
 };
 
