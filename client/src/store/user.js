@@ -20,6 +20,8 @@ const userSlice = createSlice({
 			state.lastName = action.payload.lastName;
 			state.email = action.payload.email;
 			state.featured = action.payload.featured;
+			// ! Yet to test
+			// return {...state, ...action.payload}
 		},
 		logout(state) {
 			return initialState;
@@ -27,8 +29,6 @@ const userSlice = createSlice({
 		// TODO To change soon
 		update(state, action) {
 			return { ...state, ...action.payload };
-			// const { firstName, lastName } = action.payload;
-			// return { ...state, firstName, lastName };
 		},
 		// * Kanban related information
 		addBoard(state, action) {
@@ -63,7 +63,7 @@ const userSlice = createSlice({
 		},
 		// * Calendar related information
 		updateFeatured(state, action) {
-			console.log(action.payload);
+			// console.log(action.payload);
 			state.featured = action.payload;
 		},
 	},

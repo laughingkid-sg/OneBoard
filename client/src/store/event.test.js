@@ -53,7 +53,6 @@ describe('REDUX: event slice', () => {
 		]);
 	});
 
-	// Bottom 2 tests necessary? Since it won't happen
 	test('update event in slice (no id)', () => {
 		const newEvent = {
 			_id: 'asdfgh',
@@ -69,14 +68,6 @@ describe('REDUX: event slice', () => {
 			event,
 		]);
 	});
-
-	// test('update empty slice', () => {
-	// 	expect(reducer([], eventActions.updateEvent(event))).toEqual([]);
-	// });
-
-	// test('clear non-empty slice', () => {
-	// 	expect(reducer([event], eventActions.clear())).toEqual([]);
-	// });
 
 	test('delete event (1 element)', () => {
 		expect(reducer([event], eventActions.deleteEvent(event._id))).toEqual(
@@ -103,5 +94,9 @@ describe('REDUX: event slice', () => {
 
 	test('clear empty slice', () => {
 		expect(reducer([], eventActions.clear())).toEqual([]);
+	});
+
+	test('clear non-empty slice', () => {
+		expect(reducer([event], eventActions.clear())).toEqual([]);
 	});
 });

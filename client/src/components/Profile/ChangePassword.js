@@ -10,6 +10,7 @@ import {
 	Label,
 	Input,
 } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import useInput from '../hooks/use-input';
 import useError from '../hooks/use-error';
 import { updatePassword } from '../../store/user-actions';
@@ -131,7 +132,17 @@ function ChangePassword(props) {
 					<Button type="submit" color="success">
 						Change Password
 					</Button>
-					<Button outline>Go back</Button>
+					<Button outline>
+						<Link
+							to="/"
+							style={{
+								textDecoration: 'none',
+								color: 'inherit',
+							}}
+						>
+							Go back
+						</Link>
+					</Button>
 				</div>
 			</Form>
 		</React.Fragment>
