@@ -65,7 +65,7 @@ export const fetchUserData = (token) => {
 					firstName: userData.user.firstName,
 					lastName: userData.user.lastName,
 					email: userData.user.username,
-					boards: userData.user.boards,
+					// boards: userData.user.boards,
 					featured: userData.user.featured,
 				})
 			);

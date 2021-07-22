@@ -13,20 +13,12 @@ const userSlice = createSlice({
 	name: 'user',
 	initialState,
 	reducers: {
-		// TODO can be refactored
 		login(state, action) {
-			state.id = action.payload.id;
-			state.firstName = action.payload.firstName;
-			state.lastName = action.payload.lastName;
-			state.email = action.payload.email;
-			state.featured = action.payload.featured;
-			// ! Yet to test
-			// return {...state, ...action.payload}
+			return { ...state, ...action.payload };
 		},
 		logout(state) {
 			return initialState;
 		},
-		// TODO To change soon
 		update(state, action) {
 			return { ...state, ...action.payload };
 		},
@@ -55,7 +47,7 @@ const userSlice = createSlice({
 			const id = action.payload;
 			let newIndex =
 				state.boards.boards.findIndex((board) => board._id === id) - 1;
-			if (newIndex === 0) newIndex = 1;
+			if (newIndex === -1) newIndex = 1;
 			state.boards.selectedBoard = state.boards.boards[newIndex];
 			state.boards.boards = state.boards.boards.filter(
 				(board) => board._id !== id
@@ -63,7 +55,6 @@ const userSlice = createSlice({
 		},
 		// * Calendar related information
 		updateFeatured(state, action) {
-			// console.log(action.payload);
 			state.featured = action.payload;
 		},
 	},
