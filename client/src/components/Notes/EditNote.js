@@ -1,6 +1,6 @@
 import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
-import { Input, InputGroup } from 'reactstrap';
+import { Input } from 'reactstrap';
 import { updateNote } from '../../store/note-actions';
 
 const EditNote = (props) => {
@@ -11,10 +11,7 @@ const EditNote = (props) => {
 
 	const cancelHandler = (e) => {
 		const newData = e.target.value;
-		if (
-			newData === (isTitle ? note.name : note.description) ||
-			newData === ''
-		) {
+		if (newData === (isTitle ? note.name : note.description)) {
 			onCancel();
 			return;
 		}
