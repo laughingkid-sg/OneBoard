@@ -134,7 +134,10 @@ export const updatePassword = (token, userPW) => {
 
 		try {
 			// const response = await updateData();
-			postRequest(token, '/api/user/pass', userPW);
-		} catch (error) {}
+			await postRequest(token, '/api/user/pass', userPW);
+			return '';
+		} catch (error) {
+			return 'Wrong password.';
+		}
 	};
 };

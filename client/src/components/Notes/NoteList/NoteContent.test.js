@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, fireEvent, screen } from '../test-utils';
 import userEvent from '@testing-library/user-event';
 import NoteContent from './NoteContent';
 
@@ -41,25 +41,4 @@ describe('Note Content Component', () => {
 		expect(title).toBeInTheDocument;
 		expect(desc).toBeInTheDocument;
 	});
-
-	// Redux required
-	// test('onClick edit title', () => {
-	// 	// Bare minimum note
-	// 	const noteParams = {
-	// 		onEdit: jest.fn(),
-	// 		note: {
-	// 			_id: '60f125f7df8805365eb1fd0e',
-	// 			name: 'Used to react test',
-	// 			description: '',
-	// 		},
-	// 	};
-
-	// 	render(<NoteContent {...noteParams} />);
-
-	// 	const title = screen.getByRole('heading', { level: 3 });
-	// 	userEvent.click(title);
-	// 	const titleInput = screen.getByRole('textbox');
-	// 	expect(title).not.toBeInTheDocument;
-	// 	expect(titleInput).toBeInTheDocument;
-	// });
 });

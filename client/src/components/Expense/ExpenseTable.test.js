@@ -10,12 +10,6 @@ describe('Expense Table Component', () => {
 	});
 
 	// < 10 expenses on table - redux required
-	// test('renders < 10 expenses', () => {
-	// 	render(<ExpenseTable expenses={expenses} />);
-
-	// 	const pagination = screen.getByTestId('pagination');
-	// 	expect(pagination).not.toBeInTheDocument;
-	// });
 
 	// > 10 expenses on table
 });
