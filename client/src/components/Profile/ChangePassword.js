@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 import useInput from '../hooks/use-input';
 import useError from '../hooks/use-error';
 import { updatePassword } from '../../store/user-actions';
-import { textNotEmpty } from '../../lib/validators';
+import { textNotEmpty, validPW } from '../../lib/validators';
 
 function ChangePassword(props) {
 	const dispatch = useDispatch();
@@ -37,7 +37,7 @@ function ChangePassword(props) {
 		onBlur: newPWOnBlur,
 		onChange: newPWOnChange,
 		reset: newPWReset,
-	} = useInput((value) => textNotEmpty(value) && value !== currentPassword);
+	} = useInput((value) => validPW(value) && value !== currentPassword);
 
 	const {
 		value: cfmPassword,
@@ -144,17 +144,15 @@ function ChangePassword(props) {
 					>
 						Change Password
 					</Button>
-					<Button outline>
-						<Link
-							to="/"
-							style={{
-								textDecoration: 'none',
-								color: 'inherit',
-							}}
-						>
-							Go back
-						</Link>
-					</Button>
+					<Link
+						to="/"
+						style={{
+							textDecoration: 'none',
+							color: 'inherit',
+						}}
+					>
+						<Button outline>Go back</Button>
+					</Link>
 				</div>
 			</Form>
 		</React.Fragment>
