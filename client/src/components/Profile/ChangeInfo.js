@@ -117,17 +117,15 @@ function ChangeInfo() {
 					<Button type="submit" color="success">
 						Update Information
 					</Button>
-					<Button outline>
-						<Link
-							to="/"
-							style={{
-								textDecoration: 'none',
-								color: 'inherit',
-							}}
-						>
-							Go back
-						</Link>
-					</Button>
+					<Link
+						to="/"
+						style={{
+							textDecoration: 'none',
+							color: 'inherit',
+						}}
+					>
+						<Button outline>Go back</Button>
+					</Link>
 				</div>
 			</Form>
 		</React.Fragment>

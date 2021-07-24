@@ -55,7 +55,7 @@ describe('REDUX: event slice', () => {
 
 	test('update event in slice (no id)', () => {
 		const newEvent = {
-			_id: 'asdfgh',
+			_id: '123456',
 			title: 'a new event',
 			start: new Date('2021-07-01'),
 			end: new Date('2021-07-02'),
@@ -75,7 +75,7 @@ describe('REDUX: event slice', () => {
 		);
 	});
 
-	test('delete event (>1 elements)', () => {
+	test('delete event (> 1 elements)', () => {
 		const newEvent = {
 			_id: 'asdfgh',
 			title: 'a new event',
@@ -92,11 +92,11 @@ describe('REDUX: event slice', () => {
 		);
 	});
 
-	test('clear empty slice', () => {
+	test('clear slice', () => {
+		// Empty slice
 		expect(reducer([], eventActions.clear())).toEqual([]);
-	});
 
-	test('clear non-empty slice', () => {
+		// Non-empty slice
 		expect(reducer([event], eventActions.clear())).toEqual([]);
 	});
 });
