@@ -15,6 +15,7 @@ const kanbanRoutes = require('./routes/kanban')
 const noteRoutes = require('./routes/note')
 const eventRoutes = require('./routes/event');
 const expenseRoutes = require('./routes/expense');
+const telegramRoutes = require('./routes/telegram');
 //const cors = require('./routes/cors');
 
 // app
@@ -46,6 +47,8 @@ app.use("/api/kanban", kanbanRoutes);
 app.use("/api/note", noteRoutes);
 app.use("/api/event", eventRoutes);
 app.use("/api/expense", expenseRoutes);
+app.use("/api/telegram", telegramRoutes);
+
 
 app.get('/', (req, res) => {
     res.json({message: "ok"})

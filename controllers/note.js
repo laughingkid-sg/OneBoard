@@ -5,7 +5,7 @@ const ObjectId = require('mongodb').ObjectID;
 exports.createNote = async (req, res) => {
     try {
         let note = new Note(req.body);
-        await note.validate(req.body); 
+        await note.validate(req.body).catch(err => res.status(400).json({message: err.message})); 
         note = await note.save(req.body);     
         await User.findByIdAndUpdate(req.auth._id, { "$push": { "notes": note._id } }, { "new": true, "upsert": true });
         res.status(200).json(note);        
