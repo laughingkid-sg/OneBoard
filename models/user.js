@@ -78,6 +78,10 @@ const userSchema = new Schema({
         required: false
     }],
     expenseLabels: [labelSchema],
+    telegramID: {
+        type: Number,
+        required: false
+    }
 }, {timestamps : true}
 );
 
