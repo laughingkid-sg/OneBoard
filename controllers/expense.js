@@ -161,8 +161,12 @@ exports.expenseUpload = async (req, res) => {
             expenses.shift();
             Expense.insertMany(expenses)
             .then(result => { 
-                fs.unlink(path, err => err ? console.log(err) : undefined); 
-                res.status(200).json(result)
+                fs.unlink(path, err => err ? console.log(err) : undefined)
+                result.forEach(expense => req.profile.expenses.push(expense._id))
+                User.findByIdAndUpdate(req.profile._id, { expenses: req.profile.expenses }, { new: true })
+                    .then((user, err) => res.status(200).json(result))
+                    .catch(err => res.status(500).json(err.message));
+
             })
             .catch(err => res.status(500).json(err.message));
         })
