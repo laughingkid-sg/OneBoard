@@ -199,7 +199,7 @@ export default function Register() {
 						/>
 						<FormFeedback invalid="true">
 							The password must be least 8 characters and contain
-							a number.
+							a digit.
 						</FormFeedback>
 					</FormGroup>
 					<FormGroup className="col">
@@ -215,7 +215,9 @@ export default function Register() {
 							data-testid="cfmPW"
 						/>
 						<FormFeedback invalid="true">
-							Ensure both passwords are the same.
+							{cfmPassword.length < 8
+								? 'Ensure the password is at least 8 characters long and contain a digit.'
+								: 'Ensure both passwords are the same.'}
 						</FormFeedback>
 					</FormGroup>
 				</div>
