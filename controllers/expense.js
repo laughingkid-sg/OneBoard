@@ -199,6 +199,8 @@ exports.expenseUpload = async (req, res) => {
 
 	let stream = fs.createReadStream(path);
 
+	let stream = fs.createReadStream(path);
+
 	let csvStream = fastcsv
 		.parse()
 		.on('data', (data) => {
@@ -218,7 +220,16 @@ exports.expenseUpload = async (req, res) => {
 					fs.unlink(path, (err) =>
 						err ? console.log(err) : undefined
 					);
-					res.status(200).json(result);
+					result.forEach((expense) =>
+						req.profile.expenses.push(expense._id)
+					);
+					User.findByIdAndUpdate(
+						req.profile._id,
+						{ expenses: req.profile.expenses },
+						{ new: true }
+					)
+						.then((user, err) => res.status(200).json(result))
+						.catch((err) => res.status(500).json(err.message));
 				})
 				.catch((err) => res.status(500).json(err.message));
 		});
