@@ -124,8 +124,10 @@ exports.getExpenses = (req, res) => {
             res.status(404).json({
                 message: "No expenses found"
             });
+        } else {
+            res.json(expenses);
         }
-        res.json(expenses);
+        
     }); 
 }
 
