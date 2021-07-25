@@ -27,9 +27,10 @@ exports.userById = (req, res, next, id) => {
 
 exports.setUser = (req, res, next) => {
     try {
+        
         User.findById(req.auth._id).exec((err, user) => {
             if (!user) {
-                return res.status(400).json({
+                return res.status(404).json({
                     message: "User not found"
                 })
             } else if (err) {
@@ -57,9 +58,8 @@ exports.setPass = async (req, res) => {
 }
 
 exports.updateUser = (req, res) => {
-    req.profile.firstName = req.body.firstName;
-    req.profile.lastName = req.body.lastName;
-    req.profile.save().then((user) => res.status(200).json(user), 
-        err => res.status(500).json({ message: err.message} ))
-    .catch(err => res.status(500).json({ message: err.message} ))   
+    User.findByIdAndUpdate(req.profile._id, { firstName: req.body.firstName, lastName: req.body.lastName }, { new: true })
+        .then((user) => res.status(200).json(user), 
+            err => res.status(500).json({ message: err.message} ))
+        .catch(err => res.status(500).json({ message: err.message} ))   
 }
