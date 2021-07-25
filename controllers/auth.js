@@ -2,7 +2,6 @@ const User = require('../models/user')
 const expressJwt = require("express-jwt"); // for authorization check
 const {errorHandler} = require("../helpers/dbErrorHander")
 const authenticate = require('../authenticate');
-
 /*
     User Sign up
 */
@@ -75,12 +74,33 @@ exports.requireSignin = expressJwt({
   isAuth - Used to check if user has the correct authorisation
 */
 exports.isAuth = (req, res, next) => {
-
     if (!authenticate.verifyUser) {
         res.status(403).json({
             message: "Insufficient permission"
         });
     } else {
         next();
+    }
+}
+
+exports.telegramLink = (req, res) => {
+    if (req.body.key == process.env.TELEGRAMKEY) {
+        User.findByIdAndUpdate(req.profile._id, { telegramID: req.body.telegramID }, { new: true })
+            .then((user) => res.status(200).send(user.firstName), 
+            err => res.status(500).json({ message: err.message} ))
+                .catch(err => res.status(500).json({ message: err.message} ))  
+    } else {
+        res.status(403).send()
+    }
+}
+
+exports.telegramUnlink = (req, res) => {
+    if (req.body.key == process.env.TELEGRAMKEY) {
+        User.findOneAndUpdate({ telegramID:  req.body.telegramID }, {$unset: {telegramID: true}}, { new: true })
+            .then((user) => res.status(204).send(), 
+            err => res.status(500).json({ message: err.message} ))
+            .catch(err => res.status(500).json({ message: err.message} ))  
+    } else {
+        res.status(403).send()
     }
 }

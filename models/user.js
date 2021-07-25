@@ -80,7 +80,9 @@ const userSchema = new Schema({
     expenseLabels: [labelSchema],
     telegramID: {
         type: Number,
-        required: false
+        required: false,
+        unique: true,
+        sparse: true
     }
 }, {timestamps : true}
 );
