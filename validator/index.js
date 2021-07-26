@@ -13,7 +13,7 @@ exports.userSignupValidator = (req, res, next) => {
         req.check('password')
             .isLength({ min: 8 })
             .withMessage('Password must be between 8 and 32 characters')
-            .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,32}$/)
+            .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9!@#$%^&*]{8,32}$/)
             .withMessage('Password must contain at least 1 character and number.');
         const errors = req.validationErrors();
         if (errors) {
