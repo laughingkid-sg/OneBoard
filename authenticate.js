@@ -18,6 +18,11 @@ exports.getToken = (user) => {
         {expiresIn: 3600});
 };
 
+exports.getShortToken = (user) => {
+    return jwt.sign(user, process.env.SECRETKEY,
+        {expiresIn: 60});
+}
+
 const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = process.env.SECRETKEY;

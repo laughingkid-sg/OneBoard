@@ -104,3 +104,16 @@ exports.telegramUnlink = (req, res) => {
         res.status(403).send()
     }
 }
+
+exports.telegramShortJWT = (req, res) => {
+    if (req.body.key == process.env.TELEGRAMKEY) {
+        User.findOne({ telegramID:  req.body.telegramID })
+            .then((user, err) => {
+                res.send(authenticate.getShortToken({_id: user._id}));
+            }, 
+                err => res.status(500).json({ message: err.message} ))
+            .catch(err => res.status(500).json({ message: err.message} ))  
+    } else {
+        res.status(403).send()
+    }    
+}
