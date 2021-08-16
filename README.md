@@ -17,7 +17,6 @@ OneBoard would consist of a dashboard with the supporting features:
 - [ant-design](https://github.com/ant-design/ant-design/) for UI components
 
 ## Features
-**Completed Features (as of 26 Jul 21)**
 - User
   - Login/Signup
   - Change Profile Name
@@ -55,14 +54,12 @@ https://oneboard-sg.netlify.app/
 
 ```
 git clone https://github.com/KwanHW/OneBoard.git
-npm install
 ```
 
 2. Clone the [backend repository](https://github.com/laughingkid-sg/OneBoard-backend)
 
 ```
 git clone https://github.com/laughingkid-sg/OneBoard-backend.git
-npm install
 ```
 
 3. Run `npm start` for both repositories and you're all set!
