@@ -1,18 +1,17 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
+const express = require("express")
+const cors = require("cors")
+const app = express()
 
-const whitelist = ['https://oneboard-sg.netlify.app/', 'https://localhost:3000'];
+const whitelist = ["https://oneboard-sg.netlify.app/", "https://localhost:3000"]
 var corsOptionsDelegate = (req, callback) => {
-    var corsOptions;
-    if(whitelist.indexOf(req.header('Origin')) !== -1) {
-        corsOptions = { origin: true };
-    }
-    else {
-        corsOptions = { origin: false };
-    }
-    callback(null, corsOptions);
-};
+	var corsOptions
+	if (whitelist.indexOf(req.header("Origin")) !== -1) {
+		corsOptions = { origin: true }
+	} else {
+		corsOptions = { origin: false }
+	}
+	callback(null, corsOptions)
+}
 
-exports.cors = cors();
-exports.corsWithOptions = cors(corsOptionsDelegate);
+exports.cors = cors()
+exports.corsWithOptions = cors(corsOptionsDelegate)
