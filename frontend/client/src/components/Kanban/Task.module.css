@@ -1,0 +1,13 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid lightgrey;
+	border-radius: 2px;
+	padding: 8px;
+	margin-bottom: 8px;
+	background-color: white;
+}
+
+.deadline {
+	margin-top: 4px;
+}

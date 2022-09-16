@@ -1,0 +1,36 @@
+.addTask {
+	margin: 8px;
+	width: 94%;
+	display: flex;
+	flex-direction: column;
+}
+
+.text {
+	resize: none;
+	margin-bottom: 4px;
+}
+
+.confirm {
+	margin-right: 12px;
+	font-size: 18px;
+	padding: 8px;
+	background-color: #458c7f;
+	border: 1px solid #458c7f;
+	border-radius: 8px;
+	color: white;
+}
+
+.confirm:hover {
+	background-color: #43c6ae;
+	border: 1px solid #43c6ae;
+}
+
+.cancel {
+	font-size: 22px;
+	cursor: pointer;
+	color: rgb(87, 87, 87);
+}
+
+.cancel:hover {
+	color: #272727;
+}

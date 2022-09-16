@@ -1,0 +1,70 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	flex: 0 0 auto;
+	width: 275px;
+	min-height: 100px;
+	/* May be removed in favour of a parent flex/grid  */
+	margin: 8px;
+	/* padding: 16px; */
+	border: 1px solid lightgray;
+	border-radius: 15px;
+	background-color: white;
+}
+
+.title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-top-left-radius: 15px !important;
+	border-top-right-radius: 15px !important;
+	background-color: #43c6ae;
+	padding: 11px 12px;
+	margin: 0px;
+}
+
+.titleText {
+	overflow: hidden;
+	width: 70%;
+	margin: 0 22px;
+}
+
+.taskList {
+	padding: 8px;
+	height: 100%;
+	overflow: auto;
+	background-color: rgb(228, 228, 228);
+}
+
+.addTaskBtn {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	/* height: 50%; */
+	padding: 8px 18px;
+	cursor: pointer;
+	color: #333333;
+	background-color: #aaaaaa;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+}
+
+.addTaskBtn:hover {
+	color: #333333;
+	background-color: #cccccc;
+}
+
+.addTaskBtn p {
+	margin-left: 6px;
+}
+
+/* Hide scrollbar */
+.container::-webkit-scrollbar,
+.taskList::-webkit-scrollbar {
+	display: none;
+}
+
+.container,
+.taskList {
+	scrollbar-width: none;
+}

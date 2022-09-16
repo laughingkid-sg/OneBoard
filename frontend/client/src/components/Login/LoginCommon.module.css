@@ -1,0 +1,41 @@
+.invalid input {
+	background-color: #ed919191;
+}
+
+.invalid {
+	color: red;
+	margin: 0;
+}
+
+.formRow {
+	width: 100%;
+	font-size: 2rem;
+}
+
+.formRow label {
+	display: block;
+	font-size: 1.25rem;
+}
+
+.formBtn {
+	width: 100%;
+	font-size: 1.25rem;
+	margin-top: 35px;
+	background-color: #458c7f;
+	border: 1px solid #458c7f;
+}
+
+.formBtn:hover {
+	background-color: #3ec7ae;
+	border: 1px solid #3ec7ae;
+}
+
+.footText {
+	font-size: 1.25rem;
+	margin-top: 35px;
+}
+
+.checkBox {
+	display: inline-flex;
+	align-items: center;
+}
